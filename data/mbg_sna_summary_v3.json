@@ -1,0 +1,227 @@
+{
+  "topic": "MBG",
+  "total_nodes": 64323,
+  "total_edges": 2,
+  "top_influencers": [
+    {
+      "rank": 1,
+      "user": "mba",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Positif",
+      "emotion": "Neutral",
+      "nss": 100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 2,
+      "user": "kesederhanaan",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Joy",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 3,
+      "user": "@jonmanru74",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Surprise",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 4,
+      "user": "@kotasolo_fp",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Netral",
+      "emotion": "Neutral",
+      "nss": 0.0,
+      "platform": "Threads",
+      "engagement": 2
+    },
+    {
+      "rank": 5,
+      "user": "@zakwanoe",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Joy",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 3
+    },
+    {
+      "rank": 6,
+      "user": "@kabarburung.basuki",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Positif",
+      "emotion": "Neutral",
+      "nss": 100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 7,
+      "user": "@hervianajuwita",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 1
+    },
+    {
+      "rank": 8,
+      "user": "@jessicaliandani",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Netral",
+      "emotion": "Neutral",
+      "nss": 0.0,
+      "platform": "Threads",
+      "engagement": 2
+    },
+    {
+      "rank": 9,
+      "user": "@hafisdmuchtar",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Anticipation",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 1
+    },
+    {
+      "rank": 10,
+      "user": "@ganisapejuangkemanusiaan",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Sadness",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 924
+    },
+    {
+      "rank": 11,
+      "user": "@listi_fatimah",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 2
+    },
+    {
+      "rank": 12,
+      "user": "@republik_partai",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Disgust",
+      "nss": -100.0,
+      "platform": "Twitter",
+      "engagement": 1
+    },
+    {
+      "rank": 13,
+      "user": "warta kota production",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -64.71,
+      "platform": "YouTube",
+      "engagement": 15234
+    },
+    {
+      "rank": 14,
+      "user": "@shokoyudiono",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Positif",
+      "emotion": "Neutral",
+      "nss": 100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 15,
+      "user": "@essensidotid",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 3
+    },
+    {
+      "rank": 16,
+      "user": "@sosialitas_channel",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 17,
+      "user": "@mama_husnashofiyyah",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Anticipation",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 18,
+      "user": "@ipong86ok",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 19,
+      "user": "malutpost.id",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "News",
+      "engagement": 0
+    },
+    {
+      "rank": 20,
+      "user": "@en_apek",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Netral",
+      "emotion": "Neutral",
+      "nss": 0.0,
+      "platform": "Threads",
+      "engagement": 36
+    }
+  ]
+}

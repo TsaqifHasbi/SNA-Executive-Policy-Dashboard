@@ -1,0 +1,15 @@
+{
+  "model": "indobenchmark/indobert-base-p1",
+  "task": "emotion_7class",
+  "accuracy": 0.8919047619047619,
+  "macro_f1": 0.8921912253357585,
+  "labels": [
+    "Netral",
+    "Senang",
+    "Sedih",
+    "Marah",
+    "Takut",
+    "Terkejut",
+    "Jijik"
+  ]
+}

@@ -1,0 +1,167 @@
+import os
+import re
+import pandas as pd
+# pyrefly: ignore[missing-import]
+import numpy as np
+# pyrefly: ignore[missing-import]
+import streamlit as st
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+PARQUET_PATH = os.path.join(DATA_DIR, 'enriched_corpus_for_sna.parquet')
+CSV_PATH = os.path.join(DATA_DIR, 'enriched_corpus_for_sna.csv')
+
+# Indonesian Stopwords
+STOPWORDS_ID = {
+    'dan', 'yang', 'di', 'ini', 'itu', 'ke', 'dari', 'untuk', 'pada', 'dengan',
+    'adalah', 'akan', 'atau', 'juga', 'dalam', 'bisa', 'ada', 'tidak', 'sudah',
+    'karena', 'oleh', 'saat', 'para', 'seperti', 'lebih', 'harus', 'kami', 'kita',
+    'bagi', 'saja', 'masih', 'tentang', 'telah', 'mereka', 'ia', 'itu', 'hal',
+    'tersebut', 'kata', 'agar', 'lalu', 'maka', 'namun', 'serta', 'pun', 'yakni',
+    'antara', 'setiap', 'tetapi', 'hingga', 'secara', 'begitu', 'bahwa', 'atas',
+    'nya', 'se', 'tak', 'yg', 'gak', 'ga', 'gk', 'udah', 'dah', 'lah', 'dong',
+    'kok', 'sih', 'kan', 'tuh', 'nih', 'deh', 'ya', 'lo', 'gue', 'lu', 'gw',
+    'https', 'http', 'www', 'com', 'rt', 'amp', 'nan', 'none',
+}
+
+TOPIC_STOPWORDS = {
+    'mbg', 'makan', 'bergizi', 'gratis', 'sekolah', 'rakyat', 'kdmp',
+    'koperasi', 'desa', 'merah', 'putih', 'program', 'pemerintah',
+}
+
+ALL_STOPWORDS = STOPWORDS_ID | TOPIC_STOPWORDS
+
+EMOTION_LEXICON = {
+    'Senang': ['senang', 'bahagia', 'gembira', 'sukacita', 'ceria', 'riang', 'puas',
+               'bangga', 'syukur', 'bersyukur', 'senyum', 'tertawa', 'hore', 'mantap',
+               'keren', 'asik', 'asyik', 'hebat', 'luar biasa', 'amazing', 'good', 'love',
+               'suka', 'yeay', 'yey', 'bravo', 'top', 'joss', 'mantul', 'wah'],
+    'Sedih': ['sedih', 'duka', 'pilu', 'nelangsa', 'haru', 'menangis', 'nangis',
+              'menyesal', 'kecewa', 'kehilangan', 'tragis', 'muram', 'galau', 'hopeless',
+              'menderita', 'derita', 'kasihan', 'miris', 'pedih'],
+    'Marah': ['marah', 'kesal', 'geram', 'murka', 'emosi', 'dongkol', 'jengkel',
+              'benci', 'muak', 'berang', 'ngamuk', 'amarah', 'dendam', 'kutuk',
+              'laknat', 'bangsat', 'brengsek', 'sialan', 'kampret', 'anjing', 'goblog',
+              'bodoh', 'tolol', 'idiot', 'goblok', 'busuk', 'bajingan'],
+    'Takut': ['takut', 'khawatir', 'cemas', 'was-was', 'ngeri', 'menakutkan', 'horor',
+              'panik', 'gentar', 'gelisah', 'waswas', 'ragu', 'phobia', 'teror',
+              'ancaman', 'mengancam', 'bahaya', 'berbahaya', 'waspada', 'seram'],
+    'Terkejut': ['terkejut', 'kaget', 'heran', 'tercengang', 'terperangah', 'wow',
+                 'astaga', 'astagfirullah', 'duh', 'waduh', 'gila', 'anjir', 'njir',
+                 'shock', 'speechless', 'ternyata', 'mendadak', 'tiba-tiba'],
+    'Jijik': ['jijik', 'mual', 'muak', 'basi', 'busuk', 'jorok', 'kotor', 'sampah',
+              'kotoran', 'najis', 'hina', 'rendah', 'menjijikkan', 'ogah', 'eneg',
+              'menjemukan', 'bosan', 'ilfeel'],
+}
+
+def detect_emotion(text):
+    if not isinstance(text, str) or not text.strip():
+        return 'Netral'
+    text_lower = text.lower()
+    scores = {}
+    for emotion, keywords in EMOTION_LEXICON.items():
+        score = sum(1 for kw in keywords if kw in text_lower)
+        if score > 0:
+            scores[emotion] = score
+    if not scores:
+        return 'Netral'
+    return max(scores, key=scores.get)
+
+def extract_emojis(text):
+    if not isinstance(text, str):
+        return []
+    # pyrefly: ignore[missing-import]
+    import emoji
+    return [c for c in text if c in emoji.EMOJI_DATA]
+
+@st.cache_resource(show_spinner=False)
+def load_main_data():
+    if os.path.exists(PARQUET_PATH):
+        try:
+            df = pd.read_parquet(PARQUET_PATH, engine='pyarrow', use_threads=False)
+        except Exception:
+            df = pd.read_parquet(PARQUET_PATH)
+    elif os.path.exists(CSV_PATH):
+        df = pd.read_csv(CSV_PATH, low_memory=False)
+    else:
+        raise FileNotFoundError(f"Data tidak ditemukan di {PARQUET_PATH} atau {CSV_PATH}")
+
+    # Standardize textual columns
+    for col in ['cleaned_content', 'raw_content', 'handle', 'url']:
+        if col in df.columns:
+            df[col] = df[col].fillna('').astype(str)
+
+    if 'author' in df.columns:
+        df['author'] = df['author'].fillna(df.get('handle', '')).fillna('anonim').astype(str)
+    if 'platform' in df.columns:
+        df['platform'] = df['platform'].fillna('Other').astype(str)
+    if 'topic' in df.columns:
+        df['topic'] = df['topic'].fillna('MBG').astype(str)
+
+    # Clean outlier values from scraping (e.g. numeric post IDs accidentally saved in likes)
+    # Using int32 to optimize memory footprint
+    for col in ['likes', 'comments', 'shares', 'reposts', 'views', 'total_engagement', 'reach']:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).clip(lower=0, upper=500_000).astype('int32')
+        else:
+            df[col] = 0
+
+    # Recalculate engagement & reach consistently
+    df['total_engagement'] = (df['likes'] + df['comments'] + df['shares'] + df['reposts']).astype('int32')
+    df['reach'] = (df['views'] + (df['likes'] * 3) + (df['comments'] * 5) + (df['shares'] * 10) + (df['reposts'] * 10)).astype('int32')
+
+    if 'sentiment_label' in df.columns:
+        df['sentiment_label'] = pd.to_numeric(df['sentiment_label'], errors='coerce').fillna(1).astype('int8')
+        label_map = {0: 'Negatif', 1: 'Netral', 2: 'Positif'}
+        if 'sentiment_name' not in df.columns:
+            df['sentiment_name'] = df['sentiment_label'].map(label_map).fillna('Netral')
+
+    if 'date' not in df.columns or df['date'].isna().all():
+        df['date'] = pd.to_datetime(df['created_at'].astype(str).str.extract(r'(\d{4}-\d{2}-\d{2})')[0], errors='coerce')
+        if df['date'].isna().sum() > 0:
+            valid_median = df['date'].dropna().median()
+            df['date'] = df['date'].fillna(valid_median)
+            
+    if 'date_str' not in df.columns:
+        df['date_str'] = df['date'].dt.strftime('%Y-%m-%d')
+    if 'year_month' not in df.columns:
+        df['year_month'] = df['date'].dt.to_period('M').astype(str)
+
+    if 'emotion' not in df.columns:
+        df['emotion'] = df['cleaned_content'].apply(detect_emotion)
+
+    # Hybrid Rule-Neural Post-Processing (Penyelarasan Valensi Sentimen-Emosi Plutchik 9-Kelas)
+    try:
+        from src.sentiment_corrector import align_emotion_valence_9class
+        if 'emotion' in df.columns and 'sentiment_name' in df.columns:
+            df['emotion'] = [
+                align_emotion_valence_9class(t, s, e)
+                for t, s, e in zip(df['cleaned_content'], df['sentiment_name'], df['emotion'])
+            ]
+    except Exception:
+        pass
+
+    return df
+
+def filter_dataset(df, selected_topic='Semua', selected_platform='Semua', start_date=None, end_date=None):
+    mask = None
+
+    if selected_topic and selected_topic != 'Semua':
+        m = (df['topic'] == selected_topic)
+        mask = m if mask is None else (mask & m)
+
+    if selected_platform and selected_platform != 'Semua':
+        m = (df['platform'] == selected_platform)
+        mask = m if mask is None else (mask & m)
+
+    if start_date and end_date:
+        start_ts = pd.to_datetime(start_date)
+        end_ts = pd.to_datetime(end_date)
+        m = (df['date'] >= start_ts) & (df['date'] <= end_ts)
+        mask = m if mask is None else (mask & m)
+
+    if mask is None:
+        return df
+    return df[mask]
+
+
+# Cache reload trigger: 2026-10-20 Unicode NFKD (Fancy Fonts) & Full Hashtags Cleansing Applied

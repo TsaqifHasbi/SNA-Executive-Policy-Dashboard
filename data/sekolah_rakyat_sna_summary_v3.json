@@ -1,0 +1,227 @@
+{
+  "topic": "Sekolah_Rakyat",
+  "total_nodes": 17802,
+  "total_edges": 6,
+  "top_influencers": [
+    {
+      "rank": 1,
+      "user": "sumedanh",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 2,
+      "user": "sekolahrakyat",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 3,
+      "user": "proyeksr",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Anger",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 4,
+      "user": "jabar",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Anger",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 5,
+      "user": "beritasumedanh",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 6,
+      "user": "donyahmadmunir",
+      "in_degree": 1,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Anger",
+      "nss": -100.0,
+      "platform": "Mentioned",
+      "engagement": 0
+    },
+    {
+      "rank": 7,
+      "user": "@ain_humairah89",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Twitter",
+      "engagement": 5
+    },
+    {
+      "rank": 8,
+      "user": "anaksma.bandung",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Positif",
+      "emotion": "Neutral",
+      "nss": 100.0,
+      "platform": "Instagram",
+      "engagement": 0
+    },
+    {
+      "rank": 9,
+      "user": "@xxvalen1011",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Sadness",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 10,
+      "user": "millenialzkece.official",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Instagram",
+      "engagement": 2258
+    },
+    {
+      "rank": 11,
+      "user": "@zikriaa_budiman",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Anticipation",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 12,
+      "user": "warta kota production",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "YouTube",
+      "engagement": 11
+    },
+    {
+      "rank": 13,
+      "user": "@republik_partai",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Disgust",
+      "nss": -100.0,
+      "platform": "Twitter",
+      "engagement": 19
+    },
+    {
+      "rank": 14,
+      "user": "@fuzafirdaus",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Twitter",
+      "engagement": 5
+    },
+    {
+      "rank": 15,
+      "user": "@fin_mcp99",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 16,
+      "user": "@virgafatari",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Positif",
+      "emotion": "Joy",
+      "nss": 100.0,
+      "platform": "Threads",
+      "engagement": 0
+    },
+    {
+      "rank": 17,
+      "user": "@historysuprema1",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Twitter",
+      "engagement": 1
+    },
+    {
+      "rank": 18,
+      "user": "@prabukresno27",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Negatif",
+      "emotion": "Neutral",
+      "nss": -100.0,
+      "platform": "Threads",
+      "engagement": 2
+    },
+    {
+      "rank": 19,
+      "user": "asma ul husna husna",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Netral",
+      "emotion": "Neutral",
+      "nss": 0.0,
+      "platform": "Facebook",
+      "engagement": 271
+    },
+    {
+      "rank": 20,
+      "user": "@cuankaizen",
+      "in_degree": 0,
+      "out_degree": 0,
+      "sentiment": "Positif",
+      "emotion": "Neutral",
+      "nss": 100.0,
+      "platform": "Threads",
+      "engagement": 0
+    }
+  ]
+}
