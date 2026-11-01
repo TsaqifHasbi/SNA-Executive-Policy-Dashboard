@@ -7,12 +7,12 @@ import streamlit as st
 import pandas as pd
 # pyrefly: ignore[missing-import]
 import plotly.graph_objects as go
-from src.clean_header_footer import render_de_header, render_de_footer, _chart_layout, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, _chart_layout, render_html, fmt_val
 from src.icons import get_platform_icon, get_platform_badge
 
 # Helper for Single Platform Slide
 def _render_single_platform_sentiment_slide(df, platform_name, title, breadcrumb):
-    render_de_header(title, breadcrumb)
+    render_slide_header(title, breadcrumb)
     df_plat = df[df['platform'].str.lower().str.contains(platform_name.lower())]
     if len(df_plat) == 0:
         df_plat = df
@@ -122,7 +122,7 @@ def _render_single_platform_sentiment_slide(df, platform_name, title, breadcrumb
 </div>""")
             render_html("".join(auth_rows))
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 21: SENTIMENT INSTAGRAM
@@ -204,7 +204,7 @@ def _generate_svg_donut(items, total_val, size=215, stroke_width=26):
 def render_slide_emotion_analysis_1(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("EMOTION ANALYSIS /1", f"Distribusi & Intensitas 8 Emosi (IndoBERT Plutchik) &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("EMOTION ANALYSIS /1", f"Distribusi & Intensitas 8 Emosi (IndoBERT Plutchik) &bull; {topic_label} &bull; {date_str}")
     
     total_all = len(df) if len(df) > 0 else 1
     # Filter for affective emotions (Plutchik basic emotions)
@@ -215,7 +215,7 @@ def render_slide_emotion_analysis_1(df, selected_topic='MBG', topic_label=None, 
     total_emo = len(df_emo)
     emo_counts = df_emo['emotion'].value_counts()
     
-    # Standard 8 Plutchik Emotions mapping (matching Drone Emprit palette & icons)
+    # Standard 8 Plutchik Emotions mapping (matching Standar Eksekutif palette & icons)
     PLUTCHIK_8 = [
         {'key': 'Senang', 'en': 'Joy', 'emoji': '🙂', 'color': '#F59E0B', 'type': 'pos'},
         {'key': 'Marah', 'en': 'Anger', 'emoji': '😠', 'color': '#F87171', 'type': 'neg'},
@@ -350,4 +350,4 @@ def render_slide_emotion_analysis_1(df, selected_topic='MBG', topic_label=None, 
 </div>"""
         render_html(right_card_html)
         
-    render_de_footer()
+    render_slide_footer()

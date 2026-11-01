@@ -10,14 +10,14 @@ import plotly.graph_objects as go
 # pyrefly: ignore[missing-import]
 import streamlit.components.v1 as components_v1
 from src.sna_engine import build_sna_network, generate_pyvis_html, get_network_metrics
-from src.clean_header_footer import render_de_header, render_de_footer, _chart_layout, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, _chart_layout, render_html, fmt_val
 from src.icons import get_platform_icon
 
 # SLIDE 11: VOLUME, USER, ENGAGEMENT, REACH
 def render_slide_volume_user_engagement_reach(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("VOLUME, USER, ENGAGEMENT, REACH", f"{topic_label} • All Sources • {date_str}")
+    render_slide_header("VOLUME, USER, ENGAGEMENT, REACH", f"{topic_label} • All Sources • {date_str}")
     
     v_total = len(df)
     u_total = df['author'].nunique() if v_total > 0 else 0
@@ -132,14 +132,14 @@ def render_slide_volume_user_engagement_reach(df, selected_topic='MBG', topic_la
 </li>
 </ul>
 </div>""")
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 12: MENTIONS TREND BY CHANNEL
 def render_slide_mentions_trend_channel(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("MENTIONS TREND BY CHANNEL", f"{topic_label} • All Sources • {date_str}")
+    render_slide_header("MENTIONS TREND BY CHANNEL", f"{topic_label} • All Sources • {date_str}")
     
     daily_plat = df.groupby(['date_str', 'platform']).size().unstack(fill_value=0).reset_index().tail(30)
     fig = go.Figure()
@@ -164,14 +164,14 @@ def render_slide_mentions_trend_channel(df, selected_topic='MBG', topic_label=No
 Berdasarkan data riil, kanal <strong>{top_plat_name}</strong> secara konsisten mencatatkan frekuensi publikasi terbanyak dalam kurun waktu pemantauan, disusul video di TikTok dan artikel legitimasi di Portal Berita Daring.
 </div>
 </div>""")
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 13: MENTIONS TREND BY SENTIMENT
 def render_slide_mentions_trend_sentiment(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("MENTIONS TREND BY SENTIMENT", f"{topic_label} • All Sources • {date_str}")
+    render_slide_header("MENTIONS TREND BY SENTIMENT", f"{topic_label} • All Sources • {date_str}")
     
     daily_sent = df.groupby(['date_str', 'sentiment_name']).size().unstack(fill_value=0).reset_index().tail(30)
     fig = go.Figure()
@@ -195,14 +195,14 @@ def render_slide_mentions_trend_sentiment(df, selected_topic='MBG', topic_label=
 Tren sentimen terklasifikasi oleh model <strong>IndoBERT Sentimen V2 (Akurasi 91.33%, Macro F1 91.37%)</strong> menunjukkan dominasi sentimen <strong>{dominant_sent}</strong> ({s_counts.get(dominant_sent, 0):,} mention), mengonfirmasi respon publik terhadap keberlanjutan program menuju 2029.
 </div>
 </div>""")
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 14: MENTIONS TREND BY EMOTIONS
 def render_slide_mentions_trend_emotions(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("MENTIONS TREND BY EMOTIONS", f"{topic_label} • All Sources • {date_str}")
+    render_slide_header("MENTIONS TREND BY EMOTIONS", f"{topic_label} • All Sources • {date_str}")
     
     plutchik_map = {
         'Joy': '#F59E0B', 'Trust': '#10B981', 'Anticipation': '#8B5CF6', 'Surprise': '#EC4899',
@@ -228,14 +228,14 @@ def render_slide_mentions_trend_emotions(df, selected_topic='MBG', topic_label=N
 Dimensi emosi Plutchik mencatat emosi <strong>{top_emo}</strong> ({emo_counts.get(top_emo, 0):,} data) sebagai respon emosional tertinggi di kalangan netizen terhadap dinamika isu {topic_label}.
 </div>
 </div>""")
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 15: SNA BY SENTIMENT
 def render_slide_sna_by_sentiment(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("SNA BY SENTIMENT", f"Social Network Analysis • Polarisasi Sentimen • {topic_label} • {date_str}")
+    render_slide_header("SNA BY SENTIMENT", f"Social Network Analysis • Polarisasi Sentimen • {topic_label} • {date_str}")
     
     col_graph, col_sidebar = st.columns([2.7, 1.3])
     
@@ -364,4 +364,4 @@ def render_slide_sna_by_sentiment(df, selected_topic='MBG', topic_label=None, da
 </div>
 </div>""")
         
-    render_de_footer()
+    render_slide_footer()

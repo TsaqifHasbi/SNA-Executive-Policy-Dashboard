@@ -1,5 +1,5 @@
 # Clean Header and Footer (Academic & Executive Policy Intelligence)
-# Neutral executive layout - NO Drone Emprit branding, NO slide number in footer.
+# Neutral executive layout - Executive intelligence layout, NO slide number in footer.
 
 # pyrefly: ignore[missing-import]
 import streamlit as st
@@ -12,10 +12,10 @@ def render_html(html_str):
     clean_lines = [line.strip() for line in html_str.strip().split('\n') if line.strip()]
     st.markdown("".join(clean_lines), unsafe_allow_html=True)
 
-def render_de_header(title, breadcrumb=""):
+def render_slide_header(title, breadcrumb=""):
     """
     Renders clean executive header with bold orange title, breadcrumb,
-    and neutral academic intelligence badge (NO Drone Emprit logo).
+    and neutral academic intelligence badge (neutral executive badge).
     Transparent background ensures it adapts seamlessly to any page background.
     """
     html = f"""<div style="background:transparent; border-bottom: 2.5px solid #EA580C; padding: 4px 0 12px 0; margin-bottom: 16px;">
@@ -31,7 +31,7 @@ def render_de_header(title, breadcrumb=""):
 </div>"""
     render_html(html)
 
-def render_de_footer(slide_num=None):
+def render_slide_footer(slide_num=None):
     """
     Renders clean academic divider footer.
     Completely eliminates page numbers, slide counts, and origami corner badges.
@@ -91,3 +91,7 @@ def _chart_layout(height=300, **kwargs):
     )
     layout.update(kwargs)
     return layout
+
+# Backward compatibility aliases
+render_de_header = render_slide_header
+render_de_footer = render_slide_footer

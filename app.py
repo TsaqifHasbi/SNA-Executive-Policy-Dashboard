@@ -16,7 +16,7 @@ from src.data_loader import load_main_data, filter_dataset
 from src.metrics_calculator import calculate_kpis
 
 # Executive Slide Renderers (Exact match to uploaded report slides - 30 total pages)
-from src.drone_emprit_slides import (
+from src.executive_slides import (
     # 1. Volume & Trend
     render_slide_volume_user_engagement_reach,
     render_slide_mentions_trend_channel,
@@ -74,7 +74,7 @@ from src.tab_evaluation import render_tab_evaluation
 from src.clean_header_footer import render_html
 
 # -------------------------------------------------------------
-# PAGE CONFIGURATION & EXECUTIVE THEME (NO DRONE EMPRIT BRANDING)
+# PAGE CONFIGURATION & EXECUTIVE THEME (EXECUTIVE THEME)
 # -------------------------------------------------------------
 st.set_page_config(
     page_title="Public Policy Intelligence Platform | IndoBERT & SNA",

@@ -7,7 +7,7 @@ import urllib.parse
 # pyrefly: ignore[missing-import]
 import streamlit as st
 import pandas as pd
-from src.clean_header_footer import render_de_header, render_de_footer, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, render_html, fmt_val
 from src.icons import get_platform_icon
 from src.sentiment_corrector import correct_sentiment
 
@@ -47,7 +47,7 @@ def _render_viral_cards_grid(df, platform_name, title, breadcrumb, page_num=1, p
     - Clickable profile link (avatar & username) opening in new tab
     - Clickable post snippet & direct 'Buka Postingan ↗' action button opening in new tab
     """
-    render_de_header(title, breadcrumb)
+    render_slide_header(title, breadcrumb)
     
     df_plat = df[df['platform'].str.lower().str.contains(platform_name.lower())]
     if df_plat.empty: df_plat = df
@@ -141,7 +141,7 @@ Buka ↗
 </div>
 </div>""")
             
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDES 39 - 42: VIRAL TWITTER (PAGES 1 - 4)

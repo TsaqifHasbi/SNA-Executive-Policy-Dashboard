@@ -10,7 +10,7 @@ import streamlit as st
 import pandas as pd
 # pyrefly: ignore[missing-import]
 import plotly.graph_objects as go
-from src.clean_header_footer import render_de_header, render_de_footer, _chart_layout, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, _chart_layout, render_html, fmt_val
 
 INDONESIAN_STOPWORDS = {
     'yang', 'di', 'dan', 'ini', 'itu', 'dari', 'untuk', 'pada', 'ke', 'para',
@@ -72,7 +72,7 @@ def _extract_top_words(df, col='cleaned_content', top_n=35):
 
 def _extract_top_hashtags(df, top_n=30):
     """
-    Extracts top hashtags using regex #(\w+).
+    Extracts top hashtags.
     """
     ht_counter = collections.Counter()
     target_col = 'raw_content' if 'raw_content' in df.columns else df.columns[0]
@@ -103,7 +103,7 @@ def _extract_top_hashtags(df, top_n=30):
 def render_slide_popular_tags_terms(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("POPULAR TAGS & TERMS", f"Top 20 Tagar & Top 20 Istilah Kunci &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("POPULAR TAGS & TERMS", f"Top 20 Tagar & Top 20 Istilah Kunci &bull; {topic_label} &bull; {date_str}")
     
     col_tags, col_terms = st.columns(2)
     
@@ -138,14 +138,14 @@ def render_slide_popular_tags_terms(df, selected_topic='MBG', topic_label=None, 
             fig_terms.update_layout(**_chart_layout(height=480))
             st.plotly_chart(fig_terms, use_container_width=True)
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 49: WORD CLOUD TERMS (Semantic Clusters & Sentiment Association)
 def render_slide_wordcloud_terms(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("WORD CLOUD TERMS", f"Awan Kata Kunci Seluruh Platform &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("WORD CLOUD TERMS", f"Awan Kata Kunci Seluruh Platform &bull; {topic_label} &bull; {date_str}")
     
     col_cloud, col_narr = st.columns([1.8, 1.2])
     
@@ -263,14 +263,14 @@ KLASTER SEMANTIK UTAMA (DINAMIS)
 </div>
 </div>""")
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 50: WORD CLOUD HASHTAGS
 def render_slide_wordcloud_hashtags(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("WORD CLOUD HASHTAGS", f"Awan Tagar Seluruh Platform &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("WORD CLOUD HASHTAGS", f"Awan Tagar Seluruh Platform &bull; {topic_label} &bull; {date_str}")
     
     col_cloud, col_rank = st.columns([1.8, 1.2])
     
@@ -303,4 +303,4 @@ PERINGKAT 10 TAGAR TERPOPULER
 </div>""")
             render_html("".join(rank_rows))
         
-    render_de_footer()
+    render_slide_footer()

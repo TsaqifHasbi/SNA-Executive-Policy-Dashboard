@@ -37,4 +37,5 @@ Aplikasi Dashboard Analisis Sentimen berbasis **Deep Learning IndoBERT (Akurasi:
    `ash
    streamlit run app.py
    `
-   *Atau cukup klik dua kali file un_dashboard.bat!*
+   *Atau cukup klik dua kali file 
+un_dashboard.bat!*

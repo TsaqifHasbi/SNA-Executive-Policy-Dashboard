@@ -9,18 +9,18 @@ import streamlit as st
 import pandas as pd
 # pyrefly: ignore[missing-import]
 import plotly.graph_objects as go
-from src.clean_header_footer import render_de_header, render_de_footer, _chart_layout, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, _chart_layout, render_html, fmt_val
 from src.icons import get_platform_icon, get_platform_badge
 
 # SLIDE 26: EMOTION ANALYSIS /2 (Left: Emotion by Sentiment | Right: Komposisi Emosi di Tiap Kanal)
 def render_slide_emotion_analysis_2(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("EMOTION ANALYSIS /2", f"Distribusi Emosi Berdasarkan Sentimen & Kanal &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("EMOTION ANALYSIS /2", f"Distribusi Emosi Berdasarkan Sentimen & Kanal &bull; {topic_label} &bull; {date_str}")
     
     total_all = len(df) if len(df) > 0 else 1
     
-    # 1. Real Sentiment Counts & Distribution (Drone Emprit Standard: Positif, Netral, Negatif)
+    # 1. Real Sentiment Counts & Distribution (Standar Eksekutif Standard: Positif, Netral, Negatif)
     if 'sentiment_name' in df.columns:
         s_counts = df['sentiment_name'].value_counts()
         pos_c = int(s_counts.get('Positif', 0) + s_counts.get('Positive', 0))
@@ -140,7 +140,7 @@ def render_slide_emotion_analysis_2(df, selected_topic='MBG', topic_label=None, 
     col_left, col_right = st.columns([1.12, 1.35])
     
     with col_left:
-        # EMOTION BY SENTIMENT CARD (Exact Drone Emprit Reference Design & Compact Spacing)
+        # EMOTION BY SENTIMENT CARD (Exact Standar Eksekutif Reference Design & Compact Spacing)
         html_sentiment = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:12px; padding:20px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03); min-height:430px; display:flex; flex-direction:column; justify-content:flex-start; gap:14px;">
 <div>
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -288,13 +288,13 @@ Negative Emotions
             )
             st.plotly_chart(fig_p, use_container_width=True, config={'displayModeBar': False})
         
-    render_de_footer()
+    render_slide_footer()
 
 
 def render_slide_emoji_analysis(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("EMOJI ANALYSIS", f"Analisis Semiotika & Rasio Sentimen Simbolik &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("EMOJI ANALYSIS", f"Analisis Semiotika & Rasio Sentimen Simbolik &bull; {topic_label} &bull; {date_str}")
     
     total = len(df) if len(df) > 0 else 1
     estr_list = df['emojis_str'].fillna('').tolist() if 'emojis_str' in df.columns else [''] * total
@@ -315,7 +315,7 @@ def render_slide_emoji_analysis(df, selected_topic='MBG', topic_label=None, date
 
     if not emoji_data:
         st.info("Tidak ada data emoji pada korpus ini.")
-        render_de_footer()
+        render_slide_footer()
         return
 
     cov_pct = round(posts_with_emoji / total * 100) if total else 0
@@ -510,14 +510,14 @@ def render_slide_emoji_analysis(df, selected_topic='MBG', topic_label=None, date
 </div>"""
 
     render_html(html_emoji_card + insights_box_html)
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 30: CROSSPLATFORM DIFFUSION (Timeline of Issue Travel Across 7 Platforms)
 def render_slide_crossplatform_diffusion(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("CROSSPLATFORM DIFFUSION", f"Pola Difusi & Perjalanan Isu Lintas Kanal &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("CROSSPLATFORM DIFFUSION", f"Pola Difusi & Perjalanan Isu Lintas Kanal &bull; {topic_label} &bull; {date_str}")
     
     col_chart, col_phases = st.columns([2.0, 1.2])
     
@@ -579,14 +579,14 @@ Diskusi mendalam berlanjut di <strong>Facebook & YouTube</strong> melalui analis
 </div>
 </div>""")
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 31: TOP ONLINE NEWS SITES
 def render_slide_top_news_sites(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("TOP NEWS SITES", f"Top Situs Berita Daring Teraktif &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("TOP NEWS SITES", f"Top Situs Berita Daring Teraktif &bull; {topic_label} &bull; {date_str}")
     
     df_news = df[df['platform'].str.lower().str.contains('news|berita')]
     if df_news.empty: df_news = df
@@ -626,14 +626,14 @@ PERINGKAT AKTIVITAS MEDIA ONLINE
 </div>""")
             render_html("".join(rows))
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 32: TOP INFLUENCERS TWITTER
 def render_slide_top_influencers_twitter(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("TOP INFLUENCERS: TWITTER / X", f"Matriks Aktor Utama (Interest vs Power) &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("TOP INFLUENCERS: TWITTER / X", f"Matriks Aktor Utama (Interest vs Power) &bull; {topic_label} &bull; {date_str}")
     
     df_tw = df[df['platform'].str.lower().str.contains('twitter|x')]
     if df_tw.empty: df_tw = df
@@ -690,4 +690,4 @@ TOP 5 AKUN PALING BERPENGARUH
 </div>""")
         render_html("".join(cards) + "</div>")
         
-    render_de_footer()
+    render_slide_footer()

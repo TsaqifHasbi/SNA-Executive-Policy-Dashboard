@@ -11,14 +11,14 @@ import plotly.graph_objects as go
 # pyrefly: ignore[missing-import]
 import streamlit.components.v1 as components_v1
 from src.sna_engine import build_sna_network, generate_pyvis_html
-from src.clean_header_footer import render_de_header, render_de_footer, _chart_layout, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, _chart_layout, render_html, fmt_val
 from src.icons import get_platform_icon, get_platform_badge
 
 # SLIDE 16: SNA BY EMOTIONS
 def render_slide_sna_by_emotions(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("SNA BY EMOTIONS", f"Social Network Analysis &bull; Klaster Emosi Komunitas &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("SNA BY EMOTIONS", f"Social Network Analysis &bull; Klaster Emosi Komunitas &bull; {topic_label} &bull; {date_str}")
     
     col_graph, col_sidebar = st.columns([2.7, 1.3])
     
@@ -160,14 +160,14 @@ def render_slide_sna_by_emotions(df, selected_topic='MBG', topic_label=None, dat
 <div style="max-height:160px; overflow-y:auto; font-size:11px; line-height:1.6;">{nodes_list_html}</div>
 </div>""")
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 17: OVERALL SENTIMENT & 7 PLATFORMS
 def render_slide_overall_sentiment(df, selected_topic='MBG', topic_label=None, date_str='13 Aug 2026 - 14 Sept 2026', **kwargs):
     if topic_label is None: topic_label = selected_topic
     if selected_topic is None: selected_topic = topic_label
-    render_de_header("OVERALL SENTIMENT", f"Sentimen Keseluruhan & Komparasi 7 Kanal &bull; {topic_label} &bull; {date_str}")
+    render_slide_header("OVERALL SENTIMENT", f"Sentimen Keseluruhan & Komparasi 7 Kanal &bull; {topic_label} &bull; {date_str}")
     
     total = len(df)
     s_counts = df['sentiment_name'].value_counts()
@@ -239,12 +239,12 @@ def render_slide_overall_sentiment(df, selected_topic='MBG', topic_label=None, d
             fig_bar.update_xaxes(title="Persentase (%)", range=[0, 100])
             st.plotly_chart(fig_bar, use_container_width=True)
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # Helper for Single Platform Slide
 def _render_single_platform_sentiment_slide(df, platform_name, title, breadcrumb):
-    render_de_header(title, breadcrumb)
+    render_slide_header(title, breadcrumb)
     df_plat = df[df['platform'].str.lower().str.contains(platform_name.lower())]
     if len(df_plat) == 0:
         df_plat = df
@@ -354,7 +354,7 @@ def _render_single_platform_sentiment_slide(df, platform_name, title, breadcrumb
 </div>""")
             render_html("".join(auth_rows))
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 18: SENTIMENT ONLINE NEWS

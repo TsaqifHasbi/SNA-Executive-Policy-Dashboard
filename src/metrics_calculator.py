@@ -6,7 +6,7 @@ from scipy import stats
 
 def calculate_nss(pos_count, neg_count, total_count):
     """
-    Net Sentiment Score (NSS) formula Kementerian PU & Drone Emprit:
+    Net Sentiment Score (NSS) formula standar pemantauan eksekutif:
     NSS = ((Positif - Negatif) / Total) * 100
     Rentang: -100 s/d +100
     """

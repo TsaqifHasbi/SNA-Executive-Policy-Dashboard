@@ -8,11 +8,11 @@ import streamlit as st
 import pandas as pd
 # pyrefly: ignore[missing-import]
 import plotly.graph_objects as go
-from src.clean_header_footer import render_de_header, render_de_footer, _chart_layout, render_html, fmt_val
+from src.clean_header_footer import render_slide_header, render_slide_footer, _chart_layout, render_html, fmt_val
 from src.icons import get_platform_icon, get_platform_badge
 
 def _render_platform_influencers_slide(df, platform_name, title, breadcrumb_sub):
-    render_de_header(title, breadcrumb_sub)
+    render_slide_header(title, breadcrumb_sub)
     
     df_plat = df[df['platform'].str.lower().str.contains(platform_name.lower())]
     if df_plat.empty: df_plat = df
@@ -72,7 +72,7 @@ TOP 5 AKUN PALING BERPENGARUH DI {platform_name.upper()}
 </div>""")
         render_html("".join(cards) + "</div>")
         
-    render_de_footer()
+    render_slide_footer()
 
 
 # SLIDE 33: FACEBOOK

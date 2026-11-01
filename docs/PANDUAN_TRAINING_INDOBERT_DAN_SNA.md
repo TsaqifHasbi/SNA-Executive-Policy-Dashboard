@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > **Fokus Utama Penelitian**: *Marketing Tools & Social Network Analysis (SNA) by Sentiment Menggunakan Deep Learning IndoBERT untuk Analisis Persepsi Kebijakan Publik (Studi Kasus: MBG, KDMP, dan Sekolah Rakyat Menuju Pemilu 2029).*  
-> **Benchmark Arsitektur**: Integrasi Metrik [Drone Emprit](https://pers.droneemprit.id/) & Standar Pemantauan Eksekutif **Kementerian Pekerjaan Umum Republik Indonesia**.
+> **Benchmark Arsitektur**: Integrasi Metrik Intelijen Media & Standar Pemantauan Eksekutif **Kementerian Pekerjaan Umum Republik Indonesia**.
 
 ---
 
