@@ -1,7 +1,7 @@
 """
 Social Network Analysis (SNA) by Sentiment & Emotion Engine
 Tugas Akhir: SNA by Sentiment & 9 Emotions dengan Deep Learning IndoBERT
-Referensi: Drone Emprit Architecture + Dashboard Monitoring Kementerian PU
+Referensi: Standar Pemantauan Eksekutif & Dashboard Monitoring Kebijakan Publik
 """
 
 import os
