@@ -114,6 +114,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Intersep cepat halaman legal via query params (misal: /?page=terms atau /?page=privacy)
+# Berjalan instan tanpa memuat dataset 197k baris untuk performa bot review
+_qp_page = (st.query_params.get("page") or "").lower().strip()
+if _qp_page in ["terms", "tos", "terms_of_service", "terms-of-service"]:
+    from src.legal_pages import render_terms_of_service
+    render_terms_of_service()
+    st.stop()
+elif _qp_page in ["privacy", "privacy_policy", "privacy-policy"]:
+    from src.legal_pages import render_privacy_policy
+    render_privacy_policy()
+    st.stop()
+
 # Standalone st.logo removed per user preference; logo is integrated into the header bar and cards.
 
 # Executive Clean Light Styling
@@ -377,6 +389,21 @@ with st.sidebar:
             <div style="border-top:1px dashed #E2E8F0; margin:6px 0;"></div>
             <div style="display:flex; justify-content:space-between;"><span>Akurasi 9 Emosi:</span> <strong style="color:#8B5CF6;">{acc_emo*100:.2f}%</strong></div>
             <div style="display:flex; justify-content:space-between;"><span>Macro F1 9 Emosi:</span> <strong style="color:#0F172A;">{f1_emo*100:.2f}%</strong></div>
+        </div>
+    </div>
+    """)
+
+    st.markdown("---")
+    render_html("""
+    <div style="font-size: 11px; color: #64748B; text-align: center; line-height: 1.8;">
+        <div><strong>Public Policy Intelligence Platform</strong></div>
+        <div style="margin-top: 4px;">
+            <a href="/Terms_of_Service" target="_self" style="color: #2563EB; text-decoration: none; font-weight: 600;">Ketentuan Layanan</a>
+            &nbsp;•&nbsp;
+            <a href="/Privacy_Policy" target="_self" style="color: #2563EB; text-decoration: none; font-weight: 600;">Kebijakan Privasi</a>
+        </div>
+        <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">
+            TikTok Developer & Academic Compliant
         </div>
     </div>
     """)
