@@ -125,14 +125,16 @@ def render_prioritas_banner(items):
 </div>"""
     render_html(html)
 
-def render_mh_footer(source_text):
+def render_mh_footer(source_text, date_label=None):
+    if not date_label:
+        date_label = st.session_state.get('current_date_display', 'Periode Pemantauan Terkini')
     """
     Renders standardized footer with blue square icon and source footnote.
     """
     html = f"""<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #E2E8F0; padding-top:8px; margin-top:18px; font-size:10.5px; color:#94A3B8;">
 <div style="display:flex; align-items:center; gap:6px;">
 <span style="background:#2563EB; width:10px; height:10px; border-radius:2px; display:inline-block;"></span>
-<span style="font-weight:700; color:#475569; font-size:11px;">Edisi Mingguan 26 Okt-1 Nov 2026</span>
+<span style="font-weight:700; color:#475569; font-size:11px;">{date_label}</span>
 </div>
 <div style="font-size:9.5px; color:#94A3B8; text-align:right; max-width:70%; line-height:1.4;">
 Sumber: {source_text}

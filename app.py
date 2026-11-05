@@ -244,7 +244,8 @@ with st.sidebar:
         </div>
     </div>
     """)
-    st.caption("Edisi Spesial Mingguan • 26 Okt - 1 Nov 2026")
+    curr_caption = st.session_state.get('current_date_display', 'Periode Pemantauan Terkini')
+    st.caption(f"{curr_caption}")
     
     # Mode Switcher
     view_mode = st.radio(
@@ -303,6 +304,25 @@ with st.sidebar:
             start_d, end_d = date_range[0], date_range[1]
         elif len(date_range) == 1:
             start_d, end_d = date_range[0], max_date
+
+    def format_indo_date(d):
+        if not d:
+            return ""
+        months = ["", "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
+        return f"{d.day} {months[d.month]} {d.year}"
+
+    if start_d and end_d:
+        days_diff = (end_d - start_d).days
+        if days_diff <= 7:
+            date_caption = f"Edisi Mingguan • {format_indo_date(start_d)} - {format_indo_date(end_d)}"
+        else:
+            date_caption = f"Periode Pemantauan • {format_indo_date(start_d)} s/d {format_indo_date(end_d)}"
+        date_display = f"{format_indo_date(start_d)} s/d {format_indo_date(end_d)}"
+    else:
+        date_caption = "Periode Pemantauan • Seluruh Waktu"
+        date_display = "Semua Periode"
+
+    st.session_state['current_date_display'] = date_caption
 
     # Apply filters
     df_filtered = filter_dataset(df_raw, selected_topic=selected_topic, selected_platform=selected_platform, start_date=start_d, end_date=end_d)
@@ -366,7 +386,7 @@ with st.sidebar:
 
 # Calculate Core KPIs
 kpis = calculate_kpis(df_filtered)
-date_display = f"{start_d} s/d {end_d}" if start_d and end_d else "Semua Periode"
+# date_display already formatted in Indonesian above
 
 # -------------------------------------------------------------
 # MAIN CONTENT DISPATCHER
@@ -374,7 +394,7 @@ date_display = f"{start_d} s/d {end_d}" if start_d and end_d else "Semua Periode
 if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Slide MH" in view_mode:
     MH_CHAPTERS = {
         "Ringkasan Eksekutif & Cover": {
-            "Slide 1: Cover Edisi Spesial": render_slide_1_cover,
+            "Slide 1: Cover Laporan Eksekutif": render_slide_1_cover,
             "Slide 2: Executive Summary": render_slide_2_executive_summary,
         },
         "CHAPTER 01: The Overview": {
@@ -395,8 +415,8 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
         },
         "CHAPTER 03: The Action": {
             "Slide 16: Chapter 03 Break": render_slide_16_chapter_3,
-            "Slide 17: Laporan Harian 1 November": render_slide_17_daily_nov1,
-            "Slide 18: Laporan Harian 2 November": render_slide_18_daily_nov2,
+            "Slide 17: Laporan Pemantauan Harian (Sesi A)": render_slide_17_daily_nov1,
+            "Slide 18: Laporan Pemantauan Harian (Sesi B)": render_slide_18_daily_nov2,
             "Slide 19: Daftar Pantau Sepekan": render_slide_19_watch_list,
             "Slide 20: Prioritas Tindakan & Metodologi": render_slide_20_priorities_methodology,
             "Slide 21: Penutup & Pesan Kunci": render_slide_21_closing_summary,
