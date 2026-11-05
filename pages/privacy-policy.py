@@ -33,3 +33,4 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 render_privacy_policy()
+

@@ -394,19 +394,10 @@ with st.sidebar:
     """)
 
     st.markdown("---")
-    render_html("""
-    <div style="font-size: 11px; color: #64748B; text-align: center; line-height: 1.8;">
-        <div><strong>Public Policy Intelligence Platform</strong></div>
-        <div style="margin-top: 4px;">
-            <a href="/Terms_of_Service" target="_self" style="color: #2563EB; text-decoration: none; font-weight: 600;">Ketentuan Layanan</a>
-            &nbsp;•&nbsp;
-            <a href="/Privacy_Policy" target="_self" style="color: #2563EB; text-decoration: none; font-weight: 600;">Kebijakan Privasi</a>
-        </div>
-        <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">
-            TikTok Developer & Academic Compliant
-        </div>
-    </div>
-    """)
+    st.markdown("<div style='font-size:12px; font-weight:700; color:#334155; margin-bottom:4px;'>📜 Dokumen Kebijakan & Kepatuhan:</div>", unsafe_allow_html=True)
+    st.page_link("pages/terms-of-service.py", label="Terms of Service (Ketentuan Layanan)", icon="📜")
+    st.page_link("pages/privacy-policy.py", label="Privacy Policy (Kebijakan Privasi)", icon="🔒")
+    st.caption("TikTok Developer & Academic Compliant")
 
 # Calculate Core KPIs
 kpis = calculate_kpis(df_filtered)

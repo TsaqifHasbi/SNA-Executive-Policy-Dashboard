@@ -61,16 +61,12 @@ def render_terms_of_service():
         doc_type="tos"
     )
 
-    # Navigasi kembali
-    col_nav1, col_nav2 = st.columns([1, 4])
+    # Navigasi kembali ke Dashboard
+    col_nav1, col_nav2 = st.columns([2, 3])
     with col_nav1:
-        st.markdown(
-            '<a href="/" target="_self" style="display:inline-flex; align-items:center; gap:6px; background:#0F2942; color:#FFFFFF; padding:8px 16px; border-radius:8px; text-decoration:none; font-weight:600; font-size:12.5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
-            '⬅ Kembali ke Dashboard</a>',
-            unsafe_allow_html=True
-        )
+        st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
 
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
     # Konten Syarat dan Ketentuan
     content_html = """
@@ -150,6 +146,8 @@ def render_terms_of_service():
     </div>
     """
     render_html(content_html)
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
 
 
 def render_privacy_policy():
@@ -160,16 +158,12 @@ def render_privacy_policy():
         doc_type="privacy"
     )
 
-    # Navigasi kembali
-    col_nav1, col_nav2 = st.columns([1, 4])
+    # Navigasi kembali ke Dashboard
+    col_nav1, col_nav2 = st.columns([2, 3])
     with col_nav1:
-        st.markdown(
-            '<a href="/" target="_self" style="display:inline-flex; align-items:center; gap:6px; background:#0F2942; color:#FFFFFF; padding:8px 16px; border-radius:8px; text-decoration:none; font-weight:600; font-size:12.5px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
-            '⬅ Kembali ke Dashboard</a>',
-            unsafe_allow_html=True
-        )
+        st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
 
-    st.markdown("<div style='height: 14px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
     content_html = """
     <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:12px; padding:32px; box-shadow:0 2px 8px rgba(0,0,0,0.03); color:#1E293B; line-height:1.7; font-size:14px;">
@@ -256,3 +250,5 @@ def render_privacy_policy():
     </div>
     """
     render_html(content_html)
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+    st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
