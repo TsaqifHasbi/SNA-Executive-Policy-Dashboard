@@ -223,7 +223,7 @@ with st.sidebar:
     <div style="background:#0F2942; border-radius:6px; padding:10px 14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
         <div style="display:flex; align-items:center; gap:8px;">
             <span style="background:#F6B100; color:#0F172A; font-weight:800; font-size:12px; padding:2px 7px; border-radius:4px;">MH</span>
-            <span style="color:#FFFFFF; font-weight:700; font-size:13px; letter-spacing:0.5px;">TIM MONITORING HARIAN</span>
+            <span style="color:#FFFFFF; font-weight:700; font-size:13px; letter-spacing:0.5px;">MONITORING KEBIJAKAN PUBLIK</span>
         </div>
         <div style="font-size:11px; color:#94A3B8; margin-top:4px;">
             Policy Intelligence & Deep Learning IndoBERT

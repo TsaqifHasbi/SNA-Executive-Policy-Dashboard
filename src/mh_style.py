@@ -13,14 +13,14 @@ def render_html(html_str):
 
 def render_mh_top_bar(slide_num=None):
     """
-    Renders top dark navy bar with yellow MH badge and TIM MONITORING HARIAN title,
+    Renders top dark navy bar with yellow MH badge and MONITORING KEBIJAKAN PUBLIK title,
     plus right-aligned Slide pill badge.
     """
     slide_badge = f"""<span style="background:#2563EB; color:#FFFFFF; font-weight:600; font-size:11px; padding:3px 12px; border-radius:14px; letter-spacing:0.3px;">Slide {slide_num}</span>""" if slide_num else ""
     html = f"""<div style="background:#0F2942; border-radius:6px; padding:8px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
 <div style="display:flex; align-items:center; gap:8px;">
 <span style="background:#F6B100; color:#0F172A; font-weight:800; font-size:12px; padding:2px 7px; border-radius:4px; letter-spacing:0.5px;">MH</span>
-<span style="color:#FFFFFF; font-weight:700; font-size:12.5px; letter-spacing:0.8px;">TIM MONITORING HARIAN</span>
+<span style="color:#FFFFFF; font-weight:700; font-size:12.5px; letter-spacing:0.8px;">MONITORING KEBIJAKAN PUBLIK</span>
 </div>
 <div>{slide_badge}</div>
 </div>"""
