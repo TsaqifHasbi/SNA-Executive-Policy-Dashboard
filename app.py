@@ -64,6 +64,11 @@ from src.executive_slides import (
 )
 
 # Weekly Executive Monitoring Report (21 Slide MH Deck)
+import importlib
+import src.mh_style
+import src.mh_weekly_report
+importlib.reload(src.mh_style)
+importlib.reload(src.mh_weekly_report)
 from src.mh_weekly_report import (
     render_slide_1_cover,
     render_slide_2_executive_summary,
