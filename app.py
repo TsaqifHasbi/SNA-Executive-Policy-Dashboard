@@ -236,7 +236,7 @@ with st.sidebar:
     view_mode = st.radio(
         "Pilih Mode Tampilan:",
         [
-            "Laporan Eksekutif Mingguan (Format Slide MH)",
+            "Format Laporan Harian (Slide MH)",
             "Katalog Analisis Multiplatform (Kategori Tematik)",
             "Cockpit Analisis Mendalam & Evaluasi Model"
         ],
@@ -357,7 +357,7 @@ date_display = f"{start_d} s/d {end_d}" if start_d and end_d else "Semua Periode
 # -------------------------------------------------------------
 # MAIN CONTENT DISPATCHER
 # -------------------------------------------------------------
-if "Laporan Eksekutif Mingguan" in view_mode:
+if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Slide MH" in view_mode:
     MH_CHAPTERS = {
         "Ringkasan Eksekutif & Cover": {
             "Slide 1: Cover Edisi Spesial": render_slide_1_cover,
@@ -393,7 +393,7 @@ if "Laporan Eksekutif Mingguan" in view_mode:
     
     with st.container(border=True):
         render_html("""<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:5px;">
-Bab / Bagian Laporan Eksekutif:
+Bab / Bagian Format Laporan Harian (Slide MH):
 </div>""")
         col_c1, col_c2 = st.columns([1.65, 1.35], vertical_alignment="center")
         with col_c1:
