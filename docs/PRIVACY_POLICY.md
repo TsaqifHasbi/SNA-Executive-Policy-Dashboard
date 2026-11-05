@@ -36,3 +36,4 @@ If you are a content author whose public social media post is included in our ac
 For any privacy inquiries or data requests:
 - **Project Repository:** https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard
 - **Affiliation:** Fakultas Teknik, Universitas Jenderal Soedirman (UNSOED), Indonesia.
+
