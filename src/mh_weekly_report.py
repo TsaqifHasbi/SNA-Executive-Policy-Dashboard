@@ -1450,8 +1450,8 @@ def render_slide_21_closing_summary(df, selected_topic='Semua', topic_label=None
     quote_text = f"Evaluasi opini publik terhadap <strong>{m['topic_title']}</strong> mencatat sentimen positif sebesar <strong>{m['pos_p']}%</strong> dan negatif <strong>{m['neg_p']}%</strong> dari total <strong>{m['vol']:,}</strong> percakapan warganet. Saluran <strong>{m['plat_df'].iloc[0]['platform'] if len(m['plat_df']) > 0 else 'media digital'}</strong> menjadi arena interaksi terpadat. Kunci keberhasilan kebijakan ke depan ditentukan oleh kecepatan dan transparansi respons pemerintah dalam meredam aduan di lapangan."
     
     html = f"""<div style="background:#0F2942; border-radius:12px; padding:45px 30px; text-align:center; color:#FFFFFF; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-<div style="margin-bottom:24px;">
-<span style="background:#F6B100; color:#0F172A; font-weight:800; font-size:16px; padding:6px 14px; border-radius:6px; letter-spacing:0.8px;">MH</span>
+<div style="margin-bottom:20px;">
+{render_logo_badge(size=56)}
 </div>
 <div style="font-size:21px; font-weight:700; color:#FFFFFF; max-width:850px; margin:0 auto 24px auto; line-height:1.6; font-family:'Plus Jakarta Sans',sans-serif;">
 {quote_text}

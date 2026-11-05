@@ -2,6 +2,30 @@
 # Matches the Executive Monitoring Weekly Report (Edisi Spesial Mingguan)
 
 import streamlit as st
+import os
+import base64
+
+_LOGO_B64_CACHE = None
+
+def get_logo_b64():
+    global _LOGO_B64_CACHE
+    if _LOGO_B64_CACHE is not None:
+        return _LOGO_B64_CACHE
+    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    logo_path = os.path.join(curr_dir, '..', 'static', 'logo.svg')
+    if os.path.exists(logo_path):
+        with open(logo_path, 'rb') as f:
+            b64 = base64.b64encode(f.read()).decode('utf-8')
+            _LOGO_B64_CACHE = f"data:image/svg+xml;base64,{b64}"
+            return _LOGO_B64_CACHE
+    return ""
+
+def render_logo_badge(size=22):
+    b64 = get_logo_b64()
+    if b64:
+        return f'<img src="{b64}" style="width:{size}px; height:{size}px; vertical-align:middle; border-radius:50%; display:inline-block; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,0.25);" alt="Logo" />'
+    return '<span style="background:#F6B100; color:#0F172A; font-weight:800; font-size:12px; padding:2px 7px; border-radius:4px; letter-spacing:0.5px;">PPI</span>'
+
 
 def render_html(html_str):
     """
@@ -13,13 +37,14 @@ def render_html(html_str):
 
 def render_mh_top_bar(slide_num=None):
     """
-    Renders top dark navy bar with yellow MH badge and MONITORING KEBIJAKAN PUBLIK title,
+    Renders top dark navy bar with circular logo emblem and MONITORING KEBIJAKAN PUBLIK title,
     plus right-aligned Slide pill badge.
     """
     slide_badge = f"""<span style="background:#2563EB; color:#FFFFFF; font-weight:600; font-size:11px; padding:3px 12px; border-radius:14px; letter-spacing:0.3px;">Slide {slide_num}</span>""" if slide_num else ""
-    html = f"""<div style="background:#0F2942; border-radius:6px; padding:8px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-<div style="display:flex; align-items:center; gap:8px;">
-<span style="background:#F6B100; color:#0F172A; font-weight:800; font-size:12px; padding:2px 7px; border-radius:4px; letter-spacing:0.5px;">MH</span>
+    logo_badge = render_logo_badge(size=23)
+    html = f"""<div style="background:#0F2942; border-radius:6px; padding:7px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+<div style="display:flex; align-items:center; gap:9px;">
+{logo_badge}
 <span style="color:#FFFFFF; font-weight:700; font-size:12.5px; letter-spacing:0.8px;">MONITORING KEBIJAKAN PUBLIK</span>
 </div>
 <div>{slide_badge}</div>
