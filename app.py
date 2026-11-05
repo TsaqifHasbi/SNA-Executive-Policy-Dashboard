@@ -63,6 +63,30 @@ from src.executive_slides import (
     render_slide_wordcloud_hashtags
 )
 
+# Weekly Executive Monitoring Report (21 Slide MH Deck)
+from src.mh_weekly_report import (
+    render_slide_1_cover,
+    render_slide_2_executive_summary,
+    render_slide_3_chapter_1,
+    render_slide_5_platform_review,
+    render_slide_6_two_wordclouds,
+    render_slide_7_issues_minister,
+    render_slide_8_chapter_2,
+    render_slide_9_main_topics,
+    render_slide_10_stakeholder_mapping,
+    render_slide_11_water_focus_timeline,
+    render_slide_12_framing_analysis,
+    render_slide_13_disaster_response,
+    render_slide_14_bot_organic_audit,
+    render_slide_15_intelligence_projections,
+    render_slide_16_chapter_3,
+    render_slide_17_daily_nov1,
+    render_slide_18_daily_nov2,
+    render_slide_19_watch_list,
+    render_slide_20_priorities_methodology,
+    render_slide_21_closing_summary
+)
+
 # Deep Analytical Tab Renderers
 from src.tab_executive import render_tab_executive
 from src.tab_sna import render_tab_sna
@@ -196,22 +220,24 @@ with st.spinner("Memuat korpus data 197.951 rekaman..."):
 # -------------------------------------------------------------
 with st.sidebar:
     render_html("""
-    <div style="background:#FFFFFF; border-bottom:2px solid #EA580C; padding-bottom:12px; margin-bottom:14px;">
-        <div style="font-size:18px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:0.5px;">
-            PUBLIC POLICY INTELLIGENCE
+    <div style="background:#0F2942; border-radius:6px; padding:10px 14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="background:#F6B100; color:#0F172A; font-weight:800; font-size:12px; padding:2px 7px; border-radius:4px;">MH</span>
+            <span style="color:#FFFFFF; font-weight:700; font-size:13px; letter-spacing:0.5px;">TIM MONITORING HARIAN</span>
         </div>
-        <div style="font-size:11.5px; font-weight:600; color:#64748B; margin-top:2px;">
-            Analisis Opini Publik & SNA • IndoBERT AI
+        <div style="font-size:11px; color:#94A3B8; margin-top:4px;">
+            Policy Intelligence & Deep Learning IndoBERT
         </div>
     </div>
     """)
-    st.caption("Pemantauan Kebijakan Publik Menuju 2029")
+    st.caption("Edisi Spesial Mingguan • 26 Okt - 1 Nov 2026")
     
     # Mode Switcher
     view_mode = st.radio(
         "Pilih Mode Tampilan:",
         [
-            "Laporan Analisis Visual (Kategori Tematik)",
+            "Laporan Eksekutif Mingguan (Format Slide MH)",
+            "Katalog Analisis Multiplatform (Kategori Tematik)",
             "Cockpit Analisis Mendalam & Evaluasi Model"
         ],
         index=0
@@ -331,7 +357,81 @@ date_display = f"{start_d} s/d {end_d}" if start_d and end_d else "Semua Periode
 # -------------------------------------------------------------
 # MAIN CONTENT DISPATCHER
 # -------------------------------------------------------------
-if "Laporan Analisis Visual" in view_mode:
+if "Laporan Eksekutif Mingguan" in view_mode:
+    MH_CHAPTERS = {
+        "Ringkasan Eksekutif & Cover": {
+            "Slide 1: Cover Edisi Spesial": render_slide_1_cover,
+            "Slide 2: Executive Summary": render_slide_2_executive_summary,
+        },
+        "CHAPTER 01: The Overview": {
+            "Slide 3: Chapter 01 Break": render_slide_3_chapter_1,
+            "Slide 5: Platform Review (Tujuh Saluran)": render_slide_5_platform_review,
+            "Slide 6: Suara Teratas & Dua Awan Kata": render_slide_6_two_wordclouds,
+            "Slide 7: Isu Positif & Negatif - Menteri PU": render_slide_7_issues_minister,
+        },
+        "CHAPTER 02: The Deep Dive": {
+            "Slide 8: Chapter 02 Break": render_slide_8_chapter_2,
+            "Slide 9: Analisis Topik Utama - Kementerian PU": render_slide_9_main_topics,
+            "Slide 10: Peta Pemangku Kepentingan (Power-Interest)": render_slide_10_stakeholder_mapping,
+            "Slide 11: Sorotan Khusus: Pekan ini Air": render_slide_11_water_focus_timeline,
+            "Slide 12: Analisis Framing (Entman & Edelman)": render_slide_12_framing_analysis,
+            "Slide 13: Penanganan Bencana oleh Kementerian PU": render_slide_13_disaster_response,
+            "Slide 14: Keserempakan & Uji Organik (Bot / Buzzer)": render_slide_14_bot_organic_audit,
+            "Slide 15: Rekomendasi Intelijen - Proyeksi 7 Hari": render_slide_15_intelligence_projections,
+        },
+        "CHAPTER 03: The Action": {
+            "Slide 16: Chapter 03 Break": render_slide_16_chapter_3,
+            "Slide 17: Laporan Harian 1 November": render_slide_17_daily_nov1,
+            "Slide 18: Laporan Harian 2 November": render_slide_18_daily_nov2,
+            "Slide 19: Daftar Pantau Sepekan": render_slide_19_watch_list,
+            "Slide 20: Prioritas Tindakan & Metodologi": render_slide_20_priorities_methodology,
+            "Slide 21: Penutup & Pesan Kunci": render_slide_21_closing_summary,
+        }
+    }
+    
+    mh_chap_names = list(MH_CHAPTERS.keys())
+    
+    with st.container(border=True):
+        render_html("""<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:5px;">
+Bab / Bagian Laporan Eksekutif:
+</div>""")
+        col_c1, col_c2 = st.columns([1.65, 1.35], vertical_alignment="center")
+        with col_c1:
+            selected_mh_chap = st.selectbox(
+                "Pilih Bab / Bagian:",
+                mh_chap_names,
+                index=0,
+                label_visibility="collapsed"
+            )
+        with col_c2:
+            view_all_mh = st.checkbox(
+                "Tampilkan Seluruh Slide dalam Bab Ini Sekaligus",
+                value=False,
+                help="Centang untuk membaca seluruh slide dalam bab ini secara berurutan"
+            )
+            
+        mh_pages = MH_CHAPTERS[selected_mh_chap]
+        mh_page_names = list(mh_pages.keys())
+        
+        if not view_all_mh:
+            st.markdown("<div style='margin: 8px 0 6px 0; border-top: 1px dashed #E2E8F0;'></div>", unsafe_allow_html=True)
+            selected_mh_slide = st.radio(
+                f"Pilih Slide ({selected_mh_chap}):",
+                mh_page_names,
+                index=0,
+                horizontal=True
+            )
+    
+    st.write("")
+    if not view_all_mh:
+        mh_pages[selected_mh_slide](df_filtered, selected_topic=selected_topic, topic_label=selected_topic, date_str=date_display)
+    else:
+        for s_idx, (s_name, s_func) in enumerate(mh_pages.items(), 1):
+            s_func(df_filtered, selected_topic=selected_topic, topic_label=selected_topic, date_str=date_display)
+            if s_idx < len(mh_pages):
+                st.markdown("<div style='margin: 35px 0; border-bottom: 2px dashed #CBD5E1;'></div>", unsafe_allow_html=True)
+
+elif "Katalog Analisis Multiplatform" in view_mode or "Laporan Analisis Visual" in view_mode:
     # 7 LOGICAL ANALYTICAL CATEGORIES (All 30 visual pages organized thematically)
     CATEGORIES = {
         "1. Volume & Tren Temporal": {
