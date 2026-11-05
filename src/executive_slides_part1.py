@@ -221,7 +221,8 @@ def render_slide_mentions_trend_emotions(df, selected_topic='MBG', topic_label=N
     with st.container(border=True):
         st.plotly_chart(fig, use_container_width=True)
     
-    emo_counts = df['emotion'].value_counts()
+    df_emo_aff = df[~df['emotion'].str.lower().isin(['neutral', 'netral', 'informatif', 'informational'])] if 'emotion' in df.columns else df
+    emo_counts = df_emo_aff['emotion'].value_counts() if not df_emo_aff.empty else (df['emotion'].value_counts() if 'emotion' in df.columns else pd.Series())
     top_emo = emo_counts.index[0] if not emo_counts.empty else "Joy"
     render_html(f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:16px 22px; margin-top:14px;">
 <div style="font-size:12.5px; color:#334155; line-height:1.6;">

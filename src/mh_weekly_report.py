@@ -60,8 +60,17 @@ def _get_slide_metrics(df, selected_topic='Semua', topic_label=None):
     
     # Emotion distributions (IndoBERT 9 Classes)
     emo_pcts = (df['emotion'].value_counts(normalize=True) * 100).round(1).to_dict() if vol > 0 and 'emotion' in df.columns else {}
-    top_emo = list(emo_pcts.keys())[0] if emo_pcts else "Neutral"
-    top_emo_p = emo_pcts.get(top_emo, 0)
+    
+    # Affective emotions (8 Plutchik emotions, excluding Neutral/Informatif)
+    df_affective = df[~df['emotion'].str.lower().isin(['neutral', 'netral', 'informatif', 'informational'])] if vol > 0 and 'emotion' in df.columns else pd.DataFrame()
+    aff_vol = len(df_affective)
+    if aff_vol > 0:
+        aff_counts = df_affective['emotion'].value_counts()
+        top_emo = aff_counts.index[0]
+        top_emo_p = round((aff_counts.iloc[0] / aff_vol) * 100, 1)
+    else:
+        top_emo = list(emo_pcts.keys())[0] if emo_pcts else "Neutral"
+        top_emo_p = emo_pcts.get(top_emo, 0)
     
     # Platform aggregation
     if vol > 0 and 'platform' in df.columns:
@@ -261,7 +270,7 @@ def render_slide_2_executive_summary(df, selected_topic='Semua', topic_label=Non
         {"label": "Positif", "val": f"{m['pos_p']}%", "sub": f"{m['pos_c']:,} percakapan", "dot": "#10B981", "val_color": "#10B981"},
         {"label": "Negatif", "val": f"{m['neg_p']}%", "sub": f"{m['neg_c']:,} kritik/keluhan", "dot": "#EF4444", "val_color": "#EF4444"},
         {"label": "Netral", "val": f"{m['net_p']}%", "sub": f"{m['net_c']:,} informatif", "dot": "#64748B", "val_color": "#64748B"},
-        {"label": "Emosi Dominan", "val": m['top_emo'], "sub": f"{m['top_emo_p']}% dari total korpus", "dot": "#8B5CF6", "val_color": "#8B5CF6"}
+        {"label": "Emosi Dominan", "val": m['top_emo'], "sub": f"{m['top_emo_p']}% respon afektif", "dot": "#8B5CF6", "val_color": "#8B5CF6"}
     ]
     render_kpi_chips(chips)
     
@@ -297,7 +306,7 @@ Enam Temuan Utama Kebijakan: {m['topic_title']}
 </div>
 <div>
 <div style="font-weight:700; font-size:11.5px; color:#1E293B; margin-bottom:2px;">4. Suasana Emosi Dominan</div>
-<div style="font-size:11px; color:#475569; line-height:1.45;">Model IndoBERT 9-Emosi mengidentifikasi emosi <strong>{m['top_emo']}</strong> ({m['top_emo_p']}%) sebagai corak emosional utama yang menyertai percakapan netizen.</div>
+<div style="font-size:11px; color:#475569; line-height:1.45;">Model IndoBERT 9-Emosi mengidentifikasi emosi <strong>{m['top_emo']}</strong> ({m['top_emo_p']}% respon afektif) sebagai corak emosional utama yang menyertai percakapan netizen.</div>
 </div>
 <div>
 <div style="font-weight:700; font-size:11.5px; color:#1E293B; margin-bottom:2px;">5. Saluran Pendukung Terkuat</div>
@@ -371,7 +380,7 @@ def render_slide_5_platform_review(df, selected_topic='Semua', topic_label=None,
         {"label": "Volume Terbanyak", "val": f"{top_vol_name} {top_vol_pct}%", "sub": f"{top_vol_plat['penyebutan']:,} sebutan" if top_vol_plat is not None else "-", "dot": "#64748B"},
         {"label": "Keterlibatan Puncak", "val": f"{top_eng_name} {top_eng_val}", "sub": "total interaksi publik", "dot": "#2563EB", "val_color": "#2563EB"},
         {"label": "Kritik Tertinggi", "val": f"{worst_name} {worst_neg_p}%", "sub": "rasio sentimen negatif", "dot": "#EF4444", "val_color": "#EF4444"},
-        {"label": "Emosi Dominan", "val": f"{m['top_emo']}", "sub": f"{m['top_emo_p']}% dari total emosi", "dot": "#8B5CF6", "val_color": "#8B5CF6"},
+        {"label": "Emosi Dominan", "val": f"{m['top_emo']}", "sub": f"{m['top_emo_p']}% respon afektif", "dot": "#8B5CF6", "val_color": "#8B5CF6"},
         {"label": "Total Korpus", "val": f"{fmt_val(m['vol'])}", "sub": "terverifikasi IndoBERT", "dot": "#10B981"}
     ]
     render_kpi_chips(chips)

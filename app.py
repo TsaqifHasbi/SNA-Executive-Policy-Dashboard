@@ -237,7 +237,7 @@ with st.sidebar:
         "Pilih Mode Tampilan:",
         [
             "Format Laporan Harian (Slide MH)",
-            "Katalog Analisis Multiplatform (Kategori Tematik)",
+            "Dashboard Analisis Multi Platform",
             "Cockpit Analisis Mendalam & Evaluasi Model"
         ],
         index=0
@@ -431,7 +431,7 @@ Bab / Bagian Format Laporan Harian (Slide MH):
             if s_idx < len(mh_pages):
                 st.markdown("<div style='margin: 35px 0; border-bottom: 2px dashed #CBD5E1;'></div>", unsafe_allow_html=True)
 
-elif "Katalog Analisis Multiplatform" in view_mode or "Laporan Analisis Visual" in view_mode:
+elif "Dashboard Analisis Multi Platform" in view_mode or "Katalog Analisis Multiplatform" in view_mode or "Laporan Analisis Visual" in view_mode:
     # 7 LOGICAL ANALYTICAL CATEGORIES (All 30 visual pages organized thematically)
     CATEGORIES = {
         "1. Volume & Tren Temporal": {
