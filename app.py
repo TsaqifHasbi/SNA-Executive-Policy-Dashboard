@@ -106,7 +106,6 @@ from src.clean_header_footer import render_html
 # PAGE CONFIGURATION & EXECUTIVE THEME (EXECUTIVE THEME)
 # -------------------------------------------------------------
 _logo_icon = os.path.join(current_dir, "static", "logo.svg")
-_logo_h = os.path.join(current_dir, "static", "logo_horizontal.svg")
 
 st.set_page_config(
     page_title="Public Policy Intelligence Platform | IndoBERT & SNA",
@@ -115,9 +114,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-if os.path.exists(_logo_h) and os.path.exists(_logo_icon):
+if os.path.exists(_logo_icon):
     try:
-        st.logo(_logo_h, icon_image=_logo_icon)
+        st.logo(_logo_icon)
     except Exception:
         pass
 
