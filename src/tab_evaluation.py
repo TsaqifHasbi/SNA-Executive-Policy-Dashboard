@@ -4,13 +4,13 @@ import json
 import streamlit as st
 
 def render_tab_evaluation(current_dir):
-    st.subheader("🤖 Hasil Evaluasi Model IndoBERT Deep Learning (Bab IV Skripsi)")
+    st.subheader("🤖 Hasil Evaluasi Model IndoBERT Deep Learning")
     st.markdown("Ringkasan matematis pengujian model **IndoBERT Base (indobenchmark/indobert-base-p1)** pada sampel uji seimbang (*Stratified Balanced Test Set*):")
 
-    # 1. Evaluasi Model Sentimen
-    sent_v1_dir = os.path.join(current_dir, 'models', 'best_indobert_sentiment')
+    # 1. Evaluasi Model Sentimen (Prioritaskan model V2/V3 terbaru)
     sent_v2_dir = os.path.join(current_dir, 'models', 'best_indobert_sentiment_v2')
-    sent_model_dir = sent_v1_dir if os.path.exists(sent_v1_dir) else sent_v2_dir
+    sent_v1_dir = os.path.join(current_dir, 'models', 'best_indobert_sentiment')
+    sent_model_dir = sent_v2_dir if os.path.exists(sent_v2_dir) else sent_v1_dir
 
     metrics_path = os.path.join(sent_model_dir, 'evaluation_metrics.json')
     if os.path.exists(metrics_path):
@@ -19,8 +19,8 @@ def render_tab_evaluation(current_dir):
 
         st.markdown("#### 🎯 1. Model IndoBERT Sentimen (3-Kelas: Positif, Netral, Negatif)")
         m1, m2, m3, m4 = st.columns(4)
-        acc = metrics.get('accuracy', 0.9133)
-        f1 = metrics.get('macro_f1', 0.9137)
+        acc = metrics.get('accuracy', 0.9775)
+        f1 = metrics.get('macro_f1', 0.9775)
         
         # Hitung precision dan recall dari confusion matrix jika tidak ada di JSON
         cm = metrics.get('confusion_matrix')
@@ -35,7 +35,7 @@ def render_tab_evaluation(current_dir):
         else:
             prec = metrics.get('macro_precision', acc)
             rec = metrics.get('macro_recall', acc)
-            rec_neg = 90.75
+            rec_neg = 98.13
 
         m1.metric("Akurasi (Accuracy)", f"{acc*100:.2f}%")
         m2.metric("Macro Precision", f"{prec*100:.2f}%")
@@ -53,11 +53,11 @@ def render_tab_evaluation(current_dir):
                 st.image(cm_img_path, caption="Confusion Matrix IndoBERT Sentimen pada 2.400 Data Uji Independen", use_container_width=True)
 
         with cm_col_text:
-            st.markdown("#### 🎓 Catatan Ilmiah untuk Sidang Skripsi (Pak Ihsan)")
+            st.markdown("#### 🎓 Catatan Metodologis & Evaluasi Metrik Model")
             st.markdown(f"""
             * **1. Mengapa Nilai Akurasi = Macro Recall ({rec*100:.2f}%)?**  
-              Secara matematis, dataset uji dirancang seimbang sempurna (*balanced stratified test set*) dengan tepat 800 sampel per kelas ($N_0 = N_1 = N_2 = 800$, total 2.400 data uji). Sehingga:  
-              Macro Recall = (Recall_0 + Recall_1 + Recall_2) / 3 = Accuracy.
+              Secara matematis, dataset uji dirancang seimbang sempurna (*balanced stratified test set*) dengan tepat 800 sampel per kelas ($N_0 = N_1 = N_2 = 800$, total 2.400 data uji independen). Sehingga:  
+              $$\\text{{Macro Recall}} = \\frac{{\\text{{Recall}}_{{0}} + \\text{{Recall}}_{{1}} + \\text{{Recall}}_{{2}}}}{{3}} = \\text{{Akurasi}} = {rec*100:.2f}\\%$$
             * **2. Ketahanan Model Terhadap Imbalance Real-World:**  
               Meskipun data media sosial mentah didominasi nada netral, pelatihan *stratified balanced* pada korpus mencegah IndoBERT dari gejala *accuracy paradox*.
             * **3. Kepentingan Recall Negatif dalam Kebijakan Publik:**  

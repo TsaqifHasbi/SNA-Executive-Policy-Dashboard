@@ -338,13 +338,16 @@ with st.sidebar:
     df_filtered = filter_dataset(df_raw, selected_topic=selected_topic, selected_platform=selected_platform, start_date=start_d, end_date=end_d)
 
     # Load Real Evaluation Metrics (Sentimen & Emosi)
-    sent_metrics_file = os.path.join(str(current_dir), 'models', 'best_indobert_sentiment', 'evaluation_metrics.json')
+    sent_v2_dir = os.path.join(str(current_dir), 'models', 'best_indobert_sentiment_v2')
+    sent_v1_dir = os.path.join(str(current_dir), 'models', 'best_indobert_sentiment')
+    sent_model_dir = sent_v2_dir if os.path.exists(sent_v2_dir) else sent_v1_dir
+    sent_metrics_file = os.path.join(sent_model_dir, 'evaluation_metrics.json')
     emo_metrics_file = os.path.join(str(current_dir), 'models', 'best_indobert_emotion', 'evaluation_metrics.json')
     
-    acc_sent = 0.9133
-    f1_sent = 0.9137
-    prec_sent = 0.9150
-    rec_sent = 0.9133
+    acc_sent = 0.9775
+    f1_sent = 0.9775
+    prec_sent = 0.9775
+    rec_sent = 0.9775
     
     acc_emo = 0.9178
     f1_emo = 0.9174
