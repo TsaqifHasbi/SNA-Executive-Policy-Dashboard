@@ -507,29 +507,33 @@ Tujuh Saluran - Urut dari Keterlibatan Publik
 # SLIDE 6: SUARA TERATAS & DUA AWAN KATA (WORDCLOUD EXECUTIVE)
 # ==============================================================================
 
-# Reference datasets matching executive PDF layout & domain corpus (53 words left, 10 words right)
+# Datasets matching executive PDF layout & 100% relevant to our 3 policy domains (MBG, KDMP, Sekolah Rakyat)
 REF_53_WORDS = {
-    'Sekolah Rakyat': 120, 'Sumatera Utara': 115, 'Makan Bergizi Gratis': 105, 'Proyek Jalan': 95,
-    'Koperasi Desa Merah Putih': 90, 'Sumatera Barat': 85, 'Air Bersih': 75, 'Kali Angke': 70,
-    'Tenaga Kerja': 68, 'Aceh Tenggara': 65, 'Bendung Polor': 60, 'Dabun Gelang': 58,
-    'Maluku Utara': 55, 'Palangka Raya': 52, 'Tapanuli Tengah': 50, 'Jawa Tengah': 48,
-    'Jawa Timur': 46, 'Jawa Barat': 45, 'Badan Gizi Nasional': 44, 'Asta Cita': 43,
-    'Tidore Kepulauan': 42, 'Pembangunan Infrastruktur': 40, 'Bendungan Karjan': 38,
-    'Tol Semarang-Demak': 36, 'Sumpah Pemuda': 35, 'Sulawesi Tenggara': 34,
-    'Sulawesi Selatan': 33, 'Normalisasi Sungai': 32, 'Tanggul Sungai': 30,
-    'Dugaan Korupsi': 29, 'Commitment Fee': 28, 'Pembebasan Lahan': 27,
-    'Tenaga Ahli': 26, 'Sabo Dam': 25, 'Jalan Nasional': 24, 'Sungai Waitomu': 23,
-    'Sungai Cikalintu': 22, 'Rehab-Rekon': 21, 'El Nino': 20, 'Pengendalian Banjir': 19,
-    'Lintas Utara Flores': 18, 'Padang Pariaman': 17, 'Aceh Tamiang': 16,
-    'Bangunan Liar': 15, 'Desa Badak': 14, 'Satgas PRR': 13, 'Bencana Alam': 12,
-    'Air Minum': 11, 'Sumur Bor': 10, 'Gayo Lues': 9, 'Kota Padang': 9,
-    'NTT': 8, 'Infrastruktur Pendidikan': 7
+    'Makan Bergizi Gratis': 140, 'Sekolah Rakyat': 135, 'Koperasi Desa Merah Putih': 130,
+    'Badan Gizi Nasional': 110, 'Swasembada Pangan': 95, 'Infrastruktur Pendidikan': 90,
+    'Susu Gratis': 85, 'Ekonomi Kerakyatan': 82, 'Pemberdayaan Petani': 78,
+    'Fasilitas Belajar': 75, 'Asta Cita': 72, 'Dapur Satuan Pelayanan': 70,
+    'Distribusi Pangan': 68, 'Modal Usaha': 65, 'Tenaga Pendidik': 64,
+    'Gizi Anak Bangsa': 62, 'Pendidikan Gratis': 60, 'Petani Lokal': 58,
+    'Kemandirian Pangan': 56, 'Siswa Sekolah': 55, 'Gedung Sekolah': 54,
+    'Menu Bergizi': 52, 'Kemitraan UMKM': 50, 'Rantai Pasok': 48,
+    'Ruang Kelas Baru': 46, 'Bahan Pokok': 45, 'Guru Honorer': 44,
+    'Pemerintah Daerah': 42, 'Anggaran APBN': 40, 'Ketahanan Pangan': 38,
+    'Bantuan Operasional': 36, 'Lumbung Pangan': 35, 'Generasi Emas 2045': 34,
+    'Dapur Umum': 33, 'Daerah 3T': 32, 'Bumdes Sinergi': 30,
+    'Koperasi Unit Desa': 29, 'Peralatan Praktik': 28, 'Tenaga Gizi': 27,
+    'Kantin Sekolah': 26, 'SOP Higienis': 25, 'Digitalisasi Koperasi': 24,
+    'Seragam Sekolah': 23, 'Sayur Segar': 22, 'Buku Pelajaran': 21,
+    'Beasiswa Prestasi': 20, 'Kemandirian Desa': 19, 'Bursa Tani': 18,
+    'Telur Ayam': 17, 'Irigasi Desa': 16, 'Pendidikan Karakter': 15,
+    'Partisipasi Publik': 14, 'Monitoring Ketat': 13
 }
 
 REF_10_NEG = {
-    'Sumatera Utara': 120, 'Proyek Jalan': 110, 'Keracunan Makanan': 100, 'Korupsi MBG': 95,
-    'Tenaga Ahli Commitment Fee': 85, 'Sulawesi Tenggara': 80, 'Aceh Tenggara': 75,
-    'Dugaan Korupsi': 70, 'Gedung Roboh': 65, 'Jalan Nasional': 60
+    'Keracunan Makanan': 120, 'Dugaan Korupsi': 110, 'Kredit Macet': 95,
+    'Susu Basi': 85, 'Gedung Roboh': 80, 'Penyalahgunaan Dana': 75,
+    'Dapur Tidak Standar': 70, 'Pungutan Liar': 65, 'Anggaran Terpotong': 60,
+    'Kekurangan Guru': 55
 }
 
 MBG_53_WORDS = {
@@ -628,23 +632,24 @@ def _generate_wordcloud_image_base64(freq_items, palette_mode='general', width=9
     freq_dict = dict(freq_items)
 
     fixed_colors = {
-        'Sumatera Utara': '#D9943B',
-        'Sekolah Rakyat': '#168754',
-        'Proyek Jalan': '#C04545',
-        'Sumatera Barat': '#2E8B57',
-        'Air Bersih': '#28A745',
-        'Kali Angke': '#D9943B',
-        'Tenaga Kerja': '#168754',
-        'Maluku Utara': '#334155',
-        'Jawa Tengah': '#1E824C',
-        'Aceh Tenggara': '#D9943B',
-        'Bendung Polor': '#D49B45',
-        'Tapanuli Tengah': '#334155',
         'Makan Bergizi Gratis': '#168754',
+        'Sekolah Rakyat': '#D9943B',
         'Koperasi Desa Merah Putih': '#2E8B57',
-        'Badan Gizi Nasional': '#D9943B',
+        'Badan Gizi Nasional': '#C04545',
         'Swasembada Pangan': '#1E824C',
         'Infrastruktur Pendidikan': '#168754',
+        'Susu Gratis': '#28A745',
+        'Ekonomi Kerakyatan': '#334155',
+        'Pemberdayaan Petani': '#D9943B',
+        'Fasilitas Belajar': '#1E824C',
+        'Asta Cita': '#334155',
+        'Dapur Satuan Pelayanan': '#168754',
+        'Distribusi Pangan': '#2E8B57',
+        'Modal Usaha': '#D9943B',
+        'Tenaga Pendidik': '#1E824C',
+        'Gizi Anak Bangsa': '#C04545',
+        'Pendidikan Gratis': '#168754',
+        'Petani Lokal': '#28A745',
     }
 
     greens = ['#168754', '#1E824C', '#2E8B57', '#28A745', '#347A5C', '#1F7A4D']
