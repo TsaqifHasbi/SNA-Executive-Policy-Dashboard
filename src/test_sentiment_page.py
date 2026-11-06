@@ -26,57 +26,108 @@ import streamlit.components.v1 as components_v1
 # Leksikon & Bobot Semantik Bahasa Indonesia untuk Kebijakan Publik
 # ------------------------------------------------------------------------------
 POSITIVE_TERMS = {
-    'bagus': 1.8, 'hebat': 2.0, 'mantap': 2.2, 'mantul': 2.2, 'keren': 1.8, 'berhasil': 2.2,
-    'sukses': 2.2, 'bermanfaat': 2.5, 'membantu': 2.2, 'apresiasi': 2.0, 'dukung': 2.0,
-    'terima kasih': 1.8, 'alhamdulillah': 2.0, 'bersyukur': 2.0, 'berkualitas': 2.2, 'sehat': 2.0,
-    'nutrisi': 1.8, 'bergizi': 2.2, 'berguna': 2.0, 'senang': 1.8, 'bangga': 2.0, 'terjamin': 2.0,
-    'berkembang': 1.8, 'maju': 1.8, 'tumbuh': 1.8, 'harapan': 1.8, 'terbukti': 2.0, 'layak': 1.8,
-    'adil': 2.2, 'merata': 2.0, 'beres': 1.8, 'tuntas': 2.0, 'positif': 1.8, 'puas': 2.2,
-    'terobosan': 2.2, 'efisien': 2.0, 'transparan': 2.2, 'semangat': 1.8, 'berdaya': 2.0,
-    'gembira': 1.8, 'amanah': 2.5, 'optimal': 2.0, 'solutif': 2.2, 'enak': 1.8, 'lezat': 2.0,
-    'nikmat': 2.0, 'kenyang': 1.8, 'top': 2.0, 'jos': 2.0, 'joss': 2.0, 'berkah': 2.2, 'setuju': 1.8
+    # Keberhasilan, Mutu, & Manfaat
+    'bagus': 2.0, 'hebat': 2.2, 'mantap': 2.5, 'mantul': 2.5, 'keren': 2.0, 'berhasil': 2.5,
+    'sukses': 2.5, 'bermanfaat': 2.8, 'manfaat': 2.2, 'kemanfaatan': 2.5, 'membantu': 2.5,
+    'terbantu': 2.2, 'bantu': 2.0, 'bantuan': 2.0, 'apresiasi': 2.2, 'mengapresiasi': 2.5,
+    'dukung': 2.2, 'mendukung': 2.5, 'dukungan': 2.2, 'terima kasih': 2.0, 'alhamdulillah': 2.5,
+    'alhamdulilah': 2.5, 'bersyukur': 2.2, 'syukur': 2.0, 'berkualitas': 2.5, 'kualitas': 2.0,
+    # Nutrisi, Higienitas, & Kesehatan
+    'sehat': 2.5, 'menyehatkan': 2.8, 'kesehatan': 2.2, 'nutrisi': 2.2, 'bergizi': 2.8,
+    'gizi': 2.2, 'enak': 2.0, 'nikmat': 2.2, 'lezat': 2.5, 'kenyang': 2.0, 'higienis': 2.2,
+    # Karakter, Integritas & Keadilan
+    'amanah': 2.8, 'terpercaya': 2.5, 'percaya': 2.2, 'kepercayaan': 2.2, 'transparan': 2.8,
+    'transparansi': 2.5, 'terbukti': 2.5, 'adil': 2.5, 'keadilan': 2.5, 'merata': 2.5,
+    'pemerataan': 2.5, 'layak': 2.2, 'kelayakan': 2.2, 'beres': 2.0, 'tuntas': 2.2,
+    'positif': 2.5, 'puas': 2.5, 'memuaskan': 2.5, 'senang': 2.0, 'bangga': 2.2,
+    'gembira': 2.0, 'maju': 2.2, 'kemajuan': 2.5, 'tumbuh': 2.0, 'harapan': 2.0,
+    'terobosan': 2.8, 'efisien': 2.5, 'efisiensi': 2.5, 'solusi': 2.5, 'solutif': 2.8,
+    'semangat': 2.0, 'berdaya': 2.2, 'optimal': 2.2, 'top': 2.2, 'jos': 2.2, 'joss': 2.2,
+    'berkah': 2.5, 'setuju': 2.0, 'pro': 2.0, 'pro rakyat': 2.8, 'juara': 2.5
 }
 
 NEGATIVE_TERMS = {
     # Umpatan & Makian Kasar (High intensity Anger/Negatif)
-    'anjing': 3.2, 'babi': 3.2, 'bangsat': 3.2, 'bajingan': 3.2, 'brengsek': 3.0,
+    'anjing': 3.5, 'babi': 3.5, 'bangsat': 3.5, 'bajingan': 3.5, 'brengsek': 3.2,
     'kontol': 3.5, 'memek': 3.5, 'pantek': 3.5, 'jancuk': 3.5, 'jancok': 3.5,
-    'asu': 3.2, 'kampret': 2.8, 'sialan': 2.8, 'tai': 3.0, 'taik': 3.0, 'taek': 3.0,
-    'keparat': 3.0, 'bedebah': 3.0, 'biadab': 3.0, 'laknat': 2.8, 'bangke': 2.8,
-    'sompret': 2.5, 'setan': 2.8, 'iblis': 2.8, 'dajjal': 3.0,
+    'asu': 3.5, 'kampret': 3.0, 'sialan': 3.0, 'tai': 3.2, 'taik': 3.2, 'taek': 3.2,
+    'keparat': 3.2, 'bedebah': 3.2, 'biadab': 3.5, 'laknat': 3.0, 'bangke': 3.0,
+    'sompret': 2.8, 'setan': 3.0, 'iblis': 3.0, 'dajjal': 3.2,
     # Ejekan Intelektual & Mental
-    'tolol': 3.0, 'goblok': 3.0, 'goblog': 3.0, 'bego': 2.8, 'bloon': 2.8,
-    'dungu': 3.0, 'pekok': 2.8, 'idiot': 2.8, 'bodoh': 2.5, 'sesat': 2.5,
+    'tolol': 3.2, 'goblok': 3.2, 'goblog': 3.2, 'bego': 3.0, 'bloon': 3.0,
+    'dungu': 3.2, 'pekok': 3.0, 'idiot': 3.0, 'bodoh': 2.8, 'pembodohan': 3.2, 'sesat': 2.8,
     # Ejekan Politik, Hinaan Relasi, dan Sindiran Sosial
     'kacung': 2.8, 'jongos': 2.8, 'penjilat': 2.8, 'antek': 2.8, 'boneka': 2.5,
-    'buzzer': 2.2, 'cebong': 2.5, 'kadrun': 2.5, 'rezim': 2.0, 'komprador': 2.5,
-    'budak': 2.5, 'pengkhianat': 3.0, 'khianat': 2.8, 'munafik': 2.8, 'fasik': 2.5,
-    # Kritik Mutu, Keluhan, Kehancuran
-    'buruk': 2.2, 'gagal': 2.5, 'rusak': 2.2, 'hancur': 2.5, 'kecewa': 2.2,
-    'rugi': 2.0, 'parah': 2.2, 'krisis': 2.2, 'marah': 2.2, 'bobrok': 2.5,
-    'sengsara': 2.2, 'beban': 2.0, 'masalah': 1.8, 'amburadul': 2.5, 'merusak': 2.2,
-    'ancaman': 2.2, 'lambat': 1.8, 'tidak adil': 2.5, 'tidak layak': 2.5,
-    'mahal': 1.8, 'sulit': 1.8, 'sampah': 2.8, 'ampas': 2.5, 'sia-sia': 2.2,
-    'pemborosan': 2.5, 'roboh': 2.5, 'menolak': 2.0, 'kritik': 1.5,
+    'buzzer': 2.5, 'cebong': 2.5, 'kadrun': 2.5, 'rezim': 2.2, 'komprador': 2.5,
+    'budak': 2.5, 'pengkhianat': 3.2, 'khianat': 3.0, 'munafik': 3.0, 'fasik': 2.8,
+    # Kritik Mutu, Keluhan, Kehancuran, & Kerusakan
+    'negatif': 2.8, 'buruk': 2.5, 'memburuk': 2.5, 'terburuk': 3.0, 'gagal': 2.8,
+    'kegagalan': 2.8, 'rusak': 2.5, 'merusak': 2.8, 'perusak': 3.0, 'kerusakan': 2.8,
+    'hancur': 2.8, 'menghancurkan': 3.0, 'kehancuran': 3.0, 'penghancur': 3.0,
+    'kecewa': 2.5, 'kekecewaan': 2.8, 'mengecewakan': 2.8, 'rugi': 2.5, 'merugikan': 2.8,
+    'dirugikan': 2.8, 'kerugian': 2.8, 'parah': 2.5, 'memperparah': 2.8, 'krisis': 2.5,
+    'marah': 2.5, 'kemarahan': 2.8, 'bobrok': 2.8, 'kebobrokan': 3.0, 'sengsara': 2.5,
+    'kesengsaraan': 2.8, 'derita': 2.5, 'menderita': 2.8, 'penderitaan': 2.8,
+    'beban': 2.2, 'membebani': 2.5, 'masalah': 2.0, 'bermasalah': 2.5, 'amburadul': 2.8,
+    'ancam': 2.5, 'ancaman': 2.5, 'mengancam': 2.8, 'terancam': 2.5, 'bahaya': 2.5,
+    'berbahaya': 2.8, 'lambat': 2.0, 'tidak adil': 2.8, 'tidak layak': 2.8, 'tidak bermutu': 2.8,
+    'mahal': 2.0, 'sulit': 2.0, 'sampah': 2.8, 'ampas': 2.8, 'sia-sia': 2.5, 'sia sia': 2.5,
+    'mubazir': 2.8, 'boros': 2.5, 'pemborosan': 2.8, 'roboh': 2.8, 'menolak': 2.5,
+    'penolakan': 2.5, 'tolak': 2.5, 'protes': 2.5, 'memprotes': 2.5, 'keluhan': 2.2,
+    'ngeluh': 2.2, 'kritik': 1.8, 'mengkritik': 2.0, 'kecam': 2.8, 'mengecam': 2.8,
+    'kecaman': 2.8, 'batal': 2.2, 'dibatalkan': 2.5, 'kacau': 2.5, 'kekacauan': 2.8,
+    'cacat': 2.5, 'mundur': 2.2, 'kemunduran': 2.5, 'kontra': 2.0, 'anti': 2.0,
     # Isu Korupsi & Fraud
-    'korupsi': 3.0, 'korup': 3.0, 'bancakan': 2.8, 'curang': 2.5, 'bohong': 2.5,
-    'palsu': 2.2, 'maling': 3.0, 'rampok': 3.0, 'nilep': 2.8, 'tilep': 2.8,
-    'sunat': 2.5, 'pencitraan': 2.2, 'penipuan': 2.8, 'manipulasi': 2.5,
-    'pungli': 2.8, 'culas': 2.5, 'hoax': 2.5, 'fitnah': 2.5,
+    'korupsi': 3.2, 'korup': 3.2, 'bancakan': 3.0, 'curang': 2.8, 'kecurangan': 3.0,
+    'bohong': 2.8, 'kebohongan': 3.0, 'pembohong': 3.0, 'dibohongi': 3.0, 'palsu': 2.5,
+    'maling': 3.2, 'rampok': 3.2, 'nilep': 3.0, 'tilep': 3.0, 'sunat': 2.8,
+    'pencitraan': 2.5, 'penipuan': 3.0, 'tipu': 2.8, 'manipulasi': 2.8, 'pungli': 3.0,
+    'culas': 2.8, 'licik': 2.8, 'kelicikan': 3.0, 'hoax': 2.8, 'fitnah': 3.0,
     # Isu Higienitas & Medis (Disgust/Fear)
-    'keracunan': 3.2, 'beracun': 3.2, 'basi': 2.8, 'bau': 2.2, 'jorok': 2.5,
-    'mual': 2.2, 'muntah': 2.5, 'busuk': 2.8, 'najis': 2.8, 'menjijikkan': 2.8,
-    'mati': 2.8, 'sakit': 2.0
+    'keracunan': 3.5, 'beracun': 3.5, 'racun': 3.5, 'meracuni': 3.5, 'basi': 3.0,
+    'bau': 2.5, 'jorok': 2.8, 'mual': 2.5, 'muntah': 2.8, 'busuk': 3.0, 'najis': 3.0,
+    'menjijikkan': 3.0, 'mati': 3.0, 'kematian': 3.0, 'sakit': 2.2
 }
 
+# Prefiks & Sufiks Pembentuk Kata Bahasa Indonesia (Morfologi Derivasi)
+ID_PREFIXES = ['diper', 'memper', 'meng', 'meny', 'men', 'mem', 'me', 'peng', 'peny', 'pen', 'pem', 'per', 'pe', 'di', 'ter', 'ber', 'ke', 'se']
+ID_SUFFIXES = ['kan', 'an', 'i', 'nya', 'lah', 'kah', 'pun']
+
+def get_morphology_candidates(word):
+    """
+    Menghasilkan variasi bentuk kata dasar (stem/root) bahasa Indonesia
+    guna mengatasi variasi afiksasi (misal: perusak -> rusak, menyehatkan -> sehat).
+    """
+    cands = {word}
+    base_words = [word]
+    for suf in ID_SUFFIXES:
+        if word.endswith(suf) and len(word) - len(suf) >= 3:
+            s_word = word[:-len(suf)]
+            cands.add(s_word)
+            base_words.append(s_word)
+    for bw in base_words:
+        for pfx in ID_PREFIXES:
+            if bw.startswith(pfx) and len(bw) - len(pfx) >= 3:
+                rem = bw[len(pfx):]
+                cands.add(rem)
+                if pfx == 'meny': cands.add('s' + rem)
+                elif pfx == 'men': cands.add('t' + rem)
+                elif pfx == 'mem': cands.add('p' + rem)
+                elif pfx == 'meng': cands.add('k' + rem)
+                elif pfx == 'peny': cands.add('s' + rem)
+                elif pfx == 'pen': cands.add('t' + rem)
+                elif pfx == 'pem': cands.add('p' + rem)
+                elif pfx == 'peng': cands.add('k' + rem)
+    return cands
+
 EMOTION_KEYWORDS = {
-    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis'],
-    'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap'],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat'],
-    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik'],
-    'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram'],
-    'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'terpuruk', 'terbengkalai', 'miris', 'pilu'],
+    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi'],
+    'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam'],
+    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan'],
+    'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
+    'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita'],
     'Surprise': ['kaget', 'terkejut', 'heran', 'ternyata', 'waduh', 'astaga', 'syok', 'luar biasa', 'tak disangka', 'wow', 'anjir', 'gila'],
     'Neutral': ['siaran pers', 'pengumuman resmi', 'tata tertib', 'berita acara', 'statistik resmi', 'siaran berita']
 }
@@ -88,7 +139,8 @@ NEGATIONS = {'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', '
 # ------------------------------------------------------------------------------
 def analyze_text_nlp(text):
     """
-    Melakukan ekstraksi sentimen, 9 emosi, entitas mention, dan hashtag dari teks.
+    Melakukan ekstraksi sentimen, 9 emosi, entitas mention, dan hashtag dari teks
+    dengan mesin evaluasi morfologi leksikon kontekstual berbobot.
     """
     if not text or not str(text).strip():
         text = ""
@@ -101,7 +153,7 @@ def analyze_text_nlp(text):
     mentions = [m.lstrip('@') for m in re.findall(r'@[A-Za-z0-9_.]+', raw_text)]
     hashtags = [h.lstrip('#') for h in re.findall(r'#[A-Za-z0-9_]+', raw_text)]
     
-    # 2. Perhitungan Skor Sentimen
+    # 2. Perhitungan Skor Sentimen berbasis Morfologi & Frasa
     pos_score = 0.0
     neg_score = 0.0
     
@@ -112,18 +164,23 @@ def analyze_text_nlp(text):
         elif i > 1 and words[i-2] in NEGATIONS:
             is_negated = True
             
-        if w in POSITIVE_TERMS:
-            val = POSITIVE_TERMS[w]
+        cands = get_morphology_candidates(w)
+        pos_matches = [POSITIVE_TERMS[c] for c in cands if c in POSITIVE_TERMS]
+        neg_matches = [NEGATIVE_TERMS[c] for c in cands if c in NEGATIVE_TERMS]
+        
+        best_pos = max(pos_matches) if pos_matches else 0.0
+        best_neg = max(neg_matches) if neg_matches else 0.0
+        
+        if best_pos > 0 and best_pos >= best_neg:
             if is_negated:
-                neg_score += val * 1.2
+                neg_score += best_pos * 1.2
             else:
-                pos_score += val
-        elif w in NEGATIVE_TERMS:
-            val = NEGATIVE_TERMS[w]
+                pos_score += best_pos
+        elif best_neg > 0:
             if is_negated:
-                pos_score += val * 0.8
+                pos_score += best_neg * 0.8
             else:
-                neg_score += val * 1.3
+                neg_score += best_neg * 1.3
 
     diff = pos_score - neg_score
     total_val = pos_score + neg_score
@@ -160,6 +217,14 @@ def analyze_text_nlp(text):
         for kw in kw_list:
             if re.search(rf'\b{re.escape(kw)}\b', clean_text):
                 emo_scores[emo] += 2.8
+                
+    # Evaluasi kecocokan morfologi emosi per kata
+    for w in words:
+        cands = get_morphology_candidates(w)
+        for emo, kw_list in EMOTION_KEYWORDS.items():
+            for kw in kw_list:
+                if kw in cands:
+                    emo_scores[emo] += 2.5
                 
     # Sinkronisasi emosi dengan polaritas sentimen
     if pred_sent == "Positif":
