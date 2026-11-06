@@ -258,7 +258,7 @@ with st.sidebar:
         [
             "Format Laporan Harian",
             "Dashboard Analisis Multi Platform",
-            "Cockpit Analisis Mendalam & Evaluasi Model"
+            "Cockpit Analisis & Evaluasi Model"
         ],
         index=0
     )
@@ -764,7 +764,7 @@ elif "Dashboard Analisis Multi Platform" in view_mode or "Katalog Analisis Multi
 
 else:
     # ---------------------------------------------------------
-    # MODE 2: COCKPIT ANALISIS MENDALAM & EVALUASI INDOBERT
+    # MODE 3: COCKPIT ANALISIS & EVALUASI MODEL
     # ---------------------------------------------------------
     tabs = st.tabs([
         "Ringkasan Eksekutif",
