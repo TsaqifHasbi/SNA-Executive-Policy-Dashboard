@@ -26,39 +26,55 @@ import streamlit.components.v1 as components_v1
 # Leksikon & Bobot Semantik Bahasa Indonesia untuk Kebijakan Publik
 # ------------------------------------------------------------------------------
 POSITIVE_TERMS = {
-    'bagus': 1.5, 'hebat': 1.8, 'mantap': 1.8, 'keren': 1.5, 'berhasil': 2.0,
-    'sukses': 2.0, 'bermanfaat': 2.2, 'membantu': 2.0, 'apresiasi': 1.8,
-    'dukung': 1.8, 'terima kasih': 1.5, 'alhamdulillah': 1.5, 'bersyukur': 1.8,
-    'berkualitas': 2.0, 'sehat': 1.8, 'nutrisi': 1.8, 'bergizi': 2.0, 'berguna': 1.8,
-    'senang': 1.5, 'bangga': 1.8, 'terjamin': 1.8, 'berkembang': 1.5, 'maju': 1.5,
-    'tumbuh': 1.5, 'harapan': 1.5, 'terbukti': 1.8, 'layak': 1.5, 'adil': 2.0,
-    'merata': 1.8, 'beres': 1.5, 'tuntas': 1.8, 'positif': 1.5, 'puas': 1.8,
-    'terobosan': 2.0, 'efisien': 1.8, 'transparan': 2.0, 'semangat': 1.5, 'berdaya': 1.8,
-    'senang': 1.5, 'gembira': 1.5, 'amanah': 2.0, 'optimal': 1.8, 'solutif': 2.0
+    'bagus': 1.8, 'hebat': 2.0, 'mantap': 2.2, 'mantul': 2.2, 'keren': 1.8, 'berhasil': 2.2,
+    'sukses': 2.2, 'bermanfaat': 2.5, 'membantu': 2.2, 'apresiasi': 2.0, 'dukung': 2.0,
+    'terima kasih': 1.8, 'alhamdulillah': 2.0, 'bersyukur': 2.0, 'berkualitas': 2.2, 'sehat': 2.0,
+    'nutrisi': 1.8, 'bergizi': 2.2, 'berguna': 2.0, 'senang': 1.8, 'bangga': 2.0, 'terjamin': 2.0,
+    'berkembang': 1.8, 'maju': 1.8, 'tumbuh': 1.8, 'harapan': 1.8, 'terbukti': 2.0, 'layak': 1.8,
+    'adil': 2.2, 'merata': 2.0, 'beres': 1.8, 'tuntas': 2.0, 'positif': 1.8, 'puas': 2.2,
+    'terobosan': 2.2, 'efisien': 2.0, 'transparan': 2.2, 'semangat': 1.8, 'berdaya': 2.0,
+    'gembira': 1.8, 'amanah': 2.5, 'optimal': 2.0, 'solutif': 2.2, 'enak': 1.8, 'lezat': 2.0,
+    'nikmat': 2.0, 'kenyang': 1.8, 'top': 2.0, 'jos': 2.0, 'joss': 2.0, 'berkah': 2.2, 'setuju': 1.8
 }
 
 NEGATIVE_TERMS = {
-    'buruk': 2.0, 'gagal': 2.2, 'rusak': 1.8, 'hancur': 2.0, 'kecewa': 2.0,
-    'rugi': 1.8, 'korupsi': 2.5, 'bancakan': 2.2, 'curang': 2.0, 'bohong': 2.0,
-    'palsu': 1.8, 'maling': 2.2, 'keracunan': 2.5, 'beracun': 2.5, 'basi': 2.2,
-    'bau': 1.8, 'jorok': 2.0, 'mual': 1.8, 'muntah': 1.8, 'parah': 2.0,
-    'krisis': 2.0, 'marah': 2.0, 'sesat': 2.0, 'bobrok': 2.2, 'bodoh': 2.0,
-    'sengsara': 2.0, 'beban': 1.8, 'masalah': 1.5, 'sunat': 2.0, 'pencitraan': 2.0,
-    'penipuan': 2.2, 'manipulasi': 2.0, 'menolak': 1.8, 'kritik': 1.2, 'dungu': 2.2,
-    'salah': 1.5, 'amburadul': 2.0, 'merusak': 2.0, 'ancaman': 2.0, 'lambat': 1.5,
-    'tidak adil': 2.2, 'tidak layak': 2.2, 'pungli': 2.2, 'mahal': 1.5, 'sulit': 1.5
+    # Umpatan & Makian Kasar (High intensity Anger/Negatif)
+    'anjing': 3.2, 'babi': 3.2, 'bangsat': 3.2, 'bajingan': 3.2, 'brengsek': 3.0,
+    'kontol': 3.5, 'memek': 3.5, 'pantek': 3.5, 'jancuk': 3.5, 'jancok': 3.5,
+    'asu': 3.2, 'kampret': 2.8, 'sialan': 2.8, 'tai': 3.0, 'taik': 3.0, 'taek': 3.0,
+    'keparat': 3.0, 'bedebah': 3.0, 'biadab': 3.0, 'laknat': 2.8, 'bangke': 2.8,
+    'sompret': 2.5, 'setan': 2.8, 'iblis': 2.8, 'dajjal': 3.0,
+    # Ejekan Intelektual & Mental
+    'tolol': 3.0, 'goblok': 3.0, 'goblog': 3.0, 'bego': 2.8, 'bloon': 2.8,
+    'dungu': 3.0, 'pekok': 2.8, 'idiot': 2.8, 'bodoh': 2.5, 'sesat': 2.5,
+    # Kritik Mutu, Keluhan, Kehancuran
+    'buruk': 2.2, 'gagal': 2.5, 'rusak': 2.2, 'hancur': 2.5, 'kecewa': 2.2,
+    'rugi': 2.0, 'parah': 2.2, 'krisis': 2.2, 'marah': 2.2, 'bobrok': 2.5,
+    'sengsara': 2.2, 'beban': 2.0, 'masalah': 1.8, 'amburadul': 2.5, 'merusak': 2.2,
+    'ancaman': 2.2, 'lambat': 1.8, 'tidak adil': 2.5, 'tidak layak': 2.5,
+    'mahal': 1.8, 'sulit': 1.8, 'sampah': 2.8, 'ampas': 2.5, 'sia-sia': 2.2,
+    'pemborosan': 2.5, 'roboh': 2.5, 'menolak': 2.0, 'kritik': 1.5,
+    # Isu Korupsi & Fraud
+    'korupsi': 3.0, 'korup': 3.0, 'bancakan': 2.8, 'curang': 2.5, 'bohong': 2.5,
+    'palsu': 2.2, 'maling': 3.0, 'rampok': 3.0, 'nilep': 2.8, 'tilep': 2.8,
+    'sunat': 2.5, 'pencitraan': 2.2, 'penipuan': 2.8, 'manipulasi': 2.5,
+    'pungli': 2.8, 'culas': 2.5, 'hoax': 2.5, 'fitnah': 2.5,
+    # Isu Higienitas & Medis (Disgust/Fear)
+    'keracunan': 3.2, 'beracun': 3.2, 'basi': 2.8, 'bau': 2.2, 'jorok': 2.5,
+    'mual': 2.2, 'muntah': 2.5, 'busuk': 2.8, 'najis': 2.8, 'menjijikkan': 2.8,
+    'mati': 2.8, 'sakit': 2.0
 }
 
 EMOTION_KEYWORDS = {
-    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi'],
-    'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan'],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'maling', 'korupsi', 'bancakan', 'kebangetan', 'bodoh', 'brengsek', 'dungu'],
-    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu'],
-    'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'krisis', 'resiko', 'risiko'],
-    'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'terpuruk', 'terbengkalai'],
-    'Surprise': ['kaget', 'terkejut', 'heran', 'ternyata', 'waduh', 'astaga', 'syok', 'luar biasa', 'tak disangka', 'wow'],
-    'Neutral': ['jadwal', 'informasi', 'laporan', 'program', 'anggaran', 'presiden', 'menteri', 'resmi', 'data', 'berita', 'sosialisasi']
+    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis'],
+    'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu'],
+    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina'],
+    'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram'],
+    'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'terpuruk', 'terbengkalai', 'miris', 'pilu'],
+    'Surprise': ['kaget', 'terkejut', 'heran', 'ternyata', 'waduh', 'astaga', 'syok', 'luar biasa', 'tak disangka', 'wow', 'anjir', 'gila'],
+    'Neutral': ['siaran pers', 'pengumuman resmi', 'tata tertib', 'berita acara', 'statistik resmi', 'siaran berita']
 }
 
 NEGATIONS = {'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', 'tdk', 'kurang'}
@@ -138,16 +154,16 @@ def analyze_text_nlp(text):
     emo_scores = {k: 0.1 for k in EMOTION_KEYWORDS.keys()}
     for emo, kw_list in EMOTION_KEYWORDS.items():
         for kw in kw_list:
-            if kw in clean_text:
-                emo_scores[emo] += 2.0
+            if re.search(rf'\b{re.escape(kw)}\b', clean_text):
+                emo_scores[emo] += 2.8
                 
     # Sinkronisasi emosi dengan polaritas sentimen
     if pred_sent == "Positif":
-        emo_scores['Trust'] += pos_score * 0.6
-        emo_scores['Joy'] += pos_score * 0.5
+        emo_scores['Joy'] += pos_score * 0.8
+        emo_scores['Trust'] += pos_score * 0.7
         emo_scores['Anticipation'] += pos_score * 0.4
     elif pred_sent == "Negatif":
-        emo_scores['Anger'] += neg_score * 0.6
+        emo_scores['Anger'] += neg_score * 0.8
         emo_scores['Disgust'] += neg_score * 0.5
         emo_scores['Fear'] += neg_score * 0.4
         emo_scores['Sadness'] += neg_score * 0.4
