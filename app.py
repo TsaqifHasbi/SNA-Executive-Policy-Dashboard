@@ -453,7 +453,7 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
         with c_top2:
             view_all_mh = st.toggle("Mode Baca Beruntun", value=False, help="Menampilkan seluruh slide dalam bab terpilih secara berurutan ke bawah")
 
-        c_chap, c_slide, c_nav = st.columns([1.5, 2.3, 1.2], vertical_alignment="bottom")
+        c_chap, c_slide, c_nav = st.columns([1.5, 2.2, 1.3], vertical_alignment="bottom")
         with c_chap:
             selected_mh_chap = st.selectbox(
                 "Pilih Bab / Bagian:",
@@ -465,39 +465,61 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
         mh_pages = MH_CHAPTERS[selected_mh_chap]
         mh_page_names = list(mh_pages.keys())
 
-        # Pelacakan indeks slide aktif via session state
-        if 'mh_slide_idx' not in st.session_state:
-            st.session_state.mh_slide_idx = 0
-        if st.session_state.get('mh_prev_chap') != selected_mh_chap:
-            st.session_state.mh_slide_idx = 0
-            st.session_state.mh_prev_chap = selected_mh_chap
+        # Sinkronisasi state slide per bab
+        slide_widget_key = f"mh_slide_select_{selected_mh_chap}"
+        if slide_widget_key not in st.session_state or st.session_state[slide_widget_key] not in mh_page_names:
+            st.session_state[slide_widget_key] = mh_page_names[0]
 
-        st.session_state.mh_slide_idx = max(0, min(st.session_state.mh_slide_idx, len(mh_page_names) - 1))
+        def _on_prev_mh(key, names):
+            cur = st.session_state.get(key, names[0])
+            idx = names.index(cur) if cur in names else 0
+            if idx > 0:
+                st.session_state[key] = names[idx - 1]
+
+        def _on_next_mh(key, names):
+            cur = st.session_state.get(key, names[0])
+            idx = names.index(cur) if cur in names else 0
+            if idx < len(names) - 1:
+                st.session_state[key] = names[idx + 1]
+
+        cur_slide = st.session_state[slide_widget_key]
+        cur_idx = mh_page_names.index(cur_slide) if cur_slide in mh_page_names else 0
 
         if not view_all_mh:
             with c_slide:
                 selected_mh_slide = st.selectbox(
-                    "Pilih Slide:",
+                    f"Pilih Slide ({cur_idx + 1}/{len(mh_page_names)}):",
                     mh_page_names,
-                    index=st.session_state.mh_slide_idx,
-                    key=f"mh_slide_select_{selected_mh_chap}"
+                    key=slide_widget_key
                 )
-                curr_idx = mh_page_names.index(selected_mh_slide)
-                if curr_idx != st.session_state.mh_slide_idx:
-                    st.session_state.mh_slide_idx = curr_idx
+                cur_idx = mh_page_names.index(selected_mh_slide)
 
             with c_nav:
                 col_b1, col_b2 = st.columns(2)
                 with col_b1:
-                    prev_disabled = (st.session_state.mh_slide_idx == 0)
-                    if st.button("◀", disabled=prev_disabled, use_container_width=True, help="Slide Sebelumnya", key="btn_prev_mh"):
-                        st.session_state.mh_slide_idx = max(0, st.session_state.mh_slide_idx - 1)
-                        st.rerun()
+                    prev_disabled = (cur_idx == 0)
+                    st.button(
+                        "Prev",
+                        icon=":material/arrow_back:",
+                        disabled=prev_disabled,
+                        use_container_width=True,
+                        help="Slide Sebelumnya",
+                        key=f"btn_prev_{selected_mh_chap}",
+                        on_click=_on_prev_mh,
+                        args=(slide_widget_key, mh_page_names)
+                    )
                 with col_b2:
-                    next_disabled = (st.session_state.mh_slide_idx >= len(mh_page_names) - 1)
-                    if st.button("▶", disabled=next_disabled, use_container_width=True, help="Slide Berikutnya", key="btn_next_mh"):
-                        st.session_state.mh_slide_idx = min(len(mh_page_names) - 1, st.session_state.mh_slide_idx + 1)
-                        st.rerun()
+                    next_disabled = (cur_idx >= len(mh_page_names) - 1)
+                    st.button(
+                        "Next",
+                        icon=":material/arrow_forward:",
+                        disabled=next_disabled,
+                        use_container_width=True,
+                        help="Slide Berikutnya",
+                        key=f"btn_next_{selected_mh_chap}",
+                        on_click=_on_next_mh,
+                        args=(slide_widget_key, mh_page_names)
+                    )
         else:
             with c_slide:
                 st.info(f"Menampilkan seluruh {len(mh_page_names)} slide dalam bab ini secara berurutan.")
