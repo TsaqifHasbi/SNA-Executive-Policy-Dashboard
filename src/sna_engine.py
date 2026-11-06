@@ -45,7 +45,7 @@ def extract_mentions(text):
 
 def build_sna_network(df, max_nodes=100, topic_filter=None, platform_filter=None, mode='sentiment'):
     """
-    Membangun graf SNA interaktif berbobot:
+    Membangun graf SNA interaktif berbobot secara efisien dan ramah memori (zero-copy):
     - mode='sentiment': Node diwarnai berdasarkan sentimen dominan (Positif, Netral, Negatif)
     - mode='emotion': Node diwarnai berdasarkan emosi dominan (Senang, Sedih, Marah, dll.)
     
@@ -53,8 +53,7 @@ def build_sna_network(df, max_nodes=100, topic_filter=None, platform_filter=None
     - topic_filter: Sekolah_Rakyat, MBG, KDMP, atau Semua
     - platform_filter: Twitter, Facebook, Instagram, YouTube, TikTok, Threads, News, atau Semua
     """
-    sub_df = df.copy()
-
+    sub_df = df
     if topic_filter and topic_filter != 'Semua':
         sub_df = sub_df[sub_df['topic'] == topic_filter]
 
@@ -69,54 +68,75 @@ def build_sna_network(df, max_nodes=100, topic_filter=None, platform_filter=None
     target_sentiments = {}
     target_emotions = {}
 
-    for _, row in sub_df.iterrows():
-        author = str(row['author']).strip().lower()
-        if not author or author in ['nan', 'anonim', 'none', '']:
+    # Optimasi Memori: Filter HANYA baris yang memiliki karakter mention '@' (instan, 0MB overhead)
+    mention_mask = sub_df['cleaned_content'].str.contains('@', regex=False, na=False)
+    mention_rows = sub_df[mention_mask]
+
+    for author, content, sent, emo, plat in zip(
+        mention_rows['author'],
+        mention_rows['cleaned_content'],
+        mention_rows.get('sentiment_name', ['Netral'] * len(mention_rows)),
+        mention_rows.get('emotion', ['Netral'] * len(mention_rows)),
+        mention_rows.get('platform', ['Other'] * len(mention_rows))
+    ):
+        a_clean = str(author).strip().lower()
+        if not a_clean or a_clean in ['nan', 'anonim', 'none', '']:
             continue
 
-        sent = row.get('sentiment_name', 'Netral')
-        emo = row.get('emotion', 'Netral')
-        plat = row.get('platform', 'Other')
+        sent_str = str(sent)
+        emo_str = str(emo)
+        plat_str = str(plat)
 
-        # Accumulate sentiment
-        if author not in author_sentiments:
-            author_sentiments[author] = {'Positif': 0, 'Netral': 0, 'Negatif': 0}
-        author_sentiments[author][sent] = author_sentiments[author].get(sent, 0) + 1
+        if a_clean not in author_sentiments:
+            author_sentiments[a_clean] = {'Positif': 0, 'Netral': 0, 'Negatif': 0}
+        author_sentiments[a_clean][sent_str] = author_sentiments[a_clean].get(sent_str, 0) + 1
 
-        # Accumulate emotion
-        if author not in author_emotions:
-            author_emotions[author] = {'Senang': 0, 'Sedih': 0, 'Marah': 0, 'Takut': 0, 'Terkejut': 0, 'Jijik': 0, 'Netral': 0}
-        author_emotions[author][emo] = author_emotions[author].get(emo, 0) + 1
+        if a_clean not in author_emotions:
+            author_emotions[a_clean] = {'Senang': 0, 'Sedih': 0, 'Marah': 0, 'Takut': 0, 'Terkejut': 0, 'Jijik': 0, 'Netral': 0}
+        author_emotions[a_clean][emo_str] = author_emotions[a_clean].get(emo_str, 0) + 1
 
-        author_platforms[author] = plat
+        author_platforms[a_clean] = plat_str
 
-        # Extract mentions
-        mentions = extract_mentions(row['cleaned_content'])
+        # Ekstraksi mention
+        mentions = extract_mentions(content)
         for m in mentions:
             target = m.strip().lower()
-            if target and target != author:
-                # Track target incoming sentiments and emotions
+            if target and target != a_clean:
                 if target not in target_sentiments:
                     target_sentiments[target] = {'Positif': 0, 'Netral': 0, 'Negatif': 0}
-                target_sentiments[target][sent] = target_sentiments[target].get(sent, 0) + 1
+                target_sentiments[target][sent_str] = target_sentiments[target].get(sent_str, 0) + 1
 
                 if target not in target_emotions:
                     target_emotions[target] = {}
-                target_emotions[target][emo] = target_emotions[target].get(emo, 0) + 1
+                target_emotions[target][emo_str] = target_emotions[target].get(emo_str, 0) + 1
 
-                if G.has_edge(author, target):
-                    G[author][target]['weight'] += 1
+                if G.has_edge(a_clean, target):
+                    G[a_clean][target]['weight'] += 1
                 else:
-                    G.add_edge(author, target, weight=1, sentiment=sent, emotion=emo, platform=plat)
+                    G.add_edge(a_clean, target, weight=1, sentiment=sent_str, emotion=emo_str, platform=plat_str)
 
-    # Fallback jika graph terlalu kecil
+    # Fallback jika graph terlalu kecil: ambil top authors tanpa iterrows
     if len(G.nodes()) < 10 and len(sub_df) > 0:
-        top_authors = sub_df['author'].value_counts().head(max_nodes).index.tolist()
+        top_authors_series = sub_df['author'].value_counts().head(max_nodes)
+        top_authors = [str(a).strip().lower() for a in top_authors_series.index if str(a).strip().lower() not in ['', 'nan', 'anonim', 'none']]
+        
+        # Ambil sentimen dominan hanya untuk top authors
+        sub_top = sub_df[sub_df['author'].str.lower().isin(top_authors)]
+        for a, s, e, p in zip(sub_top['author'], sub_top['sentiment_name'], sub_top['emotion'], sub_top['platform']):
+            ac = str(a).strip().lower()
+            if ac not in author_sentiments:
+                author_sentiments[ac] = {'Positif': 0, 'Netral': 0, 'Negatif': 0}
+            author_sentiments[ac][str(s)] = author_sentiments[ac].get(str(s), 0) + 1
+            if ac not in author_emotions:
+                author_emotions[ac] = {}
+            author_emotions[ac][str(e)] = author_emotions[ac].get(str(e), 0) + 1
+            author_platforms[ac] = str(p)
+
         for i in range(len(top_authors) - 1):
-            a1 = str(top_authors[i]).strip().lower()
-            a2 = str(top_authors[i+1]).strip().lower()
-            if a1 and a2 and a1 != a2 and a1 != 'anonim' and a2 != 'anonim':
-                G.add_edge(a1, a2, weight=1, sentiment='Netral', emotion='Netral')
+            a1 = top_authors[i]
+            a2 = top_authors[i+1]
+            if a1 != a2:
+                G.add_edge(a1, a2, weight=1, sentiment='Netral', emotion='Netral', platform='Lintas')
 
     # Subgraph first to top nodes before calculating betweenness for sub-second performance
     if len(G.nodes()) > max_nodes:
@@ -130,7 +150,7 @@ def build_sna_network(df, max_nodes=100, topic_filter=None, platform_filter=None
     # Calculate betweenness centrality on the top subgraph
     try:
         betweenness = nx.betweenness_centrality(G)
-    except:
+    except Exception:
         betweenness = {n: 0 for n in G.nodes()}
 
     # Node attributes

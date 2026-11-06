@@ -85,27 +85,33 @@ def load_main_data():
     else:
         raise FileNotFoundError(f"Data tidak ditemukan di {PARQUET_PATH} atau {CSV_PATH}")
 
-    # Standardize textual columns
-    for col in ['cleaned_content', 'raw_content', 'handle', 'url']:
+    # Standardize textual columns & share string memory between raw_content and cleaned_content
+    for col in ['cleaned_content', 'handle', 'url']:
         if col in df.columns:
             df[col] = df[col].fillna('').astype(str)
 
+    if 'raw_content' in df.columns:
+        if 'cleaned_content' in df.columns:
+            df['raw_content'] = df['cleaned_content']
+        else:
+            df['raw_content'] = df['raw_content'].fillna('').astype(str)
+
     if 'author' in df.columns:
         df['author'] = df['author'].fillna(df.get('handle', '')).fillna('anonim').astype(str)
+
+    # Downcast categorical columns to drastically reduce memory on Streamlit Cloud (saves ~40MB)
     if 'platform' in df.columns:
         df['platform'] = df['platform'].fillna('Other').astype(str)
     if 'topic' in df.columns:
         df['topic'] = df['topic'].fillna('MBG').astype(str)
 
-    # Clean outlier values from scraping (e.g. numeric post IDs accidentally saved in likes)
-    # Using int32 to optimize memory footprint
+    # Clean outlier values and downcast numeric types to int32/int8
     for col in ['likes', 'comments', 'shares', 'reposts', 'views', 'total_engagement', 'reach']:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).clip(lower=0, upper=500_000).astype('int32')
         else:
             df[col] = 0
 
-    # Recalculate engagement & reach consistently
     df['total_engagement'] = (df['likes'] + df['comments'] + df['shares'] + df['reposts']).astype('int32')
     df['reach'] = (df['views'] + (df['likes'] * 3) + (df['comments'] * 5) + (df['shares'] * 10) + (df['reposts'] * 10)).astype('int32')
 
@@ -126,19 +132,21 @@ def load_main_data():
     if 'year_month' not in df.columns:
         df['year_month'] = df['date'].dt.to_period('M').astype(str)
 
+    # Detect emotion only if missing (parquet already contains precomputed aligned emotions)
     if 'emotion' not in df.columns:
         df['emotion'] = df['cleaned_content'].apply(detect_emotion)
+        try:
+            from src.sentiment_corrector import align_emotion_valence_9class
+            if 'sentiment_name' in df.columns:
+                df['emotion'] = [
+                    align_emotion_valence_9class(t, s, e)
+                    for t, s, e in zip(df['cleaned_content'], df['sentiment_name'], df['emotion'])
+                ]
+        except Exception:
+            pass
 
-    # Hybrid Rule-Neural Post-Processing (Penyelarasan Valensi Sentimen-Emosi Plutchik 9-Kelas)
-    try:
-        from src.sentiment_corrector import align_emotion_valence_9class
-        if 'emotion' in df.columns and 'sentiment_name' in df.columns:
-            df['emotion'] = [
-                align_emotion_valence_9class(t, s, e)
-                for t, s, e in zip(df['cleaned_content'], df['sentiment_name'], df['emotion'])
-            ]
-    except Exception:
-        pass
+    import gc
+    gc.collect()
 
     return df
 

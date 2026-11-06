@@ -63,12 +63,9 @@ from src.executive_slides import (
     render_slide_wordcloud_hashtags
 )
 
-# Weekly Executive Monitoring Report (21 Slide MH Deck)
-import importlib
+# Weekly Executive Monitoring Report (21 Slide Deck)
 import src.mh_style
 import src.mh_weekly_report
-importlib.reload(src.mh_style)
-importlib.reload(src.mh_weekly_report)
 from src.test_sentiment_page import render_test_sentiment_page
 from src.mh_weekly_report import (
     render_slide_1_cover,
@@ -230,12 +227,10 @@ st.markdown("""
 # -------------------------------------------------------------
 # DATA ENGINE INITIALIZATION
 # -------------------------------------------------------------
-@st.cache_resource(show_spinner=False)
-def get_clean_dataset_v2():
-    return load_main_data()
+import gc
 
-with st.spinner("Memuat korpus data 197.951 rekaman..."):
-    df_raw = get_clean_dataset_v2()
+with st.spinner("Memuat korpus data kebijakan publik..."):
+    df_raw = load_main_data()
 
 # -------------------------------------------------------------
 # SIDEBAR CONTROLS & STRATEGIC FILTERS
