@@ -11,5 +11,6 @@ showSidebarNavigation = false
 
 [server]
 headless = true
+runOnSave = true
 enableCORS = false
 enableXsrfProtection = false

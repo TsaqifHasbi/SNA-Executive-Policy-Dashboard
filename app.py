@@ -442,10 +442,10 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
     
     # Toolbar Navigasi Slide Eksekutif yang Rapi & Presisi
     with st.container(border=True):
-        c_top1, c_top2 = st.columns([3.0, 2.0], vertical_alignment="center")
+        c_top1, c_top2 = st.columns([3.6, 1.4], vertical_alignment="center")
         with c_top1:
             render_html("""
-            <div style="display:flex; align-items:center; gap:8px;">
+            <div id="mh-deck-header" style="display:flex; align-items:center; gap:8px;">
                 <span style="background:#0F2942; color:#FFFFFF; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; letter-spacing:0.5px;">DECK EKSEKUTIF</span>
                 <span style="font-size:13px; font-weight:700; color:#0F2942;">Format Laporan Harian (Slide Deck MH)</span>
             </div>
@@ -453,20 +453,23 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
         with c_top2:
             st.markdown(
                 """
-                <div id="mh-toggle-marker" style="display:none;"></div>
                 <style>
-                div[data-testid="stColumn"]:has(#mh-toggle-marker) {
+                div[data-testid="stHorizontalBlock"]:has(#mh-deck-header) > div[data-testid="stColumn"]:last-child {
                     display: flex !important;
                     justify-content: flex-end !important;
                     align-items: center !important;
                 }
-                div[data-testid="stColumn"]:has(#mh-toggle-marker) div[data-testid="stCheckbox"] {
+                div[data-testid="stHorizontalBlock"]:has(#mh-deck-header) > div[data-testid="stColumn"]:last-child div[data-testid="stElementContainer"] {
                     display: flex !important;
                     justify-content: flex-end !important;
+                    width: 100% !important;
+                }
+                div[data-testid="stHorizontalBlock"]:has(#mh-deck-header) > div[data-testid="stColumn"]:last-child div[data-testid="stCheckbox"] {
                     margin-left: auto !important;
+                    justify-content: flex-end !important;
                     width: fit-content !important;
                 }
-                div[data-testid="stColumn"]:has(#mh-toggle-marker) div[data-testid="stCheckbox"] label {
+                div[data-testid="stHorizontalBlock"]:has(#mh-deck-header) > div[data-testid="stColumn"]:last-child div[data-testid="stCheckbox"] label {
                     margin-left: auto !important;
                 }
                 </style>
