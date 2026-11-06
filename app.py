@@ -69,6 +69,7 @@ import src.mh_style
 import src.mh_weekly_report
 importlib.reload(src.mh_style)
 importlib.reload(src.mh_weekly_report)
+from src.test_sentiment_page import render_test_sentiment_page
 from src.mh_weekly_report import (
     render_slide_1_cover,
     render_slide_2_executive_summary,
@@ -435,6 +436,9 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
             "Slide 18: Daftar Pantau Isu Strategis Sepekan": render_slide_19_watch_list,
             "Slide 19: Matriks Prioritas Tindakan & Metodologi": render_slide_20_priorities_methodology,
             "Slide 20: Penutup & Pesan Kunci Eksekutif": render_slide_21_closing_summary,
+        },
+        "Test Sentimen": {
+            "Uji Interaktif: Deteksi Sentimen, Emosi & SNA": render_test_sentiment_page,
         }
     }
     
