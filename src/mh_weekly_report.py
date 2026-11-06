@@ -343,10 +343,9 @@ def render_slide_3_chapter_1(df, selected_topic='Semua', topic_label=None, **kwa
         f"Volume dan dinamika persepsi warganet pada {m['topic_title']} di 7 saluran komunikasi digital, awan kata, serta komparasi isu positif-negatif.",
         1,
         [
-            (4, f"Overview Percakapan ({m['vol']:,} data)"),
-            (5, "Platform Review - Tujuh Saluran"),
-            (6, "Suara Teratas & Dua Awan Kata"),
-            (7, "Isu Positif dan Negatif - Analisis Mendalam")
+            (4, "Platform Review - Tujuh Saluran"),
+            (5, "Suara Teratas & Dua Awan Kata"),
+            (6, "Isu Positif dan Negatif - Analisis Mendalam")
         ]
     )
     render_mh_footer("Bab Pembuka Tinjauan Komprehensif")
@@ -357,7 +356,7 @@ def render_slide_3_chapter_1(df, selected_topic='Semua', topic_label=None, **kwa
 # ==============================================================================
 def render_slide_5_platform_review(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=5)
+    render_mh_top_bar(slide_num=4)
     render_mh_title(
         "Platform Review",
         f"Tinjauan 7 Saluran & Dinamika Emosi: {m['topic_title']}",
@@ -471,7 +470,7 @@ Suasana 9 Emosi Publik (%)
 # ==============================================================================
 def render_slide_6_two_wordclouds(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=6)
+    render_mh_top_bar(slide_num=5)
     render_mh_title(
         "Suara Teratas & Dua Awan Kata",
         f"Peta Kosakata Umum vs Muatan Isu Kritis: {m['topic_title']}",
@@ -547,7 +546,7 @@ Peta Muatan Negatif (Isu Resistensi & Keluhan)
 # ==============================================================================
 def render_slide_7_issues_minister(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=7)
+    render_mh_top_bar(slide_num=6)
     render_mh_title(
         "Isu Positif dan Negatif Terbesar",
         f"Pemetaan Konten Viral & Sentimen: {m['topic_title']}",
@@ -646,13 +645,13 @@ def render_slide_8_chapter_2(df, selected_topic='Semua', topic_label=None, **kwa
         f"Analisis komprehensif struktur framing, aktor pemangku kepentingan, uji organik bot, dan rekomendasi intelijen untuk {m['topic_title']}.",
         2,
         [
-            (9, "Analisis Topik Utama & Kata Kunci"),
-            (10, "Peta Pemangku Kepentingan (KOLs)"),
-            (11, "Kronologi & Lapis Narasi Lintas Waktu"),
-            (12, "Analisis Framing Entman & Edelman"),
-            (13, "Pemetaan Respons Layanan Publik"),
-            (14, "Keserempakan & Uji Organik (Bot / Buzzer)"),
-            (15, "Rekomendasi Intelijen - Proyeksi 7 Hari")
+            (8, "Analisis Topik Utama & Kata Kunci"),
+            (9, "Peta Pemangku Kepentingan (KOLs)"),
+            (10, "Kronologi & Lapis Narasi Lintas Waktu"),
+            (11, "Analisis Framing Entman & Edelman"),
+            (12, "Pemetaan Respons Layanan Publik"),
+            (13, "Keserempakan & Uji Organik (Bot / Buzzer)"),
+            (14, "Rekomendasi Intelijen - Proyeksi 7 Hari")
         ]
     )
     render_mh_footer("Bab Pendalaman Isu Strategis")
@@ -663,7 +662,7 @@ def render_slide_8_chapter_2(df, selected_topic='Semua', topic_label=None, **kwa
 # ==============================================================================
 def render_slide_9_main_topics(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=9)
+    render_mh_top_bar(slide_num=8)
     render_mh_title(
         "Analisis Topik Utama",
         f"Klaster Pembicaraan & Kata Kunci Kunci: {m['topic_title']}",
@@ -742,7 +741,7 @@ Catatan Analisis Klaster Isu
 # ==============================================================================
 def render_slide_10_stakeholder_mapping(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=10)
+    render_mh_top_bar(slide_num=9)
     render_mh_title(
         "Peta Pemangku Kepentingan & Influencer",
         f"Aktor Paling Berpengaruh dalam Narasi {m['topic_title']}",
@@ -831,7 +830,7 @@ Analisis Risiko & Manajemen Hubungan
 # ==============================================================================
 def render_slide_11_water_focus_timeline(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=11)
+    render_mh_top_bar(slide_num=10)
     render_mh_title(
         "Kronologi & Dinamika Lintas Waktu",
         f"Alur Peristiwa & Eskalasi Pembicaraan: {m['topic_title']}",
@@ -901,7 +900,7 @@ Kronologi Harian & Status Eskalasi Opini Publik
 # ==============================================================================
 def render_slide_12_framing_analysis(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=12)
+    render_mh_top_bar(slide_num=11)
     render_mh_title(
         "Analisis Framing Media (Entman)",
         f"Konstruksi Narasi & Pembingkaian Isu: {m['topic_title']}",
@@ -980,7 +979,7 @@ Bingkai Lawan vs Narasi Tandingan
 # ==============================================================================
 def render_slide_13_disaster_response(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=13)
+    render_mh_top_bar(slide_num=12)
     render_mh_title(
         "Pemetaan Respons & Layanan Publik",
         f"Kesiapsiagaan & Evaluasi Pelaksanaan: {m['topic_title']}",
@@ -1035,7 +1034,7 @@ Insight Koordinasi Lintas Pihak
 # ==============================================================================
 def render_slide_14_bot_organic_audit(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=14)
+    render_mh_top_bar(slide_num=13)
     render_mh_title(
         "Keserempakan & Uji Organik Percakapan",
         f"Audit Bot, Pendengung (Buzzer) & Keaslian Diskusi: {m['topic_title']}",
@@ -1092,7 +1091,7 @@ Hasil Audit Pola Percakapan Warganet
 # ==============================================================================
 def render_slide_15_intelligence_projections(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=15)
+    render_mh_top_bar(slide_num=14)
     render_mh_title(
         "Rekomendasi Intelijen - Proyeksi 7 Hari",
         f"Skenario Perkembangan & Peringatan Dini: {m['topic_title']}",
@@ -1170,11 +1169,11 @@ def render_slide_16_chapter_3(df, selected_topic='Semua', topic_label=None, **kw
         f"Langkah tindak lanjut operasional, daftar pantau prioritas, dan metodologi riset untuk {m['topic_title']}.",
         3,
         [
-            (17, "Laporan Pemantauan Harian (Sesi 1)"),
-            (18, "Laporan Pemantauan Harian (Sesi 2)"),
-            (19, "Daftar Pantau Prioritas Pimpinan"),
-            (20, "Prioritas Tindakan & Metodologi Model"),
-            (21, "Penutup & Pesan Kunci Pimpinan")
+            (16, "Laporan Pemantauan Harian (Sesi 1)"),
+            (17, "Laporan Pemantauan Harian (Sesi 2)"),
+            (18, "Daftar Pantau Prioritas Pimpinan"),
+            (19, "Prioritas Tindakan & Metodologi Model"),
+            (20, "Penutup & Pesan Kunci Pimpinan")
         ]
     )
     render_mh_footer("Bab Implementasi & Rencana Aksi")
@@ -1185,7 +1184,7 @@ def render_slide_16_chapter_3(df, selected_topic='Semua', topic_label=None, **kw
 # ==============================================================================
 def render_slide_17_daily_nov1(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=17)
+    render_mh_top_bar(slide_num=16)
     render_mh_title(
         "Laporan Pemantauan Harian - Sesi A",
         f"Rekapitulasi Temuan Harian Terkini: {m['topic_title']}",
@@ -1252,7 +1251,7 @@ Pelajaran Lapangan Penting
 # ==============================================================================
 def render_slide_18_daily_nov2(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=18)
+    render_mh_top_bar(slide_num=17)
     render_mh_title(
         "Laporan Pemantauan Harian - Sesi B",
         f"Agenda Penguatan & Tindak Lanjut: {m['topic_title']}",
@@ -1319,7 +1318,7 @@ Fokus Pengawasan Prioritas
 # ==============================================================================
 def render_slide_19_watch_list(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=19)
+    render_mh_top_bar(slide_num=18)
     render_mh_title(
         "Daftar Pantau Prioritas Pimpinan",
         f"Matriks Butir Pantau Strategis: {m['topic_title']}",
@@ -1369,7 +1368,7 @@ Butir Pantau Prioritas Pimpinan
 # ==============================================================================
 def render_slide_20_priorities_methodology(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
-    render_mh_top_bar(slide_num=20)
+    render_mh_top_bar(slide_num=19)
     render_mh_title(
         "Prioritas Tindakan & Metodologi",
         f"Langkah Taktis Pimpinan & Transparansi Model: {m['topic_title']}",
