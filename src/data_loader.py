@@ -99,6 +99,14 @@ def load_main_data():
     if 'author' in df.columns:
         df['author'] = df['author'].fillna(df.get('handle', '')).fillna('anonim').astype(str)
 
+    # Deduplicate normalized URLs (e.g. TikTok /photo/ vs /video/ redirects)
+    if 'url' in df.columns:
+        norm_url = df['url'].str.replace('/photo/', '/video/', regex=False)
+        valid_url = norm_url.str.len() > 10
+        dup_mask = valid_url & norm_url.duplicated(keep='first')
+        if dup_mask.any():
+            df = df[~dup_mask].copy()
+
     # Downcast categorical columns to drastically reduce memory on Streamlit Cloud (saves ~40MB)
     if 'platform' in df.columns:
         df['platform'] = df['platform'].fillna('Other').astype(str)

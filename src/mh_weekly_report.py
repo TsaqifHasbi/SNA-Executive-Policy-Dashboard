@@ -797,9 +797,39 @@ def render_slide_7_issues_minister(df, selected_topic='Semua', topic_label=None,
     
     col_pos, col_neg = st.columns(2, gap="medium")
     
-    # Extract real top positive & negative posts
-    top_pos_df = df[df['sentiment_name'] == 'Positif'].nlargest(7, 'total_engagement') if m['vol'] > 0 else pd.DataFrame()
-    top_neg_df = df[df['sentiment_name'] == 'Negatif'].nlargest(7, 'total_engagement') if m['vol'] > 0 else pd.DataFrame()
+    # Extract real top positive & negative posts with smart deduplication
+    def _get_top_unique_posts(sub_df, n=7):
+        if len(sub_df) == 0:
+            return pd.DataFrame()
+        sorted_sub = sub_df.sort_values('total_engagement', ascending=False)
+        seen_urls = set()
+        seen_auth_eng = set()
+        chosen_indices = []
+        for idx, row in sorted_sub.iterrows():
+            url = str(row.get('url', '')).strip().replace('/photo/', '/video/')
+            auth = str(row.get('author', '')).strip().lower()
+            eng = int(row.get('total_engagement', 0))
+            plat = str(row.get('platform', ''))
+            
+            # Skip if exact same post URL already chosen
+            if len(url) > 10 and url in seen_urls:
+                continue
+            # Skip if exact same author + engagement on same platform
+            if auth and eng > 0 and (plat, auth, eng) in seen_auth_eng:
+                continue
+                
+            if len(url) > 10:
+                seen_urls.add(url)
+            if auth and eng > 0:
+                seen_auth_eng.add((plat, auth, eng))
+                
+            chosen_indices.append(idx)
+            if len(chosen_indices) >= n:
+                break
+        return sorted_sub.loc[chosen_indices]
+
+    top_pos_df = _get_top_unique_posts(df[df['sentiment_name'] == 'Positif'], n=7) if m['vol'] > 0 else pd.DataFrame()
+    top_neg_df = _get_top_unique_posts(df[df['sentiment_name'] == 'Negatif'], n=7) if m['vol'] > 0 else pd.DataFrame()
 
     with col_pos:
         pos_rows = []
