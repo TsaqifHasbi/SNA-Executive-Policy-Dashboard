@@ -634,40 +634,127 @@ elif "Dashboard Analisis Multi Platform" in view_mode or "Katalog Analisis Multi
     cat_names = list(CATEGORIES.keys())
     
     with st.container(border=True):
-        render_html("""<div style="font-size:12.5px; font-weight:700; color:#475569; margin-bottom:5px;">
-Kategori Laporan Analisis:
-</div>""")
-        c_nav1, c_nav2 = st.columns([1.65, 1.35], vertical_alignment="center")
-        with c_nav1:
-            selected_cat = st.selectbox(
-                "Kategori Laporan Analisis:",
-                cat_names,
-                index=0,
-                label_visibility="collapsed",
-                help="Pilih klaster analisis tematik yang saling terhubung"
+        c_top1, c_top2 = st.columns([3.6, 1.4], vertical_alignment="center")
+        with c_top1:
+            render_html("""
+            <div id="mp-deck-header" style="display:flex; align-items:center; gap:8px;">
+                <span style="background:#0F2942; color:#FFFFFF; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; letter-spacing:0.5px;">KATALOG MULTIPLATFORM</span>
+                <span style="font-size:13px; font-weight:700; color:#0F2942;">Dashboard Analisis Multi Platform</span>
+            </div>
+            """)
+        with c_top2:
+            st.markdown(
+                """
+                <style>
+                div[data-testid="stHorizontalBlock"]:has(#mp-deck-header) > div[data-testid="stColumn"]:last-child {
+                    display: flex !important;
+                    justify-content: flex-end !important;
+                    align-items: center !important;
+                }
+                div[data-testid="stHorizontalBlock"]:has(#mp-deck-header) > div[data-testid="stColumn"]:last-child div[data-testid="stElementContainer"] {
+                    display: flex !important;
+                    justify-content: flex-end !important;
+                    width: 100% !important;
+                }
+                div[data-testid="stHorizontalBlock"]:has(#mp-deck-header) > div[data-testid="stColumn"]:last-child div[data-testid="stCheckbox"] {
+                    margin-left: auto !important;
+                    justify-content: flex-end !important;
+                    width: fit-content !important;
+                }
+                div[data-testid="stHorizontalBlock"]:has(#mp-deck-header) > div[data-testid="stColumn"]:last-child div[data-testid="stCheckbox"] label {
+                    margin-left: auto !important;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
             )
-        with c_nav2:
-            view_all_in_cat = st.checkbox(
-                "Tampilkan Seluruh Visualisasi dalam Kategori Ini Sekaligus",
+            view_all_mp = st.toggle(
+                "Mode Baca Beruntun",
                 value=False,
-                help="Centang untuk melihat seluruh halaman visualisasi dalam klaster ini secara berurutan dalam satu layar"
+                help="Menampilkan seluruh visualisasi dalam kategori terpilih secara berurutan ke bawah",
+                key="mp_view_all_toggle"
             )
-            
-        pages_in_cat = CATEGORIES[selected_cat]
-        page_names = list(pages_in_cat.keys())
-        
-        if not view_all_in_cat:
-            st.markdown("<div style='margin: 10px 0 6px 0; border-top: 1px dashed #E2E8F0;'></div>", unsafe_allow_html=True)
-            # Sub-page navigation bar
-            selected_page = st.radio(
-                f"Pilih Halaman Visualisasi ({selected_cat}):",
-                page_names,
-                index=0,
-                horizontal=True
-            )
-        
+
+        if not view_all_mp:
+            c_cat, c_page, c_nav = st.columns([1.5, 2.2, 1.3], vertical_alignment="bottom")
+            with c_cat:
+                selected_cat = st.selectbox(
+                    "Pilih Kategori Analisis:",
+                    cat_names,
+                    index=0,
+                    key="mp_active_category"
+                )
+
+            pages_in_cat = CATEGORIES[selected_cat]
+            page_names = list(pages_in_cat.keys())
+
+            # Sinkronisasi state halaman per kategori
+            page_widget_key = f"mp_page_select_{selected_cat}"
+            if page_widget_key not in st.session_state or st.session_state[page_widget_key] not in page_names:
+                st.session_state[page_widget_key] = page_names[0]
+
+            def _on_prev_mp(key, names):
+                cur = st.session_state.get(key, names[0])
+                idx = names.index(cur) if cur in names else 0
+                if idx > 0:
+                    st.session_state[key] = names[idx - 1]
+
+            def _on_next_mp(key, names):
+                cur = st.session_state.get(key, names[0])
+                idx = names.index(cur) if cur in names else 0
+                if idx < len(names) - 1:
+                    st.session_state[key] = names[idx + 1]
+
+            cur_page = st.session_state[page_widget_key]
+            cur_idx = page_names.index(cur_page) if cur_page in page_names else 0
+
+            with c_page:
+                selected_page = st.selectbox(
+                    f"Pilih Halaman ({cur_idx + 1}/{len(page_names)}):",
+                    page_names,
+                    key=page_widget_key
+                )
+                cur_idx = page_names.index(selected_page)
+
+            with c_nav:
+                col_b1, col_b2 = st.columns(2)
+                with col_b1:
+                    prev_disabled = (cur_idx == 0)
+                    st.button(
+                        "Prev",
+                        icon=":material/arrow_back:",
+                        disabled=prev_disabled,
+                        use_container_width=True,
+                        help="Halaman Sebelumnya",
+                        key=f"mp_btn_prev_{selected_cat}",
+                        on_click=_on_prev_mp,
+                        args=(page_widget_key, page_names)
+                    )
+                with col_b2:
+                    next_disabled = (cur_idx >= len(page_names) - 1)
+                    st.button(
+                        "Next",
+                        icon=":material/arrow_forward:",
+                        disabled=next_disabled,
+                        use_container_width=True,
+                        help="Halaman Berikutnya",
+                        key=f"mp_btn_next_{selected_cat}",
+                        on_click=_on_next_mp,
+                        args=(page_widget_key, page_names)
+                    )
+        else:
+            c_cat, _ = st.columns([2.5, 2.5], vertical_alignment="bottom")
+            with c_cat:
+                selected_cat = st.selectbox(
+                    "Pilih Kategori Analisis:",
+                    cat_names,
+                    index=0,
+                    key="mp_active_category"
+                )
+            pages_in_cat = CATEGORIES[selected_cat]
+
     st.write("")
-    if not view_all_in_cat:
+    if not view_all_mp:
         # Render the specific selected page
         pages_in_cat[selected_page](df_filtered, selected_topic=selected_topic, topic_label=selected_topic, date_str=date_display)
     else:
