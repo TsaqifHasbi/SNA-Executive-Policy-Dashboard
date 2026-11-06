@@ -94,6 +94,8 @@ NEGATIVE_TERMS = {
     'maling': 3.2, 'rampok': 3.2, 'nilep': 3.0, 'tilep': 3.0, 'sunat': 2.8,
     'pencitraan': 2.5, 'penipuan': 3.0, 'tipu': 2.8, 'manipulasi': 2.8, 'pungli': 3.0,
     'culas': 2.8, 'licik': 2.8, 'kelicikan': 3.0, 'hoax': 2.8, 'fitnah': 3.0,
+    # Hambatan & Ketimpangan
+    'terhambat': 2.2, 'hambat': 2.0, 'penghambat': 2.2,
     # Isu Higienitas & Medis (Disgust/Fear)
     'keracunan': 3.5, 'beracun': 3.5, 'racun': 3.5, 'meracuni': 3.5, 'basi': 3.0,
     'bau': 2.5, 'jorok': 2.8, 'kotor': 2.8, 'kekotoran': 2.8, 'tercemar': 3.0, 'kumuh': 2.5,
@@ -134,8 +136,11 @@ def get_morphology_candidates(word):
 
 EMOTION_KEYWORDS = {
     'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman'],
-    'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran'],
+    'Anticipation': [
+        'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
+        'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
+    ],
     'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam'],
     'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
@@ -146,13 +151,45 @@ EMOTION_KEYWORDS = {
 
 NEGATIONS = {'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', 'tdk', 'kurang'}
 
+# Pola Frasa Pencegahan & Antisipasi Tata Kelola Kebijakan Publik
+PREVENTATIVE_PATTERNS = [
+    r'jangan\s+sampai',
+    r'(?:harus|perlu|wajib)\s+dipastikan',
+    r'(?:harus|perlu|wajib)\s+diantisipasi',
+    r'semoga\s+(?:tidak|tak|gak|nggak)',
+    r'(?:cegah|mencegah|hindari|menghindari)\s+potensi',
+    r'kawal\s+(?:agar|supaya|pelaksanaan)',
+    r'(?:agar|supaya)\s+(?:tidak|tak|gak)\s+terjadi',
+    r'jangan\s+biarkan',
+    r'titip\s+(?:agar|supaya)',
+    r'mohon\s+(?:dipastikan|diawasi|dijaga)',
+    r'perlu\s+pengawasan'
+]
+
+def detect_topic_from_text(text, fallback="MBG"):
+    """
+    Mendeteksi topik kebijakan secara mandiri dari isi teks/opini
+    agar visualisasi SNA, entitas, dan klaster opini sinkron dengan konten.
+    """
+    if not text:
+        return fallback
+    lower = text.lower()
+    if re.search(r'\b(?:sekolah\s+rakyat|pendidikan|putus\s+sekolah|guru|siswa|kemensos|kurikulum|pendidikanadil)\b', lower):
+        return "Sekolah Rakyat"
+    elif re.search(r'\b(?:kdmp|koperasi\s+desa|merah\s+putih|kemenkop|koperasi)\b', lower):
+        return "KDMP"
+    elif re.search(r'\b(?:mbg|makan\s+bergizi|makan\s+gratis|bapanas|katering|gizi|sarapan|spuk)\b', lower):
+        return "MBG"
+    return fallback
+
 # ------------------------------------------------------------------------------
 # Algoritma Inferensi Kalimat
 # ------------------------------------------------------------------------------
 def analyze_text_nlp(text):
     """
     Melakukan ekstraksi sentimen, 9 emosi, entitas mention, dan hashtag dari teks
-    dengan mesin evaluasi morfologi leksikon kontekstual berbobot.
+    dengan mesin evaluasi morfologi leksikon kontekstual berbobot, dilengkapi
+    pendeteksi klausa preventif/antisipasi kebijakan publik.
     """
     if not text or not str(text).strip():
         text = ""
@@ -165,11 +202,29 @@ def analyze_text_nlp(text):
     mentions = [m.lstrip('@') for m in re.findall(r'@[A-Za-z0-9_.]+', raw_text)]
     hashtags = [h.lstrip('#') for h in re.findall(r'#[A-Za-z0-9_]+', raw_text)]
     
+    # Deteksi klausa antisipasi / pencegahan (Preventative Context)
+    has_preventative = any(re.search(p, clean_text) for p in PREVENTATIVE_PATTERNS)
+    
+    # Temukan batas awal cakupan klausa pencegahan (misal mulai dari "jangan sampai ...")
+    prevent_scope_idx = -1
+    js_match = re.search(r'\b(?:jangan\s+sampai|agar\s+tidak|supaya\s+tidak|jangan\s+biarkan)\b', clean_text)
+    if js_match:
+        match_start_char = js_match.start()
+        char_count = 0
+        for idx, w in enumerate(words):
+            char_count = clean_text.find(w, char_count)
+            if char_count >= match_start_char:
+                prevent_scope_idx = idx
+                break
+                
     # 2. Perhitungan Skor Sentimen berbasis Morfologi & Frasa
     pos_score = 0.0
     neg_score = 0.0
+    caution_score = 0.0
     
     for i, w in enumerate(words):
+        is_in_prevent_scope = (prevent_scope_idx != -1 and i >= prevent_scope_idx)
+        
         is_negated = False
         if i > 0 and words[i-1] in NEGATIONS:
             is_negated = True
@@ -185,15 +240,30 @@ def analyze_text_nlp(text):
         
         if best_pos > 0 and best_pos >= best_neg:
             if is_negated:
-                neg_score += best_pos * 1.2
+                if is_in_prevent_scope:
+                    # Contoh: "jangan sampai tidak merata" -> double negation di klausa pencegahan bermakna afirmatif (harus merata)
+                    pos_score += best_pos * 0.8
+                    caution_score += 2.0
+                else:
+                    neg_score += best_pos * 1.2
             else:
                 pos_score += best_pos
         elif best_neg > 0:
             if is_negated:
                 pos_score += best_neg * 0.8
             else:
-                neg_score += best_neg * 1.3
+                if is_in_prevent_scope:
+                    # Kata risiko dalam klausa pencegahan (misal: "jangan sampai pungli/terhambat")
+                    # Diperlakukan sebagai kewaspadaan antisipatif (risk mitigation), bukan tuduhan langsung
+                    caution_score += best_neg * 1.5
+                    neg_score += best_neg * 0.15 # residu kehati-hatian minor
+                else:
+                    neg_score += best_neg * 1.3
 
+    # Penguatan nilai konstruktif untuk opini yang memuat rekomendasi pencegahan
+    if has_preventative:
+        pos_score += 1.5
+        
     diff = pos_score - neg_score
     total_val = pos_score + neg_score
     
@@ -237,12 +307,19 @@ def analyze_text_nlp(text):
             for kw in kw_list:
                 if kw in cands:
                     emo_scores[emo] += 2.5
+
+    # Boost antisipasi & redam amarah jika terdapat klausa pencegahan/tata kelola
+    if has_preventative or caution_score > 0:
+        emo_scores['Anticipation'] += 5.5 + caution_score * 0.8
+        emo_scores['Trust'] += 2.0
+        emo_scores['Anger'] = max(0.1, emo_scores['Anger'] * 0.25)
+        emo_scores['Disgust'] = max(0.1, emo_scores['Disgust'] * 0.3)
                 
     # Sinkronisasi emosi dengan polaritas sentimen
     if pred_sent == "Positif":
         emo_scores['Joy'] += pos_score * 0.8
         emo_scores['Trust'] += pos_score * 0.7
-        emo_scores['Anticipation'] += pos_score * 0.4
+        emo_scores['Anticipation'] += pos_score * 0.5
     elif pred_sent == "Negatif":
         emo_scores['Anger'] += neg_score * 0.8
         emo_scores['Disgust'] += neg_score * 0.5
@@ -299,7 +376,15 @@ def build_micro_sna_graph(author, analysis, topic="MBG", df_corpus=None):
 
     # 4. Connect to Real Corpus Influencers (if df_corpus is available)
     if df_corpus is not None and not df_corpus.empty and 'author' in df_corpus.columns:
-        sub = df_corpus[df_corpus['sentiment_name'] == sent] if 'sentiment_name' in df_corpus.columns else df_corpus
+        sub = df_corpus
+        if 'topic' in sub.columns and topic:
+            sub_topic = sub[sub['topic'].astype(str).str.upper() == str(topic).upper()]
+            if not sub_topic.empty:
+                sub = sub_topic
+        if 'sentiment_name' in sub.columns:
+            sub_sent = sub[sub['sentiment_name'] == sent]
+            if not sub_sent.empty:
+                sub = sub_sent
         top_kols = sub['author'].dropna().value_counts().head(3).index.tolist()
         for kol in top_kols:
             kol_clean = f"@{str(kol).strip().lstrip('@')}"
@@ -323,7 +408,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
         "Eksplorasi respons model Deep Learning IndoBERT terhadap teks bebas maupun tautan postingan digital multiplatform."
     )
 
-    topic_title = topic_label or selected_topic or "Kebijakan Publik"
+    fallback_topic = topic_label or selected_topic or "MBG"
 
     # Presets Kalimat Uji
     PRESETS = {
@@ -436,6 +521,9 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     pol = analysis['polarity']
     emo = analysis['primary_emotion']
 
+    # Deteksi topik secara mandiri dari teks yang diuji (Dynamic Topic Detection)
+    active_topic = detect_topic_from_text(text_input, fallback=fallback_topic)
+
     # Penentuan Warna Badge Sentimen & Emosi
     if sent == "Positif":
         sent_color = "#10B981"
@@ -512,7 +600,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                 Akun Penulis: <b>@{author_input.lstrip('@')}</b><br>
                 Target Rujukan: <b>{mentions_str}</b><br>
                 Tagar Gerakan: <b>{hashtags_str}</b><br>
-                Fokus Topik: <b>{topic_title}</b>
+                Fokus Topik: <b>{active_topic}</b>
             </div>
             <div style="font-size:11px; color:#2563EB; font-weight:600; margin-top:6px;">
                 Terdifusi ke klaster opini {sent.lower()}
@@ -564,7 +652,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             """, unsafe_allow_html=True)
 
             # Bangun Graf SNA Mikro
-            G_micro = build_micro_sna_graph(author_input, analysis, topic=topic_title, df_corpus=df)
+            G_micro = build_micro_sna_graph(author_input, analysis, topic=active_topic, df_corpus=df)
             
             # Generate HTML PyVis
             try:
@@ -612,5 +700,5 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             """, unsafe_allow_html=True)
 
     # Footer Standard
-    render_mh_footer(f"Laboratorium Uji Sentimen & Emosi IndoBERT • Korpus Kebijakan Publik {topic_title}")
+    render_mh_footer(f"Laboratorium Uji Sentimen & Emosi IndoBERT • Korpus Kebijakan Publik {active_topic}")
 
