@@ -140,7 +140,7 @@ st.markdown("""
     }
     
     div[data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
+        background-color: #FAFCFE !important;
         border-right: 1px solid #E2E8F0 !important;
     }
     div[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
@@ -148,19 +148,107 @@ st.markdown("""
         color: #1E293B !important;
     }
     
-    /* Clean Radio Buttons for Navigation */
-    div[data-testid="stRadio"] label p, div[data-testid="stRadio"] label span {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-    }
-    div[data-testid="stRadio"] label:hover {
-        background: #FFF7ED !important;
+    /* =========================================================
+       EXECUTIVE SIDEBAR NAVIGATION (CARD-STYLE RADIO BUTTONS)
+       ========================================================= */
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] > label {
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.8px !important;
+        color: #64748B !important;
+        margin-bottom: 8px !important;
+        display: flex !important;
+        align-items: center !important;
     }
     
-    /* Selectbox Styling */
-    div[data-baseweb="select"] {
-        border-radius: 6px;
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] > label,
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-baseweb="radio"] {
+        background: #FFFFFF !important;
+        border: 1.5px solid #E2E8F0 !important;
+        border-radius: 9px !important;
+        padding: 10px 13px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] > label:hover,
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-baseweb="radio"]:hover {
+        background: #F8FAFC !important;
+        border-color: #93C5FD !important;
+        transform: translateX(2px) !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+    }
+    
+    /* Checked / Active Navigation Card State */
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked),
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) {
+        background: #EFF6FF !important;
+        border: 1.5px solid #2563EB !important;
+        border-left: 4.5px solid #2563EB !important;
+        box-shadow: 0 3px 8px rgba(37, 99, 235, 0.12) !important;
+    }
+    
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) p,
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) span,
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) p,
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) span {
+        color: #1E40AF !important;
+        font-weight: 800 !important;
+    }
+
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label p, 
+    div[data-testid="stSidebar"] div[data-testid="stRadio"] label span {
+        color: #1E293B !important;
+        font-weight: 600 !important;
+        font-size: 12.5px !important;
+        line-height: 1.35 !important;
+        margin: 0 !important;
+    }
+
+    /* Executive Selectbox & Date Input in Sidebar */
+    div[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 7px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: #0F172A !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="stSidebar"] div[data-baseweb="select"] > div:hover {
+        border-color: #94A3B8 !important;
+    }
+    div[data-testid="stSidebar"] div[data-baseweb="select"] > div:focus-within {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+    }
+
+    div[data-testid="stSidebar"] div[data-testid="stDateInput"] input {
+        background-color: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 7px !important;
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        color: #0F172A !important;
+    }
+    div[data-testid="stSidebar"] div[data-testid="stDateInput"] input:focus {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
     }
 
     /* Checkbox Alignment & Typography */
@@ -239,18 +327,23 @@ with st.sidebar:
     from src.mh_style import render_logo_badge
     sb_logo = render_logo_badge(size=26)
     render_html(f"""
-    <div style="background:#0F2942; border-radius:6px; padding:10px 14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-        <div style="display:flex; align-items:center; gap:9px;">
+    <div style="background: linear-gradient(135deg, #0F2942 0%, #1A365D 100%); border-radius: 9px; padding: 12px 14px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(15, 41, 66, 0.12);">
+        <div style="display:flex; align-items:center; gap:10px;">
             {sb_logo}
-            <span style="color:#FFFFFF; font-weight:700; font-size:13px; letter-spacing:0.5px;">MONITORING KEBIJAKAN PUBLIK</span>
-        </div>
-        <div style="font-size:11px; color:#94A3B8; margin-top:4px;">
-            Policy Intelligence & Deep Learning IndoBERT
+            <div>
+                <div style="color:#FFFFFF; font-weight:800; font-size:12px; letter-spacing:0.4px; line-height:1.2;">MONITORING KEBIJAKAN</div>
+                <div style="font-size:10px; color:#94A3B8; font-weight:500; margin-top:2px;">Policy Intelligence & IndoBERT AI</div>
+            </div>
         </div>
     </div>
     """)
     curr_caption = st.session_state.get('current_date_display', 'Periode Pemantauan Terkini')
-    st.caption(f"{curr_caption}")
+    render_html(f"""
+    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:6px; padding:7px 10px; font-size:10px; color:#475569; font-weight:600; display:flex; align-items:center; gap:7px; margin-bottom:14px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+        <span style="width:6px; height:6px; border-radius:50%; background:#10B981; display:inline-block; box-shadow:0 0 0 2px rgba(16,185,129,0.25);"></span>
+        <span>{curr_caption}</span>
+    </div>
+    """)
     
     # Mode Switcher
     MODE_OPTIONS = [
@@ -266,13 +359,23 @@ with st.sidebar:
             st.session_state[k] = "Cockpit Analisis & Evaluasi Model"
             
     view_mode = st.radio(
-        "Pilih Mode Tampilan:",
+        "PILIH MODE TAMPILAN",
         MODE_OPTIONS,
-        index=0
+        index=0,
+        format_func=lambda x: {
+            "Format Laporan Harian": "📑 Format Laporan Harian",
+            "Dashboard Analisis Multi Platform": "📊 Dashboard Analisis Multi Platform",
+            "Cockpit Analisis & Evaluasi Model": "⚙️ Cockpit Analisis & Evaluasi Model"
+        }.get(x, x)
     )
     
-    st.markdown("---")
-    st.markdown("### Filter Analisis")
+    render_html("""
+    <div style="margin: 18px 0 10px 0; padding-top: 14px; border-top: 1px solid #E2E8F0;">
+        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #64748B; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 12px;">🔍</span> <span>FILTER ANALISIS</span>
+        </div>
+    </div>
+    """)
     
     # 1. Topic Selector
     topic_options = ["MBG", "Sekolah_Rakyat", "KDMP", "Semua Topik"]
