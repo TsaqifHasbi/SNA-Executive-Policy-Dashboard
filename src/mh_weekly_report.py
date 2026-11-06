@@ -473,12 +473,13 @@ Suasana 9 Emosi Publik (%)
 # SLIDE 6: SUARA TERATAS & DUA AWAN KATA (WORDCLOUD EXECUTIVE)
 # ==============================================================================
 
-# Reference datasets matching executive PDF layout & domain corpus
+# Reference datasets matching executive PDF layout & domain corpus (53 words left, 10 words right)
 REF_53_WORDS = {
-    'Sekolah Rakyat': 120, 'Sumatera Utara': 110, 'Proyek Jalan': 95, 'Sumatera Barat': 85,
-    'Air Bersih': 75, 'Kali Angke': 70, 'Tenaga Kerja': 68, 'Aceh Tenggara': 65,
-    'Bendung Polor': 60, 'Dabun Gelang': 58, 'Maluku Utara': 55, 'Palangka Raya': 52,
-    'Tapanuli Tengah': 50, 'Jawa Tengah': 48, 'Jawa Timur': 46, 'Jawa Barat': 45,
+    'Sekolah Rakyat': 120, 'Sumatera Utara': 115, 'Makan Bergizi Gratis': 105, 'Proyek Jalan': 95,
+    'Koperasi Desa Merah Putih': 90, 'Sumatera Barat': 85, 'Air Bersih': 75, 'Kali Angke': 70,
+    'Tenaga Kerja': 68, 'Aceh Tenggara': 65, 'Bendung Polor': 60, 'Dabun Gelang': 58,
+    'Maluku Utara': 55, 'Palangka Raya': 52, 'Tapanuli Tengah': 50, 'Jawa Tengah': 48,
+    'Jawa Timur': 46, 'Jawa Barat': 45, 'Badan Gizi Nasional': 44, 'Asta Cita': 43,
     'Tidore Kepulauan': 42, 'Pembangunan Infrastruktur': 40, 'Bendungan Karjan': 38,
     'Tol Semarang-Demak': 36, 'Sumpah Pemuda': 35, 'Sulawesi Tenggara': 34,
     'Sulawesi Selatan': 33, 'Normalisasi Sungai': 32, 'Tanggul Sungai': 30,
@@ -488,14 +489,13 @@ REF_53_WORDS = {
     'Lintas Utara Flores': 18, 'Padang Pariaman': 17, 'Aceh Tamiang': 16,
     'Bangunan Liar': 15, 'Desa Badak': 14, 'Satgas PRR': 13, 'Bencana Alam': 12,
     'Air Minum': 11, 'Sumur Bor': 10, 'Gayo Lues': 9, 'Kota Padang': 9,
-    'NTT': 8, 'Asta Cita': 8, 'Tanah Longsor': 7, 'Infrastruktur Pendidikan': 7,
-    'Layanan Dasar': 6, 'Banjir Bandang': 5
+    'NTT': 8, 'Infrastruktur Pendidikan': 7
 }
 
 REF_10_NEG = {
-    'Sumatera Utara': 120, 'Proyek Jalan': 110, 'Tenaga Ahli Commitment Fee': 95,
-    'Sulawesi Tenggara': 80, 'Aceh Tenggara': 75, 'Dugaan Korupsi': 70,
-    'Jalan Nasional': 60, 'Pembebasan Lahan': 55, 'Sungai Waitomu': 50, 'Commitment Fee': 45
+    'Sumatera Utara': 120, 'Proyek Jalan': 110, 'Keracunan Makanan': 100, 'Korupsi MBG': 95,
+    'Tenaga Ahli Commitment Fee': 85, 'Sulawesi Tenggara': 80, 'Aceh Tenggara': 75,
+    'Dugaan Korupsi': 70, 'Gedung Roboh': 65, 'Jalan Nasional': 60
 }
 
 MBG_53_WORDS = {
@@ -567,41 +567,85 @@ KDMP_10_NEG = {
     'Bunga Tinggi': 60, 'Audit Bermasalah': 55, 'Kurang Transparan': 50, 'Keluhan Anggota': 45
 }
 
+def _get_wordcloud_font():
+    """Mencari font Sans-Serif Bold sistem (Windows/Linux/Cloud) untuk rendering tajam mirip PDF."""
+    candidates = [
+        "C:/Windows/Fonts/arialbd.ttf",
+        "C:/Windows/Fonts/segoeuib.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+        "/System/Library/Fonts/HelveticaNeue.ttc"
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
+
 @st.cache_data(show_spinner=False)
-def _generate_wordcloud_image_base64(freq_items, palette_mode='general', width=850, height=450):
+def _generate_wordcloud_image_base64(freq_items, palette_mode='general', width=940, height=370):
     """
     Generates a crisp PNG WordCloud encoded in base64.
-    Palette matches the executive PDF reference:
+    Palette and aspect ratio match the executive PDF reference (2.54:1):
     - general: forest greens, warm ambers, brick reds, and dark slates.
-    - negative: deep crimson, scarlet, and burgundy tones.
+    - negative: monochromatic terracotta and brick reds.
     """
     freq_dict = dict(freq_items)
 
-    def general_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-        palette = [
-            '#15803D', '#16A34A', '#059669', '#047857', # greens
-            '#D97706', '#B45309', '#EA580C',             # warm ambers
-            '#DC2626', '#B91C1C',                         # brick reds
-            '#334155', '#1E293B', '#475569'              # dark slates
-        ]
-        return random.choice(palette)
+    fixed_colors = {
+        'Sumatera Utara': '#D9943B',
+        'Sekolah Rakyat': '#168754',
+        'Proyek Jalan': '#C04545',
+        'Sumatera Barat': '#2E8B57',
+        'Air Bersih': '#28A745',
+        'Kali Angke': '#D9943B',
+        'Tenaga Kerja': '#168754',
+        'Maluku Utara': '#334155',
+        'Jawa Tengah': '#1E824C',
+        'Aceh Tenggara': '#D9943B',
+        'Bendung Polor': '#D49B45',
+        'Tapanuli Tengah': '#334155',
+        'Makan Bergizi Gratis': '#168754',
+        'Koperasi Desa Merah Putih': '#2E8B57',
+        'Badan Gizi Nasional': '#D9943B',
+        'Swasembada Pangan': '#1E824C',
+        'Infrastruktur Pendidikan': '#168754',
+    }
 
+    greens = ['#168754', '#1E824C', '#2E8B57', '#28A745', '#347A5C', '#1F7A4D']
+    ambers = ['#D9943B', '#E08A38', '#C68A36', '#D49B45', '#C2782A', '#E28D32']
+    slates = ['#334155', '#475569', '#1E293B', '#3E4D5E']
+    reds = ['#C04545', '#B83A3A', '#A83232']
+    palette_pool = greens * 5 + ambers * 4 + slates * 2 + reds * 1
+
+    def general_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        if word in fixed_colors:
+            return fixed_colors[word]
+        h = sum(ord(c) for c in word)
+        return palette_pool[h % len(palette_pool)]
+
+    neg_reds = [
+        '#C04545', '#D24343', '#B83A3A', '#BA4343', '#A83232',
+        '#C53030', '#9E2A2B', '#B91C1C', '#CD4242', '#C84646'
+    ]
     def neg_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-        palette = [
-            '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D', '#EF4444', '#C2410C', '#B45309'
-        ]
-        return random.choice(palette)
+        h = sum(ord(c) for c in word)
+        return neg_reds[h % len(neg_reds)]
 
     c_func = neg_color_func if palette_mode == 'negative' else general_color_func
+    font_file = _get_wordcloud_font()
 
     wc = WordCloud(
         width=width,
         height=height,
         background_color='white',
         prefer_horizontal=1.0,
-        min_font_size=8 if palette_mode != 'negative' else 12,
-        max_font_size=75 if palette_mode != 'negative' else 70,
-        margin=4 if palette_mode != 'negative' else 6,
+        font_path=font_file,
+        min_font_size=8 if palette_mode != 'negative' else 16,
+        max_font_size=80 if palette_mode != 'negative' else 75,
+        margin=2 if palette_mode != 'negative' else 4,
+        collocations=False,
         color_func=c_func,
         random_state=42
     ).generate_from_frequencies(freq_dict)
@@ -616,8 +660,8 @@ def render_slide_6_two_wordclouds(df, selected_topic='Semua', topic_label=None, 
     render_mh_top_bar(slide_num=5)
     render_mh_title(
         "Suara Teratas & Dua Awan Kata",
-        f"Peta Kosakata Umum vs Muatan Isu Kritis: {m['topic_title']}",
-        "Dua awan kata yang diekstraksi langsung dari teks korpus. Kiri: frekuensi kata dominan. Kanan: kata bermuatan sentimen negatif."
+        f"Peta Kosakata Dominan vs Muatan Isu Kritis: {m['topic_title']}",
+        "Dua awan kata yang merefleksikan dinamika percakapan publik. Kiri: frekuensi kata dominan. Kanan: peta kata bermuatan sentimen negatif."
     )
     
     # Select word sets based on topic focus
@@ -653,16 +697,18 @@ def render_slide_6_two_wordclouds(df, selected_topic='Semua', topic_label=None, 
     ]
     render_kpi_chips(chips)
     
-    # Generate WordCloud base64 images
-    b64_left = _generate_wordcloud_image_base64(tuple(freq_left.items()), palette_mode='general')
-    b64_right = _generate_wordcloud_image_base64(tuple(freq_right.items()), palette_mode='negative')
+    # Generate WordCloud base64 images with exact 2.54:1 aspect ratio
+    b64_left = _generate_wordcloud_image_base64(tuple(freq_left.items()), palette_mode='general', width=940, height=370)
+    b64_right = _generate_wordcloud_image_base64(tuple(freq_right.items()), palette_mode='negative', width=940, height=370)
 
     c_cloud1, c_cloud2 = st.columns(2, gap="medium")
     
     with c_cloud1:
-        card1_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:14px 18px 12px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-<div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F2942; margin-bottom:12px; display:flex; align-items:center;">
-<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background-color:#2563EB; box-shadow:0 0 0 3.5px #DBEAFE; margin-right:9px;"></span>
+        card1_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:12px 18px 10px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+<div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F2942; margin-bottom:10px; display:flex; align-items:center;">
+<span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:#DBEAFE; margin-right:9px; flex-shrink:0;">
+<span style="width:7px; height:7px; border-radius:50%; background:#2563EB;"></span>
+</span>
 Kata yang Paling Sering Muncul ({total_left} kata)
 </div>
 <div style="width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
@@ -672,9 +718,11 @@ Kata yang Paling Sering Muncul ({total_left} kata)
         render_html(card1_html)
 
     with c_cloud2:
-        card2_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:14px 18px 12px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-<div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F2942; margin-bottom:12px; display:flex; align-items:center;">
-<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background-color:#2563EB; box-shadow:0 0 0 3.5px #DBEAFE; margin-right:9px;"></span>
+        card2_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:12px 18px 10px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+<div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F2942; margin-bottom:10px; display:flex; align-items:center;">
+<span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:#DBEAFE; margin-right:9px; flex-shrink:0;">
+<span style="width:7px; height:7px; border-radius:50%; background:#2563EB;"></span>
+</span>
 Peta Muatan Negatif ({total_right} kata)
 </div>
 <div style="width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
