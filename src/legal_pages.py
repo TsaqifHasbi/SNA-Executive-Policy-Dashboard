@@ -13,14 +13,14 @@ import streamlit as st
 from src.mh_style import render_logo_badge, render_html
 
 def _render_legal_header(title: str, subtitle: str, doc_type: str):
-    """Header eksekutif dengan logo resmi PPIP."""
+    """Header eksekutif dengan logo resmi PPIP (tanpa emoji, murni vektor)."""
     logo = render_logo_badge(size=36)
     
     badge_color = "#2563EB" if doc_type == "tos" else "#059669"
     badge_label = "TERMS OF SERVICE" if doc_type == "tos" else "PRIVACY POLICY"
     
     html = f"""
-    <div style="background: linear-gradient(135deg, #0F2942 0%, #14385C 100%); border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(15, 41, 66, 0.15); color: #FFFFFF;">
+    <div style="background: linear-gradient(135deg, #0F2942 0%, #14385C 100%); border-radius: 12px; padding: 26px 30px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(15, 41, 66, 0.12); color: #FFFFFF;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
             <div style="display: flex; align-items: center; gap: 14px;">
                 {logo}
@@ -42,11 +42,11 @@ def _render_legal_header(title: str, subtitle: str, doc_type: str):
         <div style="margin-top: 14px; font-size: 13px; color: #CBD5E1; line-height: 1.5;">
             {subtitle}
         </div>
-        <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.12); display: flex; gap: 20px; flex-wrap: wrap; font-size: 11.5px; color: #94A3B8;">
-            <span>📅 <strong>Tanggal Efektif:</strong> 1 Januari 2025</span>
-            <span>🔄 <strong>Pembaruan Terakhir:</strong> November 2026</span>
-            <span>🏛️ <strong>Afiliasi:</strong> Universitas Jenderal Soedirman (UNSOED)</span>
-            <span>⚖️ <strong>Status:</strong> Non-Komersial (Riset Ilmiah)</span>
+        <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.12); display: flex; gap: 24px; flex-wrap: wrap; font-size: 11.5px; color: #94A3B8;">
+            <span><strong style="color:#FFFFFF;">Tanggal Efektif:</strong> 1 Januari 2025</span>
+            <span><strong style="color:#FFFFFF;">Pembaruan:</strong> November 2026</span>
+            <span><strong style="color:#FFFFFF;">Afiliasi:</strong> Universitas Jenderal Soedirman (UNSOED)</span>
+            <span><strong style="color:#FFFFFF;">Status:</strong> Non-Komersial (Riset Ilmiah)</span>
         </div>
     </div>
     """
@@ -54,7 +54,7 @@ def _render_legal_header(title: str, subtitle: str, doc_type: str):
 
 
 def render_terms_of_service():
-    """Merender isi lengkap Terms of Service secara formal & elegan."""
+    """Merender isi lengkap Terms of Service secara formal, elegan, dan bebas emoji."""
     _render_legal_header(
         title="Ketentuan Layanan (Terms of Service)",
         subtitle="Syarat dan ketentuan resmi penggunaan dashboard analisis kebijakan publik berbasis IndoBERT & Social Network Analysis (SNA).",
@@ -64,7 +64,7 @@ def render_terms_of_service():
     # Navigasi kembali ke Dashboard
     col_nav1, col_nav2 = st.columns([2, 3])
     with col_nav1:
-        st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
+        st.link_button("Kembali ke Dashboard Utama", "/", icon=":material/home:", type="primary")
 
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
@@ -137,21 +137,21 @@ def render_terms_of_service():
         <p>
             Untuk pertanyaan, klarifikasi, atau keperluan audit teknis terkait Ketentuan Layanan ini, silakan hubungi tim pengembang:
         </p>
-        <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 18px; border-radius:8px; font-size:13px;">
-            <div>🏛️ <strong>Lembaga:</strong> Program Studi Informatika, Fakultas Teknik, Universitas Jenderal Soedirman</div>
-            <div>📍 <strong>Lokasi:</strong> Purbalingga / Purwokerto, Jawa Tengah, Indonesia</div>
-            <div>🔗 <strong>Repositori Proyek:</strong> <a href="https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard" target="_blank" style="color:#2563EB;">github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard</a></div>
-            <div>🌐 <strong>Web App:</strong> <a href="https://sna-executive-policy-dashboard.streamlit.app/" target="_blank" style="color:#2563EB;">sna-executive-policy-dashboard.streamlit.app</a></div>
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 18px; border-radius:8px; font-size:13px; line-height:1.8;">
+            <div><strong>Lembaga:</strong> Program Studi Informatika, Fakultas Teknik, Universitas Jenderal Soedirman</div>
+            <div><strong>Lokasi:</strong> Purbalingga / Purwokerto, Jawa Tengah, Indonesia</div>
+            <div><strong>Repositori Proyek:</strong> <a href="https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard" target="_blank" style="color:#2563EB;">github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard</a></div>
+            <div><strong>Web App:</strong> <a href="https://sna-executive-policy-dashboard.streamlit.app/" target="_blank" style="color:#2563EB;">sna-executive-policy-dashboard.streamlit.app</a></div>
         </div>
     </div>
     """
     render_html(content_html)
     st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
-    st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
+    st.link_button("Kembali ke Dashboard Utama", "/", icon=":material/home:", type="primary")
 
 
 def render_privacy_policy():
-    """Merender isi lengkap Privacy Policy secara formal & elegan."""
+    """Merender isi lengkap Privacy Policy secara formal, elegan, dan bebas emoji."""
     _render_legal_header(
         title="Kebijakan Privasi (Privacy Policy)",
         subtitle="Prinsip perlindungan privasi, tata kelola data publik, dan komitmen keamanan data pada Public Policy Intelligence Platform.",
@@ -161,7 +161,7 @@ def render_privacy_policy():
     # Navigasi kembali ke Dashboard
     col_nav1, col_nav2 = st.columns([2, 3])
     with col_nav1:
-        st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
+        st.link_button("Kembali ke Dashboard Utama", "/", icon=":material/home:", type="primary")
 
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
@@ -241,14 +241,14 @@ def render_privacy_policy():
         <p>
             Untuk pertanyaan atau koordinasi terkait privasi dan tata kelola data:
         </p>
-        <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 18px; border-radius:8px; font-size:13px;">
-            <div>🏛️ <strong>Penyelenggara Riset:</strong> Laboratorium Riset Informatika, Fakultas Teknik, Universitas Jenderal Soedirman</div>
-            <div>📍 <strong>Alamat:</strong> Jl. Mayjen Sungkono Km 5, Blater, Kalimanah, Purbalingga, Jawa Tengah 53371</div>
-            <div>🔗 <strong>GitHub:</strong> <a href="https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard" target="_blank" style="color:#2563EB;">github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard</a></div>
-            <div>🌐 <strong>Portal:</strong> <a href="https://sna-executive-policy-dashboard.streamlit.app/" target="_blank" style="color:#2563EB;">sna-executive-policy-dashboard.streamlit.app</a></div>
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 18px; border-radius:8px; font-size:13px; line-height:1.8;">
+            <div><strong>Penyelenggara Riset:</strong> Laboratorium Riset Informatika, Fakultas Teknik, Universitas Jenderal Soedirman</div>
+            <div><strong>Alamat:</strong> Jl. Mayjen Sungkono Km 5, Blater, Kalimanah, Purbalingga, Jawa Tengah 53371</div>
+            <div><strong>GitHub:</strong> <a href="https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard" target="_blank" style="color:#2563EB;">github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard</a></div>
+            <div><strong>Portal:</strong> <a href="https://sna-executive-policy-dashboard.streamlit.app/" target="_blank" style="color:#2563EB;">sna-executive-policy-dashboard.streamlit.app</a></div>
         </div>
     </div>
     """
     render_html(content_html)
     st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
-    st.page_link("app.py", label="Kembali ke Dashboard Utama", icon="🏠")
+    st.link_button("Kembali ke Dashboard Utama", "/", icon=":material/home:", type="primary")

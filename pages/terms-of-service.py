@@ -14,7 +14,7 @@ _logo_icon = os.path.join(current_dir, "static", "logo.svg")
 
 st.set_page_config(
     page_title="Terms of Service | Public Policy Intelligence Platform",
-    page_icon=_logo_icon if os.path.exists(_logo_icon) else "📜",
+    page_icon=_logo_icon if os.path.exists(_logo_icon) else None,
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -33,4 +33,3 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 render_terms_of_service()
-

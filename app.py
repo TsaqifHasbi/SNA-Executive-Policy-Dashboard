@@ -394,10 +394,10 @@ with st.sidebar:
     """)
 
     st.markdown("---")
-    st.markdown("<div style='font-size:12px; font-weight:700; color:#334155; margin-bottom:4px;'>📜 Dokumen Kebijakan & Kepatuhan:</div>", unsafe_allow_html=True)
-    st.page_link("pages/terms-of-service.py", label="Terms of Service (Ketentuan Layanan)", icon="📜")
-    st.page_link("pages/privacy-policy.py", label="Privacy Policy (Kebijakan Privasi)", icon="🔒")
-    st.caption("TikTok Developer & Academic Compliant")
+    st.markdown("<div style='font-size:11px; font-weight:700; color:#0F2942; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;'>Dokumen Kebijakan & Kepatuhan:</div>", unsafe_allow_html=True)
+    st.link_button("Terms of Service", "/terms-of-service", icon=":material/gavel:", use_container_width=True)
+    st.link_button("Privacy Policy", "/privacy-policy", icon=":material/policy:", use_container_width=True)
+    st.caption("Kepatuhan Resmi TikTok for Developers & Riset UNSOED")
 
 # Calculate Core KPIs
 kpis = calculate_kpis(df_filtered)
@@ -408,69 +408,100 @@ kpis = calculate_kpis(df_filtered)
 # -------------------------------------------------------------
 if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Slide MH" in view_mode:
     MH_CHAPTERS = {
-        "Ringkasan Eksekutif & Cover": {
+        "Ringkasan Eksekutif": {
             "Slide 1: Cover Laporan Eksekutif": render_slide_1_cover,
-            "Slide 2: Executive Summary": render_slide_2_executive_summary,
+            "Slide 2: Ringkasan Eksekutif (Executive Summary)": render_slide_2_executive_summary,
         },
-        "CHAPTER 01: The Overview": {
-            "Slide 3: Chapter 01 Break": render_slide_3_chapter_1,
-            "Slide 5: Platform Review (Tujuh Saluran)": render_slide_5_platform_review,
-            "Slide 6: Suara Teratas & Dua Awan Kata": render_slide_6_two_wordclouds,
-            "Slide 7: Isu Positif & Negatif - Menteri PU": render_slide_7_issues_minister,
+        "Bab 1: Tinjauan Multiplatform (The Overview)": {
+            "Slide 3: Pembuka Bab 1 (The Overview)": render_slide_3_chapter_1,
+            "Slide 5: Tinjauan Percakapan 7 Saluran Multiplatform": render_slide_5_platform_review,
+            "Slide 6: Analisis Suara Teratas & Dua Awan Kata": render_slide_6_two_wordclouds,
+            "Slide 7: Pemetaan Isu Positif & Negatif Terbesar": render_slide_7_issues_minister,
         },
-        "CHAPTER 02: The Deep Dive": {
-            "Slide 8: Chapter 02 Break": render_slide_8_chapter_2,
-            "Slide 9: Analisis Topik Utama - Kementerian PU": render_slide_9_main_topics,
-            "Slide 10: Peta Pemangku Kepentingan (Power-Interest)": render_slide_10_stakeholder_mapping,
-            "Slide 11: Sorotan Khusus: Pekan ini Air": render_slide_11_water_focus_timeline,
-            "Slide 12: Analisis Framing (Entman & Edelman)": render_slide_12_framing_analysis,
-            "Slide 13: Penanganan Bencana oleh Kementerian PU": render_slide_13_disaster_response,
-            "Slide 14: Keserempakan & Uji Organik (Bot / Buzzer)": render_slide_14_bot_organic_audit,
-            "Slide 15: Rekomendasi Intelijen - Proyeksi 7 Hari": render_slide_15_intelligence_projections,
+        "Bab 2: Analisis Mendalam (The Deep Dive)": {
+            "Slide 8: Pembuka Bab 2 (The Deep Dive)": render_slide_8_chapter_2,
+            "Slide 9: Analisis Topik Utama & Klaster Isu": render_slide_9_main_topics,
+            "Slide 10: Pemetaan Pemangku Kepentingan (Power-Interest)": render_slide_10_stakeholder_mapping,
+            "Slide 11: Kronologi & Dinamika Lintas Waktu": render_slide_11_water_focus_timeline,
+            "Slide 12: Analisis Pembingkaian Isu (Framing Analysis)": render_slide_12_framing_analysis,
+            "Slide 13: Pemetaan Respons & Layanan Publik": render_slide_13_disaster_response,
+            "Slide 14: Audit Keserempakan & Uji Organik (Bot / Buzzer)": render_slide_14_bot_organic_audit,
+            "Slide 15: Rekomendasi Intelijen & Proyeksi 7 Hari": render_slide_15_intelligence_projections,
         },
-        "CHAPTER 03: The Action": {
-            "Slide 16: Chapter 03 Break": render_slide_16_chapter_3,
-            "Slide 17: Laporan Pemantauan Harian (Sesi A)": render_slide_17_daily_nov1,
-            "Slide 18: Laporan Pemantauan Harian (Sesi B)": render_slide_18_daily_nov2,
-            "Slide 19: Daftar Pantau Sepekan": render_slide_19_watch_list,
-            "Slide 20: Prioritas Tindakan & Metodologi": render_slide_20_priorities_methodology,
-            "Slide 21: Penutup & Pesan Kunci": render_slide_21_closing_summary,
+        "Bab 3: Tindakan Strategis (The Action)": {
+            "Slide 16: Pembuka Bab 3 (The Action)": render_slide_16_chapter_3,
+            "Slide 17: Pemantauan Sentimen Harian (Sesi Pagi)": render_slide_17_daily_nov1,
+            "Slide 18: Pemantauan Sentimen Harian (Sesi Sore)": render_slide_18_daily_nov2,
+            "Slide 19: Daftar Pantau Isu Strategis Sepekan": render_slide_19_watch_list,
+            "Slide 20: Matriks Prioritas Tindakan & Metodologi": render_slide_20_priorities_methodology,
+            "Slide 21: Penutup & Pesan Kunci Eksekutif": render_slide_21_closing_summary,
         }
     }
     
     mh_chap_names = list(MH_CHAPTERS.keys())
     
+    # Toolbar Navigasi Slide Eksekutif yang Rapi & Presisi
     with st.container(border=True):
-        render_html("""<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:5px;">
-Bab / Bagian Format Laporan Harian (Slide MH):
-</div>""")
-        col_c1, col_c2 = st.columns([1.65, 1.35], vertical_alignment="center")
-        with col_c1:
+        c_top1, c_top2 = st.columns([3.2, 1.8], vertical_alignment="center")
+        with c_top1:
+            render_html("""
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:#0F2942; color:#FFFFFF; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; letter-spacing:0.5px;">DECK EKSEKUTIF</span>
+                <span style="font-size:13px; font-weight:700; color:#0F2942;">Format Laporan Harian (Slide Deck MH)</span>
+            </div>
+            """)
+        with c_top2:
+            view_all_mh = st.toggle("Mode Baca Beruntun", value=False, help="Menampilkan seluruh slide dalam bab terpilih secara berurutan ke bawah")
+
+        c_chap, c_slide, c_nav = st.columns([1.5, 2.3, 1.2], vertical_alignment="bottom")
+        with c_chap:
             selected_mh_chap = st.selectbox(
                 "Pilih Bab / Bagian:",
                 mh_chap_names,
                 index=0,
-                label_visibility="collapsed"
+                key="mh_active_chapter"
             )
-        with col_c2:
-            view_all_mh = st.checkbox(
-                "Tampilkan Seluruh Slide dalam Bab Ini Sekaligus",
-                value=False,
-                help="Centang untuk membaca seluruh slide dalam bab ini secara berurutan"
-            )
-            
+
         mh_pages = MH_CHAPTERS[selected_mh_chap]
         mh_page_names = list(mh_pages.keys())
-        
+
+        # Pelacakan indeks slide aktif via session state
+        if 'mh_slide_idx' not in st.session_state:
+            st.session_state.mh_slide_idx = 0
+        if st.session_state.get('mh_prev_chap') != selected_mh_chap:
+            st.session_state.mh_slide_idx = 0
+            st.session_state.mh_prev_chap = selected_mh_chap
+
+        st.session_state.mh_slide_idx = max(0, min(st.session_state.mh_slide_idx, len(mh_page_names) - 1))
+
         if not view_all_mh:
-            st.markdown("<div style='margin: 8px 0 6px 0; border-top: 1px dashed #E2E8F0;'></div>", unsafe_allow_html=True)
-            selected_mh_slide = st.radio(
-                f"Pilih Slide ({selected_mh_chap}):",
-                mh_page_names,
-                index=0,
-                horizontal=True
-            )
-    
+            with c_slide:
+                selected_mh_slide = st.selectbox(
+                    "Pilih Slide:",
+                    mh_page_names,
+                    index=st.session_state.mh_slide_idx,
+                    key=f"mh_slide_select_{selected_mh_chap}"
+                )
+                curr_idx = mh_page_names.index(selected_mh_slide)
+                if curr_idx != st.session_state.mh_slide_idx:
+                    st.session_state.mh_slide_idx = curr_idx
+
+            with c_nav:
+                col_b1, col_b2 = st.columns(2)
+                with col_b1:
+                    prev_disabled = (st.session_state.mh_slide_idx == 0)
+                    if st.button("◀", disabled=prev_disabled, use_container_width=True, help="Slide Sebelumnya", key="btn_prev_mh"):
+                        st.session_state.mh_slide_idx = max(0, st.session_state.mh_slide_idx - 1)
+                        st.rerun()
+                with col_b2:
+                    next_disabled = (st.session_state.mh_slide_idx >= len(mh_page_names) - 1)
+                    if st.button("▶", disabled=next_disabled, use_container_width=True, help="Slide Berikutnya", key="btn_next_mh"):
+                        st.session_state.mh_slide_idx = min(len(mh_page_names) - 1, st.session_state.mh_slide_idx + 1)
+                        st.rerun()
+        else:
+            with c_slide:
+                st.info(f"Menampilkan seluruh {len(mh_page_names)} slide dalam bab ini secara berurutan.")
+
     st.write("")
     if not view_all_mh:
         mh_pages[selected_mh_slide](df_filtered, selected_topic=selected_topic, topic_label=selected_topic, date_str=date_display)
@@ -478,7 +509,7 @@ Bab / Bagian Format Laporan Harian (Slide MH):
         for s_idx, (s_name, s_func) in enumerate(mh_pages.items(), 1):
             s_func(df_filtered, selected_topic=selected_topic, topic_label=selected_topic, date_str=date_display)
             if s_idx < len(mh_pages):
-                st.markdown("<div style='margin: 35px 0; border-bottom: 2px dashed #CBD5E1;'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='margin: 40px 0; border-bottom: 2px dashed #CBD5E1;'></div>", unsafe_allow_html=True)
 
 elif "Dashboard Analisis Multi Platform" in view_mode or "Katalog Analisis Multiplatform" in view_mode or "Laporan Analisis Visual" in view_mode:
     # 7 LOGICAL ANALYTICAL CATEGORIES (All 30 visual pages organized thematically)
