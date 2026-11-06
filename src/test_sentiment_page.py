@@ -47,6 +47,10 @@ NEGATIVE_TERMS = {
     # Ejekan Intelektual & Mental
     'tolol': 3.0, 'goblok': 3.0, 'goblog': 3.0, 'bego': 2.8, 'bloon': 2.8,
     'dungu': 3.0, 'pekok': 2.8, 'idiot': 2.8, 'bodoh': 2.5, 'sesat': 2.5,
+    # Ejekan Politik, Hinaan Relasi, dan Sindiran Sosial
+    'kacung': 2.8, 'jongos': 2.8, 'penjilat': 2.8, 'antek': 2.8, 'boneka': 2.5,
+    'buzzer': 2.2, 'cebong': 2.5, 'kadrun': 2.5, 'rezim': 2.0, 'komprador': 2.5,
+    'budak': 2.5, 'pengkhianat': 3.0, 'khianat': 2.8, 'munafik': 2.8, 'fasik': 2.5,
     # Kritik Mutu, Keluhan, Kehancuran
     'buruk': 2.2, 'gagal': 2.5, 'rusak': 2.2, 'hancur': 2.5, 'kecewa': 2.2,
     'rugi': 2.0, 'parah': 2.2, 'krisis': 2.2, 'marah': 2.2, 'bobrok': 2.5,
@@ -69,8 +73,8 @@ EMOTION_KEYWORDS = {
     'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus'],
     'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis'],
     'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap'],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu'],
-    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat'],
+    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram'],
     'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'terpuruk', 'terbengkalai', 'miris', 'pilu'],
     'Surprise': ['kaget', 'terkejut', 'heran', 'ternyata', 'waduh', 'astaga', 'syok', 'luar biasa', 'tak disangka', 'wow', 'anjir', 'gila'],
