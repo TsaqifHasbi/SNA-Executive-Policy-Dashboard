@@ -73,9 +73,11 @@ def _get_slide_metrics(df, selected_topic='Semua', topic_label=None):
         aff_counts = df_affective['emotion'].value_counts()
         top_emo = aff_counts.index[0]
         top_emo_p = round((aff_counts.iloc[0] / aff_vol) * 100, 1)
+        aff_pcts = (aff_counts / aff_vol * 100).round(1).to_dict()
     else:
         top_emo = list(emo_pcts.keys())[0] if emo_pcts else "Neutral"
         top_emo_p = emo_pcts.get(top_emo, 0)
+        aff_pcts = emo_pcts
     
     # Platform aggregation
     if vol > 0 and 'platform' in df.columns:
@@ -116,6 +118,8 @@ def _get_slide_metrics(df, selected_topic='Semua', topic_label=None):
         'neg_p': neg_p,
         'net_p': net_p,
         'emo_pcts': emo_pcts,
+        'aff_pcts': aff_pcts,
+        'aff_vol': aff_vol,
         'top_emo': top_emo,
         'top_emo_p': top_emo_p,
         'plat_df': plat_df,
@@ -365,7 +369,7 @@ def render_slide_5_platform_review(df, selected_topic='Semua', topic_label=None,
     render_mh_title(
         "Platform Review",
         f"Tinjauan 7 Saluran & Dinamika Emosi: {m['topic_title']}",
-        "Kiri: komparasi 7 saluran komunikasi berdasarkan keterlibatan publik. Kanan: komposisi 9 dimensi emosi IndoBERT."
+        "Kiri: komparasi 7 saluran komunikasi berdasarkan keterlibatan publik. Kanan: distribusi 8 emosi afektif IndoBERT (Plutchik)."
     )
     
     top_vol_plat = m['plat_df'].sort_values('penyebutan', ascending=False).iloc[0] if len(m['plat_df']) > 0 else None
@@ -438,30 +442,59 @@ Tujuh Saluran - Urut dari Keterlibatan Publik
 
     with col_emo:
         render_html("""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:14px 16px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:4px; display:flex; align-items:center; justify-content:space-between;">
+<div style="display:flex; align-items:center; gap:6px;">
 <span style="width:7px; height:7px; border-radius:50%; background:#2563EB; display:inline-block;"></span>
-Suasana 9 Emosi Publik (%)
+<span>Intensitas 8 Emosi Afektif (%)</span>
+</div>
+<span style="font-size:10px; color:#64748B; font-weight:500;">Plutchik &bull; Basis Respon Afektif</span>
 </div>
 </div>""")
         
-        # Build 9 emotion chart from m['emo_pcts']
-        sorted_emos = sorted(m['emo_pcts'].items(), key=lambda x: x[1])
+        # Color mapping for Plutchik 8 affective emotions
+        emo_colors_palette = {
+            'Anger': '#EF4444',        # Crimson Red
+            'Marah': '#EF4444',
+            'Joy': '#F59E0B',          # Amber/Gold
+            'Senang': '#F59E0B',
+            'Disgust': '#84CC16',      # Lime Green
+            'Jijik': '#84CC16',
+            'Surprise': '#06B6D4',     # Cyan
+            'Terkejut': '#06B6D4',
+            'Sadness': '#3B82F6',      # Blue
+            'Sedih': '#3B82F6',
+            'Trust': '#10B981',        # Emerald Green
+            'Percaya': '#10B981',
+            'Fear': '#8B5CF6',         # Purple/Violet
+            'Takut': '#8B5CF6',
+            'Anticipation': '#F97316', # Orange
+            'Antisipasi': '#F97316',
+        }
+        
+        # Build 8 affective emotion chart from m['aff_pcts']
+        target_emos = m.get('aff_pcts', m.get('emo_pcts', {}))
+        # Ensure Neutral/Netral is excluded so Anger is top
+        target_emos = {k: v for k, v in target_emos.items() if str(k).lower() not in ['neutral', 'netral', 'informatif', 'informational']}
+        
+        sorted_emos = sorted(target_emos.items(), key=lambda x: x[1])
         emo_names = [k for k, v in sorted_emos]
         emo_vals = [v for k, v in sorted_emos]
+        emo_colors = [emo_colors_palette.get(k, '#2563EB') for k in emo_names]
         
         fig_bar = go.Figure(go.Bar(
             x=emo_vals, y=emo_names,
             orientation='h',
-            marker=dict(color='#2563EB'),
+            marker=dict(color=emo_colors),
             text=[f"{v}%" for v in emo_vals],
             textposition='outside'
         ))
+        max_val = max(emo_vals) if emo_vals else 40
         fig_bar.update_layout(
             height=225,
-            margin=dict(l=10, r=35, t=5, b=20),
+            margin=dict(l=10, r=40, t=5, b=20),
             paper_bgcolor='#FFFFFF',
             plot_bgcolor='#FFFFFF',
-            xaxis=dict(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(size=9, color='#64748B')),
+            xaxis=dict(showgrid=True, gridcolor='#F1F5F9', tickfont=dict(size=9, color='#64748B'), range=[0, max(max_val * 1.25, 45)]),
             yaxis=dict(tickfont=dict(size=10, color='#1E293B'))
         )
         st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False})
