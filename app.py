@@ -442,7 +442,7 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
     
     # Toolbar Navigasi Slide Eksekutif yang Rapi & Presisi
     with st.container(border=True):
-        c_top1, c_top2 = st.columns([3.2, 1.8], vertical_alignment="center")
+        c_top1, c_top2 = st.columns([3.0, 2.0], vertical_alignment="center")
         with c_top1:
             render_html("""
             <div style="display:flex; align-items:center; gap:8px;">
@@ -451,41 +451,68 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
             </div>
             """)
         with c_top2:
-            view_all_mh = st.toggle("Mode Baca Beruntun", value=False, help="Menampilkan seluruh slide dalam bab terpilih secara berurutan ke bawah")
-
-        c_chap, c_slide, c_nav = st.columns([1.5, 2.2, 1.3], vertical_alignment="bottom")
-        with c_chap:
-            selected_mh_chap = st.selectbox(
-                "Pilih Bab / Bagian:",
-                mh_chap_names,
-                index=0,
-                key="mh_active_chapter"
+            st.markdown(
+                """
+                <div id="mh-toggle-marker" style="display:none;"></div>
+                <style>
+                div[data-testid="stColumn"]:has(#mh-toggle-marker) {
+                    display: flex !important;
+                    justify-content: flex-end !important;
+                    align-items: center !important;
+                }
+                div[data-testid="stColumn"]:has(#mh-toggle-marker) div[data-testid="stCheckbox"] {
+                    display: flex !important;
+                    justify-content: flex-end !important;
+                    margin-left: auto !important;
+                    width: fit-content !important;
+                }
+                div[data-testid="stColumn"]:has(#mh-toggle-marker) div[data-testid="stCheckbox"] label {
+                    margin-left: auto !important;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            view_all_mh = st.toggle(
+                "Mode Baca Beruntun",
+                value=False,
+                help="Menampilkan seluruh slide dalam bab terpilih secara berurutan ke bawah",
+                key="mh_view_all_toggle"
             )
 
-        mh_pages = MH_CHAPTERS[selected_mh_chap]
-        mh_page_names = list(mh_pages.keys())
-
-        # Sinkronisasi state slide per bab
-        slide_widget_key = f"mh_slide_select_{selected_mh_chap}"
-        if slide_widget_key not in st.session_state or st.session_state[slide_widget_key] not in mh_page_names:
-            st.session_state[slide_widget_key] = mh_page_names[0]
-
-        def _on_prev_mh(key, names):
-            cur = st.session_state.get(key, names[0])
-            idx = names.index(cur) if cur in names else 0
-            if idx > 0:
-                st.session_state[key] = names[idx - 1]
-
-        def _on_next_mh(key, names):
-            cur = st.session_state.get(key, names[0])
-            idx = names.index(cur) if cur in names else 0
-            if idx < len(names) - 1:
-                st.session_state[key] = names[idx + 1]
-
-        cur_slide = st.session_state[slide_widget_key]
-        cur_idx = mh_page_names.index(cur_slide) if cur_slide in mh_page_names else 0
-
         if not view_all_mh:
+            c_chap, c_slide, c_nav = st.columns([1.5, 2.2, 1.3], vertical_alignment="bottom")
+            with c_chap:
+                selected_mh_chap = st.selectbox(
+                    "Pilih Bab / Bagian:",
+                    mh_chap_names,
+                    index=0,
+                    key="mh_active_chapter"
+                )
+
+            mh_pages = MH_CHAPTERS[selected_mh_chap]
+            mh_page_names = list(mh_pages.keys())
+
+            # Sinkronisasi state slide per bab
+            slide_widget_key = f"mh_slide_select_{selected_mh_chap}"
+            if slide_widget_key not in st.session_state or st.session_state[slide_widget_key] not in mh_page_names:
+                st.session_state[slide_widget_key] = mh_page_names[0]
+
+            def _on_prev_mh(key, names):
+                cur = st.session_state.get(key, names[0])
+                idx = names.index(cur) if cur in names else 0
+                if idx > 0:
+                    st.session_state[key] = names[idx - 1]
+
+            def _on_next_mh(key, names):
+                cur = st.session_state.get(key, names[0])
+                idx = names.index(cur) if cur in names else 0
+                if idx < len(names) - 1:
+                    st.session_state[key] = names[idx + 1]
+
+            cur_slide = st.session_state[slide_widget_key]
+            cur_idx = mh_page_names.index(cur_slide) if cur_slide in mh_page_names else 0
+
             with c_slide:
                 selected_mh_slide = st.selectbox(
                     f"Pilih Slide ({cur_idx + 1}/{len(mh_page_names)}):",
@@ -521,8 +548,15 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
                         args=(slide_widget_key, mh_page_names)
                     )
         else:
-            with c_slide:
-                st.info(f"Menampilkan seluruh {len(mh_page_names)} slide dalam bab ini secara berurutan.")
+            c_chap, _ = st.columns([2.5, 2.5], vertical_alignment="bottom")
+            with c_chap:
+                selected_mh_chap = st.selectbox(
+                    "Pilih Bab / Bagian:",
+                    mh_chap_names,
+                    index=0,
+                    key="mh_active_chapter"
+                )
+            mh_pages = MH_CHAPTERS[selected_mh_chap]
 
     st.write("")
     if not view_all_mh:
