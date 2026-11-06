@@ -27,6 +27,7 @@ import streamlit.components.v1 as components_v1
 # ------------------------------------------------------------------------------
 POSITIVE_TERMS = {
     # Keberhasilan, Mutu, & Manfaat
+    'baik': 2.5, 'terbaik': 2.8, 'kebaikan': 2.5, 'membaik': 2.5, 'sebaik': 2.2, 'perbaikan': 2.2,
     'bagus': 2.0, 'hebat': 2.2, 'mantap': 2.5, 'mantul': 2.5, 'keren': 2.0, 'berhasil': 2.5,
     'sukses': 2.5, 'bermanfaat': 2.8, 'manfaat': 2.2, 'kemanfaatan': 2.5, 'membantu': 2.5,
     'terbantu': 2.2, 'bantu': 2.0, 'bantuan': 2.0, 'apresiasi': 2.2, 'mengapresiasi': 2.5,
@@ -35,12 +36,18 @@ POSITIVE_TERMS = {
     # Nutrisi, Higienitas, & Kesehatan
     'sehat': 2.5, 'menyehatkan': 2.8, 'kesehatan': 2.2, 'nutrisi': 2.2, 'bergizi': 2.8,
     'gizi': 2.2, 'enak': 2.0, 'nikmat': 2.2, 'lezat': 2.5, 'kenyang': 2.0, 'higienis': 2.2,
+    'bersih': 2.2, 'kebersihan': 2.2, 'segar': 2.2,
+    # Afeksi, Kecocokan, & Kebenaran
+    'benar': 2.2, 'kebenaran': 2.2, 'tepat': 2.2, 'ketepatan': 2.2, 'cocok': 2.2, 'pas': 2.0, 'sesuai': 2.0,
+    'suka': 2.2, 'menyukainya': 2.2, 'cinta': 2.5, 'sayang': 2.2, 'peduli': 2.5, 'kepedulian': 2.5,
     # Karakter, Integritas & Keadilan
     'amanah': 2.8, 'terpercaya': 2.5, 'percaya': 2.2, 'kepercayaan': 2.2, 'transparan': 2.8,
     'transparansi': 2.5, 'terbukti': 2.5, 'adil': 2.5, 'keadilan': 2.5, 'merata': 2.5,
     'pemerataan': 2.5, 'layak': 2.2, 'kelayakan': 2.2, 'beres': 2.0, 'tuntas': 2.2,
     'positif': 2.5, 'puas': 2.5, 'memuaskan': 2.5, 'senang': 2.0, 'bangga': 2.2,
-    'gembira': 2.0, 'maju': 2.2, 'kemajuan': 2.5, 'tumbuh': 2.0, 'harapan': 2.0,
+    'gembira': 2.0, 'bahagia': 2.5, 'maju': 2.2, 'kemajuan': 2.5, 'tumbuh': 2.0, 'harapan': 2.0,
+    'aman': 2.2, 'keamanan': 2.2, 'nyaman': 2.2, 'kenyamanan': 2.2, 'damai': 2.2, 'tenteram': 2.2,
+    'murah': 2.0, 'terjangkau': 2.5, 'gratis': 2.0, 'lengkap': 2.0,
     'terobosan': 2.8, 'efisien': 2.5, 'efisiensi': 2.5, 'solusi': 2.5, 'solutif': 2.8,
     'semangat': 2.0, 'berdaya': 2.2, 'optimal': 2.2, 'top': 2.2, 'jos': 2.2, 'joss': 2.2,
     'berkah': 2.5, 'setuju': 2.0, 'pro': 2.0, 'pro rakyat': 2.8, 'juara': 2.5
@@ -61,22 +68,26 @@ NEGATIVE_TERMS = {
     'buzzer': 2.5, 'cebong': 2.5, 'kadrun': 2.5, 'rezim': 2.2, 'komprador': 2.5,
     'budak': 2.5, 'pengkhianat': 3.2, 'khianat': 3.0, 'munafik': 3.0, 'fasik': 2.8,
     # Kritik Mutu, Keluhan, Kehancuran, & Kerusakan
-    'negatif': 2.8, 'buruk': 2.5, 'memburuk': 2.5, 'terburuk': 3.0, 'gagal': 2.8,
+    'negatif': 2.8, 'buruk': 2.5, 'memburuk': 2.5, 'terburuk': 3.0, 'jelek': 2.5, 'kejelekan': 2.8,
+    'jahat': 3.0, 'kejahatan': 3.2, 'kejam': 3.0, 'sadis': 3.2, 'zalim': 3.2, 'gagal': 2.8,
     'kegagalan': 2.8, 'rusak': 2.5, 'merusak': 2.8, 'perusak': 3.0, 'kerusakan': 2.8,
     'hancur': 2.8, 'menghancurkan': 3.0, 'kehancuran': 3.0, 'penghancur': 3.0,
     'kecewa': 2.5, 'kekecewaan': 2.8, 'mengecewakan': 2.8, 'rugi': 2.5, 'merugikan': 2.8,
     'dirugikan': 2.8, 'kerugian': 2.8, 'parah': 2.5, 'memperparah': 2.8, 'krisis': 2.5,
-    'marah': 2.5, 'kemarahan': 2.8, 'bobrok': 2.8, 'kebobrokan': 3.0, 'sengsara': 2.5,
-    'kesengsaraan': 2.8, 'derita': 2.5, 'menderita': 2.8, 'penderitaan': 2.8,
+    'marah': 2.5, 'kemarahan': 2.8, 'kesal': 2.5, 'geram': 2.5, 'bobrok': 2.8, 'kebobrokan': 3.0,
+    'sengsara': 2.5, 'kesengsaraan': 2.8, 'derita': 2.5, 'menderita': 2.8, 'penderitaan': 2.8,
+    'susah': 2.2, 'kesusahan': 2.5, 'sulit': 2.2, 'kesulitan': 2.5, 'payah': 2.5, 'kurang': 2.0,
     'beban': 2.2, 'membebani': 2.5, 'masalah': 2.0, 'bermasalah': 2.5, 'amburadul': 2.8,
     'ancam': 2.5, 'ancaman': 2.5, 'mengancam': 2.8, 'terancam': 2.5, 'bahaya': 2.5,
     'berbahaya': 2.8, 'lambat': 2.0, 'tidak adil': 2.8, 'tidak layak': 2.8, 'tidak bermutu': 2.8,
-    'mahal': 2.0, 'sulit': 2.0, 'sampah': 2.8, 'ampas': 2.8, 'sia-sia': 2.5, 'sia sia': 2.5,
+    'tidak baik': 2.8, 'tak baik': 2.8, 'gak baik': 2.8, 'tidak benar': 2.8, 'tidak becus': 3.0,
+    'mahal': 2.0, 'sampah': 2.8, 'ampas': 2.8, 'sia-sia': 2.5, 'sia sia': 2.5,
     'mubazir': 2.8, 'boros': 2.5, 'pemborosan': 2.8, 'roboh': 2.8, 'menolak': 2.5,
     'penolakan': 2.5, 'tolak': 2.5, 'protes': 2.5, 'memprotes': 2.5, 'keluhan': 2.2,
     'ngeluh': 2.2, 'kritik': 1.8, 'mengkritik': 2.0, 'kecam': 2.8, 'mengecam': 2.8,
     'kecaman': 2.8, 'batal': 2.2, 'dibatalkan': 2.5, 'kacau': 2.5, 'kekacauan': 2.8,
     'cacat': 2.5, 'mundur': 2.2, 'kemunduran': 2.5, 'kontra': 2.0, 'anti': 2.0,
+    'benci': 2.8, 'kebencian': 3.0, 'muak': 2.8, 'eneg': 2.5, 'jengkel': 2.5,
     # Isu Korupsi & Fraud
     'korupsi': 3.2, 'korup': 3.2, 'bancakan': 3.0, 'curang': 2.8, 'kecurangan': 3.0,
     'bohong': 2.8, 'kebohongan': 3.0, 'pembohong': 3.0, 'dibohongi': 3.0, 'palsu': 2.5,
@@ -85,8 +96,9 @@ NEGATIVE_TERMS = {
     'culas': 2.8, 'licik': 2.8, 'kelicikan': 3.0, 'hoax': 2.8, 'fitnah': 3.0,
     # Isu Higienitas & Medis (Disgust/Fear)
     'keracunan': 3.5, 'beracun': 3.5, 'racun': 3.5, 'meracuni': 3.5, 'basi': 3.0,
-    'bau': 2.5, 'jorok': 2.8, 'mual': 2.5, 'muntah': 2.8, 'busuk': 3.0, 'najis': 3.0,
-    'menjijikkan': 3.0, 'mati': 3.0, 'kematian': 3.0, 'sakit': 2.2
+    'bau': 2.5, 'jorok': 2.8, 'kotor': 2.8, 'kekotoran': 2.8, 'tercemar': 3.0, 'kumuh': 2.5,
+    'mual': 2.5, 'muntah': 2.8, 'busuk': 3.0, 'najis': 3.0,
+    'menjijikkan': 3.0, 'mati': 3.0, 'kematian': 3.0, 'sakit': 2.2, 'penyakit': 2.5
 }
 
 # Prefiks & Sufiks Pembentuk Kata Bahasa Indonesia (Morfologi Derivasi)
@@ -121,8 +133,8 @@ def get_morphology_candidates(word):
     return cands
 
 EMOTION_KEYWORDS = {
-    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi'],
+    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman'],
     'Anticipation': ['harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh'],
     'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam'],
     'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan'],
