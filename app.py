@@ -253,13 +253,21 @@ with st.sidebar:
     st.caption(f"{curr_caption}")
     
     # Mode Switcher
+    MODE_OPTIONS = [
+        "Format Laporan Harian",
+        "Dashboard Analisis Multi Platform",
+        "Cockpit Analisis & Evaluasi Model"
+    ]
+    
+    # Auto-sanitize any previous session state key containing legacy option string
+    for k in list(st.session_state.keys()):
+        val = st.session_state.get(k)
+        if isinstance(val, str) and "Cockpit Analisis Mendalam" in val:
+            st.session_state[k] = "Cockpit Analisis & Evaluasi Model"
+            
     view_mode = st.radio(
         "Pilih Mode Tampilan:",
-        [
-            "Format Laporan Harian",
-            "Dashboard Analisis Multi Platform",
-            "Cockpit Analisis & Evaluasi Model"
-        ],
+        MODE_OPTIONS,
         index=0
     )
     
