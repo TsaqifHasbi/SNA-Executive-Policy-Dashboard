@@ -260,7 +260,7 @@ with st.sidebar:
     view_mode = st.radio(
         "Pilih Mode Tampilan:",
         [
-            "Format Laporan Harian (Slide MH)",
+            "Format Laporan Harian",
             "Dashboard Analisis Multi Platform",
             "Cockpit Analisis Mendalam & Evaluasi Model"
         ],
@@ -447,7 +447,7 @@ if "Format Laporan Harian" in view_mode or "Laporan Harian" in view_mode or "Sli
             render_html("""
             <div id="mh-deck-header" style="display:flex; align-items:center; gap:8px;">
                 <span style="background:#0F2942; color:#FFFFFF; font-size:10px; font-weight:800; padding:2px 8px; border-radius:4px; letter-spacing:0.5px;">DECK EKSEKUTIF</span>
-                <span style="font-size:13px; font-weight:700; color:#0F2942;">Format Laporan Harian (Slide Deck MH)</span>
+                <span style="font-size:13px; font-weight:700; color:#0F2942;">Format Laporan Harian (Slide Deck)</span>
             </div>
             """)
         with c_top2:

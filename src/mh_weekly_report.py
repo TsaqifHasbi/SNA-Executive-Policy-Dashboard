@@ -1457,7 +1457,7 @@ def render_slide_21_closing_summary(df, selected_topic='Semua', topic_label=None
 </div>
 <div style="border-top:1px solid rgba(255,255,255,0.15); width:180px; margin:24px auto 16px auto;"></div>
 <div style="font-size:12px; color:#94A3B8; font-weight:500;">
-Monitoring Kebijakan Publik • Format Laporan Harian (Slide MH) • {m['topic_title']}
+Monitoring Kebijakan Publik • Format Laporan Harian (Slide Deck) • {m['topic_title']}
 </div>
 </div>"""
     render_html(html)
