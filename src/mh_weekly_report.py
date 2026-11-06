@@ -1459,7 +1459,7 @@ def render_slide_17_daily_nov1(df, selected_topic='Semua', topic_label=None, **k
         {"label": "Positif", "val": f"{m['pos_p']}%", "sub": "penerimaan", "dot": "#10B981"},
         {"label": "Negatif", "val": f"{m['neg_p']}%", "sub": "keluhan/evaluasi", "dot": "#EF4444"},
         {"label": "Emosi Dominan", "val": m['top_emo'], "sub": f"{m['top_emo_p']}%", "dot": "#8B5CF6"},
-        {"label": "Status Sistem", "val": "AKTIF", "sub": "pemantauan 24/7", "dot": "#10B981"}
+        {"label": "Status Data", "val": "SEMENTARA", "sub": "data hasil scraping", "dot": "#F59E0B", "val_color": "#D97706"}
     ]
     render_kpi_chips(chips)
     
@@ -1591,7 +1591,7 @@ def render_slide_19_watch_list(df, selected_topic='Semua', topic_label=None, **k
     chips = [
         {"label": "Total Butir", "val": "6 Butir", "sub": "dalam pengawasan", "dot": "#2563EB"},
         {"label": "Status Kritis", "val": f"{m['neg_p']}%", "sub": "rasio kritik", "dot": "#EF4444"},
-        {"label": "Populasi Terpantau", "val": f"{m['vol']:,}", "sub": "rekaman aktif", "dot": "#10B981"},
+        {"label": "Populasi Terpantau", "val": f"{m['vol']:,}", "sub": "data hasil scraping", "dot": "#10B981"},
         {"label": "Keterlibatan", "val": fmt_val(m['eng']), "sub": "total interaksi", "dot": "#2563EB"},
         {"label": "Emosi Utama", "val": m['top_emo'], "sub": f"{m['top_emo_p']}%", "dot": "#8B5CF6"}
     ]
@@ -1615,7 +1615,7 @@ Butir Pantau Prioritas Pimpinan
 <tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Kendala teknis & mutu pelaksanaan di daerah</td><td style="color:#64748B;">Tim Teknis Lapangan</td><td>{render_status_badge("PRIORITAS - TINGGI", "red")}</td><td>Inspeksi & audit cepat 24 jam</td></tr>
 <tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Aduan keterlambatan distribusi / sarana</td><td style="color:#64748B;">Divisi Logistik</td><td>{render_status_badge("PANTAU", "amber")}</td><td>Buka jalur hotline aduan</td></tr>
 <tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Pemberitaan capaian & dampak ekonomi warga</td><td style="color:#64748B;">Biro Humas & Media</td><td>{render_status_badge("BERJALAN", "green")}</td><td>Rilis lembar fakta berkala</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Dinamika kritik di media sosial (TikTok/X)</td><td style="color:#64748B;">Tim Monitoring Siber</td><td>{render_status_badge("AKTIF", "blue")}</td><td>Klarifikasi berbasis infografik</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Dinamika kritik di media sosial (TikTok/X)</td><td style="color:#64748B;">Tim Monitoring Siber</td><td>{render_status_badge("PANTAU", "blue")}</td><td>Klarifikasi berbasis infografik</td></tr>
 <tr><td style="font-weight:600; padding:6px 4px;">Kesesuaian alokasi anggaran kebijakan</td><td style="color:#64748B;">Inspektorat / Pengawas</td><td>{render_status_badge("TERKENDALI", "green")}</td><td>Transparansi laporan berkala</td></tr>
 </tbody>
 </table>
