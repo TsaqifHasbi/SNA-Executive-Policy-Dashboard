@@ -107,18 +107,32 @@ NEGATIVE_TERMS = {
 ID_PREFIXES = ['diper', 'memper', 'meng', 'meny', 'men', 'mem', 'me', 'peng', 'peny', 'pen', 'pem', 'per', 'pe', 'di', 'ter', 'ber', 'ke', 'se']
 ID_SUFFIXES = ['kan', 'an', 'i', 'nya', 'lah', 'kah', 'pun']
 
+def normalize_repeated_chars(word):
+    """
+    Menghasilkan variasi kata dengan mereduksi karakter berulang (elongated words)
+    khas gaya penulisan media sosial, misal: 'asuuuu' -> 'asu', 'anjiiing' -> 'anjing', 'paraaah' -> 'parah'.
+    """
+    variants = {word}
+    r1 = re.sub(r'(.)\1{2,}', r'\1', word)
+    r2 = re.sub(r'(.)\1{2,}', r'\1\1', word)
+    r3 = re.sub(r'(.)\1+', r'\1', word)
+    variants.update([r1, r2, r3])
+    return variants
+
 def get_morphology_candidates(word):
     """
     Menghasilkan variasi bentuk kata dasar (stem/root) bahasa Indonesia
-    guna mengatasi variasi afiksasi (misal: perusak -> rusak, menyehatkan -> sehat).
+    guna mengatasi variasi afiksasi dan pemanjangan huruf (misal: asuuuu -> asu, perusak -> rusak).
     """
-    cands = {word}
-    base_words = [word]
-    for suf in ID_SUFFIXES:
-        if word.endswith(suf) and len(word) - len(suf) >= 3:
-            s_word = word[:-len(suf)]
-            cands.add(s_word)
-            base_words.append(s_word)
+    raw_variants = normalize_repeated_chars(word)
+    cands = set(raw_variants)
+    base_words = list(raw_variants)
+    for w in list(base_words):
+        for suf in ID_SUFFIXES:
+            if w.endswith(suf) and len(w) - len(suf) >= 3:
+                s_word = w[:-len(suf)]
+                cands.add(s_word)
+                base_words.append(s_word)
     for bw in base_words:
         for pfx in ID_PREFIXES:
             if bw.startswith(pfx) and len(bw) - len(pfx) >= 3:
@@ -196,14 +210,16 @@ def analyze_text_nlp(text):
 
     raw_text = str(text)
     clean_text = raw_text.lower()
+    norm_text = re.sub(r'(.)\1+', r'\1', clean_text)
     words = re.findall(r'\b[a-zA-Z0-9_-]+\b', clean_text)
+    raw_words = re.findall(r'\b[a-zA-Z0-9_-]+\b', raw_text)
     
     # 1. Ekstraksi Entitas SNA
     mentions = [m.lstrip('@') for m in re.findall(r'@[A-Za-z0-9_.]+', raw_text)]
     hashtags = [h.lstrip('#') for h in re.findall(r'#[A-Za-z0-9_]+', raw_text)]
     
     # Deteksi klausa antisipasi / pencegahan (Preventative Context)
-    has_preventative = any(re.search(p, clean_text) for p in PREVENTATIVE_PATTERNS)
+    has_preventative = any(re.search(p, clean_text) or re.search(p, norm_text) for p in PREVENTATIVE_PATTERNS)
     
     # Temukan batas awal cakupan klausa pencegahan (misal mulai dari "jangan sampai ...")
     prevent_scope_idx = -1
@@ -237,6 +253,11 @@ def analyze_text_nlp(text):
         
         best_pos = max(pos_matches) if pos_matches else 0.0
         best_neg = max(neg_matches) if neg_matches else 0.0
+        
+        # Cek penekanan emosional huruf kapital (ALL CAPS)
+        caps_multiplier = 1.25 if (i < len(raw_words) and raw_words[i].isupper() and len(raw_words[i]) >= 3) else 1.0
+        best_pos *= caps_multiplier
+        best_neg *= caps_multiplier
         
         if best_pos > 0 and best_pos >= best_neg:
             if is_negated:
@@ -297,7 +318,7 @@ def analyze_text_nlp(text):
     emo_scores = {k: 0.1 for k in EMOTION_KEYWORDS.keys()}
     for emo, kw_list in EMOTION_KEYWORDS.items():
         for kw in kw_list:
-            if re.search(rf'\b{re.escape(kw)}\b', clean_text):
+            if re.search(rf'\b{re.escape(kw)}\b', clean_text) or re.search(rf'\b{re.escape(kw)}\b', norm_text):
                 emo_scores[emo] += 2.8
                 
     # Evaluasi kecocokan morfologi emosi per kata
