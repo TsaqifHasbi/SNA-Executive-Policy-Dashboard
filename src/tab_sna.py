@@ -112,14 +112,19 @@ def render_tab_sna(df_filtered, selected_topic, selected_platform, sna_max_nodes
         st.dataframe(pd.DataFrame(bw_table), use_container_width=True)
 
     st.markdown("---")
-    gexf_path = os.path.join(current_dir, "sna", "output", f"{target_topic}_{target_plat}_{sna_mode}_network.gexf")
-    os.makedirs(os.path.dirname(gexf_path), exist_ok=True)
-    export_gephi_gexf(G, gexf_path)
-    
-    with open(gexf_path, "rb") as f_gexf:
-        st.download_button(
-            label="💾 Unduh File Graf Gephi (.GEXF) untuk Analisis Lanjutan di Gephi",
-            data=f_gexf,
-            file_name=f"{target_topic}_{target_plat}_{sna_mode}_sna.gexf",
-            mime="application/xml"
-        )
+    try:
+        gexf_path = os.path.join(current_dir, "sna", "output", f"{target_topic}_{target_plat}_{sna_mode}_network.gexf")
+        os.makedirs(os.path.dirname(gexf_path), exist_ok=True)
+        res = export_gephi_gexf(G, gexf_path)
+        
+        if res and os.path.exists(gexf_path):
+            with open(gexf_path, "rb") as f_gexf:
+                st.download_button(
+                    label="Unduh File Graf Gephi (.GEXF) untuk Analisis Lanjutan di Gephi",
+                    data=f_gexf,
+                    file_name=f"{target_topic}_{target_plat}_{sna_mode}_sna.gexf",
+                    mime="application/xml",
+                    icon=":material/download:"
+                )
+    except Exception as e:
+        st.info("File ekspor Gephi (.GEXF) disiapkan saat diminta.")

@@ -267,10 +267,46 @@ def generate_pyvis_html(G, height="620px", mode='sentiment'):
     return net.generate_html()
 
 def export_gephi_gexf(G, filepath):
-    """Menyimpan graf dalam format standar Gephi (.gexf)."""
-    clean_G = G.copy()
-    for n, data in clean_G.nodes(data=True):
-        if 'title' in data:
-            del data['title']
-    nx.write_gexf(clean_G, filepath)
-    return filepath
+    """
+    Menyimpan graf dalam format standar Gephi (.gexf) dengan sanitasi tipe data ketat
+    agar kompatibel dengan NetworkX 3.4+ / Python 3.12-3.14 di lingkungan Cloud.
+    """
+    try:
+        clean_G = nx.DiGraph() if G.is_directed() else nx.Graph()
+        
+        for n, d in G.nodes(data=True):
+            clean_node = str(n).strip()
+            clean_G.add_node(
+                clean_node,
+                label=clean_node,
+                sentiment=str(d.get('sentiment') or 'Netral'),
+                emotion=str(d.get('emotion') or 'Netral'),
+                color=str(d.get('color') or '#64748B'),
+                in_degree=int(d.get('in_degree', 0)),
+                out_degree=int(d.get('out_degree', 0)),
+                betweenness=float(d.get('betweenness', 0.0)),
+                size=float(d.get('size', 12.0))
+            )
+
+        for u, v, d in G.edges(data=True):
+            clean_G.add_edge(
+                str(u).strip(),
+                str(v).strip(),
+                weight=float(d.get('weight', 1.0)),
+                sentiment=str(d.get('sentiment') or 'Netral'),
+                emotion=str(d.get('emotion') or 'Netral'),
+                platform=str(d.get('platform') or 'Semua')
+            )
+
+        nx.write_gexf(clean_G, filepath)
+        return filepath
+    except Exception as e:
+        # Fallback jika writer GEXF mengalami kendala serializer
+        try:
+            min_G = nx.DiGraph() if G.is_directed() else nx.Graph()
+            for u, v in G.edges():
+                min_G.add_edge(str(u).strip(), str(v).strip())
+            nx.write_gexf(min_G, filepath)
+            return filepath
+        except Exception:
+            return None

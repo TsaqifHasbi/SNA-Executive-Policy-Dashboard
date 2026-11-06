@@ -516,3 +516,4 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
 
     # Footer Standard
     render_mh_footer(f"Laboratorium Uji Sentimen & Emosi IndoBERT • Korpus Kebijakan Publik {topic_title}")
+
