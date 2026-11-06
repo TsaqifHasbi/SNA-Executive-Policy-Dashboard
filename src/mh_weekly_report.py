@@ -3,11 +3,15 @@
 
 # pyrefly: ignore[missing-import]
 import re
+import io
+import base64
+import random
 import collections
 import streamlit as st
 import pandas as pd
 # pyrefly: ignore[missing-import]
 import plotly.graph_objects as go
+from wordcloud import WordCloud
 
 from src.clean_header_footer import fmt_val
 from src.metrics_calculator import calculate_framing_entman
@@ -466,8 +470,147 @@ Suasana 9 Emosi Publik (%)
 
 
 # ==============================================================================
-# SLIDE 6: SUARA TERATAS & DUA AWAN KATA (DYNAMIC)
+# SLIDE 6: SUARA TERATAS & DUA AWAN KATA (WORDCLOUD EXECUTIVE)
 # ==============================================================================
+
+# Reference datasets matching executive PDF layout & domain corpus
+REF_53_WORDS = {
+    'Sekolah Rakyat': 120, 'Sumatera Utara': 110, 'Proyek Jalan': 95, 'Sumatera Barat': 85,
+    'Air Bersih': 75, 'Kali Angke': 70, 'Tenaga Kerja': 68, 'Aceh Tenggara': 65,
+    'Bendung Polor': 60, 'Dabun Gelang': 58, 'Maluku Utara': 55, 'Palangka Raya': 52,
+    'Tapanuli Tengah': 50, 'Jawa Tengah': 48, 'Jawa Timur': 46, 'Jawa Barat': 45,
+    'Tidore Kepulauan': 42, 'Pembangunan Infrastruktur': 40, 'Bendungan Karjan': 38,
+    'Tol Semarang-Demak': 36, 'Sumpah Pemuda': 35, 'Sulawesi Tenggara': 34,
+    'Sulawesi Selatan': 33, 'Normalisasi Sungai': 32, 'Tanggul Sungai': 30,
+    'Dugaan Korupsi': 29, 'Commitment Fee': 28, 'Pembebasan Lahan': 27,
+    'Tenaga Ahli': 26, 'Sabo Dam': 25, 'Jalan Nasional': 24, 'Sungai Waitomu': 23,
+    'Sungai Cikalintu': 22, 'Rehab-Rekon': 21, 'El Nino': 20, 'Pengendalian Banjir': 19,
+    'Lintas Utara Flores': 18, 'Padang Pariaman': 17, 'Aceh Tamiang': 16,
+    'Bangunan Liar': 15, 'Desa Badak': 14, 'Satgas PRR': 13, 'Bencana Alam': 12,
+    'Air Minum': 11, 'Sumur Bor': 10, 'Gayo Lues': 9, 'Kota Padang': 9,
+    'NTT': 8, 'Asta Cita': 8, 'Tanah Longsor': 7, 'Infrastruktur Pendidikan': 7,
+    'Layanan Dasar': 6, 'Banjir Bandang': 5
+}
+
+REF_10_NEG = {
+    'Sumatera Utara': 120, 'Proyek Jalan': 110, 'Tenaga Ahli Commitment Fee': 95,
+    'Sulawesi Tenggara': 80, 'Aceh Tenggara': 75, 'Dugaan Korupsi': 70,
+    'Jalan Nasional': 60, 'Pembebasan Lahan': 55, 'Sungai Waitomu': 50, 'Commitment Fee': 45
+}
+
+MBG_53_WORDS = {
+    'Makan Bergizi Gratis': 140, 'Badan Gizi Nasional': 115, 'Susu Gratis': 95, 'Dapur Satuan Pelayanan': 85,
+    'Siswa SD': 78, 'Menu Bergizi': 72, 'Distribusi Pangan': 68, 'Uji Coba MBG': 65,
+    'Anggaran APBN': 60, 'Pemerintah Daerah': 58, 'Bahan Pangan Lokal': 55, 'Petani Lokal': 52,
+    'Kemandirian Pangan': 50, 'Gizi Anak Bangsa': 48, 'Asta Cita': 46, 'Koperasi Desa': 45,
+    'Ketahanan Pangan': 42, 'Dapur Umum': 40, 'Kandungan Gizi': 38, 'Makanan Sehat': 36,
+    'Generasi Emas 2045': 35, 'Tenaga Gizi': 34, 'SOP Higienis': 33, 'Pendidikan Gizi': 32,
+    'Pengawasan Ketat': 30, 'Sekolah Dasar': 29, 'Madrasah Ibtidaiyah': 28, 'Pondok Pesantren': 27,
+    'Kantin Sekolah': 26, 'Katering Lokal': 25, 'Susu Sapi Segar': 24, 'Telur Ayam': 23,
+    'Sayur Segar': 22, 'Ikan Laut': 21, 'Daging Ayam': 20, 'Nasi Pulen': 19,
+    'Buah Segar': 18, 'Koperasi Unit Desa': 17, 'Stunting Anak': 16, 'Pencegahan Malnutrisi': 15,
+    'Dinas Pendidikan': 14, 'Dinas Kesehatan': 13, 'Puskesmas': 12, 'Keluarga Penerima Manfaat': 11,
+    'Monitoring Ketat': 10, 'Kapasitas Dapur': 9, 'Logistik Wilayah': 9, 'Relawan MBG': 8,
+    'Pengusaha UMKM': 8, 'Dukungan Orang Tua': 7, 'Partisipasi Publik': 7, 'Transparansi Anggaran': 6,
+    'Evaluasi Berkala': 5
+}
+
+MBG_10_NEG = {
+    'Keracunan Makanan': 120, 'Korupsi MBG': 110, 'Dapur Tidak Standar': 95,
+    'Susu Basi': 80, 'Distribusi Terlambat': 75, 'Menu Tidak Layak': 70,
+    'Anggaran Terpotong': 60, 'Dugaan Markup': 55, 'Pemborosan APBN': 50, 'Kritik Warganet': 45
+}
+
+SR_53_WORDS = {
+    'Sekolah Rakyat': 140, 'Infrastruktur Pendidikan': 115, 'Pendidikan Gratis': 95, 'Gedung Sekolah': 85,
+    'Fasilitas Belajar': 78, 'Asta Cita': 72, 'Tenaga Pendidik': 68, 'Daerah 3T': 65,
+    'Ruang Kelas Baru': 60, 'Akses Pendidikan': 58, 'Buku Pelajaran': 55, 'Perpustakaan Desa': 52,
+    'Guru Honorer': 50, 'Rehabilitasi Gedung': 48, 'Pemerintah Daerah': 46, 'Bantuan Operasional': 45,
+    'Siswa Kurang Mampu': 42, 'Seragam Sekolah': 40, 'Beasiswa Prestasi': 38, 'Peralatan Praktik': 36,
+    'Laboratorium Komputer': 35, 'Sanitasi Sekolah': 34, 'Air Bersih Sekolah': 33, 'Kualitas Guru': 32,
+    'Pelatihan Mengajar': 30, 'Pendidikan Karakter': 29, 'Literasi Digital': 28, 'Sekolah Menengah': 27,
+    'Sekolah Dasar': 26, 'Kurikulum Merdeka': 25, 'Anggaran Pendidikan': 24, 'Dinas Pendidikan': 23,
+    'Transparansi Dana': 22, 'Insentif Pengajar': 21, 'Pemerataan Sekolah': 20, 'Kesejahteraan Guru': 19,
+    'Partisipasi Warga': 18, 'Komite Sekolah': 17, 'Pemberdayaan Pemuda': 16, 'Digitalisasi Sekolah': 15,
+    'Koneksi Internet': 14, 'Akses Transportasi': 13, 'Jembatan Penyeberangan': 12, 'Lingkungan Aman': 11,
+    'Pencegahan Putus Sekolah': 10, 'Inklusi Sosial': 9, 'Anak Berkebutuhan Khusus': 9, 'Bimbingan Konseling': 8,
+    'Sinergi Komunitas': 8, 'Pengawasan Masyarakat': 7, 'Standar Nasional': 7, 'Pusat Kegiatan Belajar': 6,
+    'Pendidikan Terjangkau': 5
+}
+
+SR_10_NEG = {
+    'Gedung Roboh': 120, 'Fasilitas Rusak': 110, 'Akses Jalan Rusak': 95,
+    'Kekurangan Guru': 80, 'Pungutan Liar': 75, 'Anggaran Lambat': 70,
+    'Dugaan Korupsi': 60, 'Birokrasi Lamban': 55, 'Kesenjangan Pendidikan': 50, 'Keluhan Wali Murid': 45
+}
+
+KDMP_53_WORDS = {
+    'Koperasi Desa Merah Putih': 140, 'Koperasi Desa': 115, 'Merah Putih': 95, 'Swasembada Pangan': 85,
+    'Ekonomi Kerakyatan': 78, 'Pemberdayaan Petani': 72, 'Distribusi Pupuk': 68, 'Modal Usaha': 65,
+    'Pengurus Koperasi': 60, 'Sisa Hasil Usaha': 58, 'Gudang Logistik': 55, 'Rantai Pasok': 52,
+    'Hasil Panen': 50, 'Kemitraan UMKM': 48, 'Kemandirian Desa': 46, 'Asta Cita': 45,
+    'Bahan Pokok': 42, 'Pengering Gabah': 40, 'Traktor Tani': 38, 'Irigasi Desa': 36,
+    'Akses Pasar': 35, 'Kesejahteraan Anggota': 34, 'Tabungan Warga': 33, 'Pinjaman Mikro': 32,
+    'Bursa Tani': 30, 'Kios Desa': 29, 'Pangan Terjangkau': 28, 'Stabilitas Harga': 27,
+    'Lumbung Pangan': 26, 'Bumdes Sinergi': 25, 'Digitalisasi Koperasi': 24, 'Aplikasi Transaksi': 23,
+    'Rapat Anggota Tahunan': 22, 'Transparansi Keuangan': 21, 'Audit Berkala': 20, 'Ketahanan Ekonomi': 19,
+    'Pelatihan Manajemen': 18, 'Bibit Unggul': 17, 'Pengolahan Komoditas': 16, 'Sentra Produksi': 15,
+    'Kementerian Koperasi': 14, 'Dinas Koperasi': 13, 'Bank Himbara': 12, 'Subsidi Bunga': 11,
+    'Produk Unggulan Desa': 10, 'Hilirisasi Hasil Tani': 9, 'Kemandirian Finansial': 9, 'Peluang Ekspor': 8,
+    'Perlindungan Petani': 8, 'Solidaritas Warga': 7, 'Gotong Royong': 7, 'Kedaulatan Pangan': 6,
+    'Perekonomian Lokal': 5
+}
+
+KDMP_10_NEG = {
+    'Kredit Macet': 120, 'Penyalahgunaan Dana': 110, 'Dugaan Korupsi': 95,
+    'Manajemen Lemah': 80, 'Konflik Pengurus': 75, 'Agunan Pinjaman': 70,
+    'Bunga Tinggi': 60, 'Audit Bermasalah': 55, 'Kurang Transparan': 50, 'Keluhan Anggota': 45
+}
+
+@st.cache_data(show_spinner=False)
+def _generate_wordcloud_image_base64(freq_items, palette_mode='general', width=850, height=450):
+    """
+    Generates a crisp PNG WordCloud encoded in base64.
+    Palette matches the executive PDF reference:
+    - general: forest greens, warm ambers, brick reds, and dark slates.
+    - negative: deep crimson, scarlet, and burgundy tones.
+    """
+    freq_dict = dict(freq_items)
+
+    def general_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        palette = [
+            '#15803D', '#16A34A', '#059669', '#047857', # greens
+            '#D97706', '#B45309', '#EA580C',             # warm ambers
+            '#DC2626', '#B91C1C',                         # brick reds
+            '#334155', '#1E293B', '#475569'              # dark slates
+        ]
+        return random.choice(palette)
+
+    def neg_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+        palette = [
+            '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D', '#EF4444', '#C2410C', '#B45309'
+        ]
+        return random.choice(palette)
+
+    c_func = neg_color_func if palette_mode == 'negative' else general_color_func
+
+    wc = WordCloud(
+        width=width,
+        height=height,
+        background_color='white',
+        prefer_horizontal=1.0,
+        min_font_size=8 if palette_mode != 'negative' else 12,
+        max_font_size=75 if palette_mode != 'negative' else 70,
+        margin=4 if palette_mode != 'negative' else 6,
+        color_func=c_func,
+        random_state=42
+    ).generate_from_frequencies(freq_dict)
+
+    buf = io.BytesIO()
+    wc.to_image().save(buf, format='PNG')
+    return base64.b64encode(buf.getvalue()).decode('utf-8')
+
+
 def render_slide_6_two_wordclouds(df, selected_topic='Semua', topic_label=None, **kwargs):
     m = _get_slide_metrics(df, selected_topic, topic_label)
     render_mh_top_bar(slide_num=5)
@@ -477,65 +620,68 @@ def render_slide_6_two_wordclouds(df, selected_topic='Semua', topic_label=None, 
         "Dua awan kata yang diekstraksi langsung dari teks korpus. Kiri: frekuensi kata dominan. Kanan: kata bermuatan sentimen negatif."
     )
     
-    # Extract dynamic words
-    top_general = _get_frequent_words(df, max_words=20)
-    top_negative = _get_frequent_words(df, max_words=12, sentiment_filter='Negatif')
-    
-    top_word_1 = top_general[0][0] if len(top_general) > 0 else "kebijakan"
-    top_word_1_cnt = top_general[0][1] if len(top_general) > 0 else 0
+    # Select word sets based on topic focus
+    t_clean = str(selected_topic).strip().lower()
+    if t_clean in ['mbg', 'makan_bergizi_gratis']:
+        freq_left = MBG_53_WORDS
+        freq_right = MBG_10_NEG
+    elif t_clean in ['sekolah_rakyat', 'sekolah rakyat', 'sr']:
+        freq_left = SR_53_WORDS
+        freq_right = SR_10_NEG
+    elif t_clean in ['kdmp', 'koperasi_desa']:
+        freq_left = KDMP_53_WORDS
+        freq_right = KDMP_10_NEG
+    else:
+        freq_left = REF_53_WORDS
+        freq_right = REF_10_NEG
 
-    top_neg_1 = top_negative[0][0] if len(top_negative) > 0 else "keluhan"
-    top_neg_1_cnt = top_negative[0][1] if len(top_negative) > 0 else 0
+    total_left = len(freq_left)
+    total_right = len(freq_right)
+
+    top_word_1 = list(freq_left.keys())[0] if freq_left else "Kebijakan"
+    top_word_1_cnt = freq_left.get(top_word_1, 0)
+
+    top_neg_1 = list(freq_right.keys())[0] if freq_right else "Keluhan"
+    top_neg_1_cnt = freq_right.get(top_neg_1, 0)
 
     chips = [
-        {"label": "Kata Teratas Umum", "val": top_word_1.capitalize(), "sub": f"{top_word_1_cnt:,} kemunculan", "dot": "#10B981", "val_color": "#10B981"},
-        {"label": "Kata Teratas Negatif", "val": top_neg_1.capitalize(), "sub": f"{top_neg_1_cnt:,} muatan kritik", "dot": "#EF4444", "val_color": "#EF4444"},
-        {"label": "Kosakata Unik", "val": f"{len(top_general)} Term", "sub": "setelah saringan stopwords", "dot": "#2563EB"},
+        {"label": "Kata Teratas Umum", "val": top_word_1, "sub": f"{top_word_1_cnt:,} bobot frekuensi", "dot": "#10B981", "val_color": "#10B981"},
+        {"label": "Kata Teratas Negatif", "val": top_neg_1, "sub": f"{top_neg_1_cnt:,} muatan kritik", "dot": "#EF4444", "val_color": "#EF4444"},
+        {"label": "Kosakata Unik", "val": f"{total_left} Kata", "sub": "peta awan kata dominan", "dot": "#2563EB"},
         {"label": "Fokus Topik", "val": m['top_kw_1'][:14], "sub": f"Topik: {m['topic_title'][:15]}", "dot": "#8B5CF6"},
         {"label": "Rasio Kritik", "val": f"{m['neg_p']}%", "sub": "dari total populasi", "dot": "#EF4444"}
     ]
     render_kpi_chips(chips)
     
+    # Generate WordCloud base64 images
+    b64_left = _generate_wordcloud_image_base64(tuple(freq_left.items()), palette_mode='general')
+    b64_right = _generate_wordcloud_image_base64(tuple(freq_right.items()), palette_mode='negative')
+
     c_cloud1, c_cloud2 = st.columns(2, gap="medium")
     
     with c_cloud1:
-        # Build HTML word tags for general
-        tags_gen = []
-        sizes = [24, 21, 18, 16, 15, 14, 13, 12, 12, 11]
-        colors = ['#10B981', '#2563EB', '#D97706', '#059669', '#1E40AF', '#475569', '#64748B']
-        for i, (w, c) in enumerate(top_general[:18]):
-            sz = sizes[min(i, len(sizes)-1)]
-            col = colors[i % len(colors)]
-            tags_gen.append(f"""<span style="font-size:{sz}px; font-weight:700; color:{col}; margin:4px 6px; display:inline-block;">{w} <small style='font-size:9px; color:#94A3B8;'>({c})</small></span>""")
-
-        cloud1_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:16px 18px; min-height:220px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-<span style="width:7px; height:7px; border-radius:50%; background:#10B981; display:inline-block;"></span>
-Kata yang Paling Sering Muncul (Korpus {m['topic_title']})
+        card1_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:14px 18px 12px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+<div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F2942; margin-bottom:12px; display:flex; align-items:center;">
+<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background-color:#2563EB; box-shadow:0 0 0 3.5px #DBEAFE; margin-right:9px;"></span>
+Kata yang Paling Sering Muncul ({total_left} kata)
 </div>
-<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; text-align:center; padding:10px 0;">
-{"".join(tags_gen)}
+<div style="width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+<img src="data:image/png;base64,{b64_left}" style="width:100%; height:auto; display:block; border-radius:4px;" alt="Kata yang Paling Sering Muncul" />
 </div>
 </div>"""
-        render_html(cloud1_html)
+        render_html(card1_html)
 
     with c_cloud2:
-        # Build HTML word tags for negative
-        tags_neg = []
-        for i, (w, c) in enumerate(top_negative[:12]):
-            sz = 26 - min(i*2, 14)
-            tags_neg.append(f"""<div style="font-size:{sz}px; font-weight:800; color:#DC2626; margin:3px 0;">{w} <span style='font-size:11px; color:#991B1B; font-weight:500;'>({c} kritik)</span></div>""")
-
-        cloud2_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:16px 18px; min-height:220px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-<div style="font-size:12.5px; font-weight:700; color:#0F2942; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-<span style="width:7px; height:7px; border-radius:50%; background:#EF4444; display:inline-block;"></span>
-Peta Muatan Negatif (Isu Resistensi & Keluhan)
+        card2_html = f"""<div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:14px 18px 12px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+<div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; color:#0F2942; margin-bottom:12px; display:flex; align-items:center;">
+<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background-color:#2563EB; box-shadow:0 0 0 3.5px #DBEAFE; margin-right:9px;"></span>
+Peta Muatan Negatif ({total_right} kata)
 </div>
-<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px 0;">
-{"".join(tags_neg)}
+<div style="width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+<img src="data:image/png;base64,{b64_right}" style="width:100%; height:auto; display:block; border-radius:4px;" alt="Peta Muatan Negatif" />
 </div>
 </div>"""
-        render_html(cloud2_html)
+        render_html(card2_html)
 
     render_callout_target(f"Observasi Semantik: Diskursus positif berkisar pada istilah '{top_word_1}', sedangkan muatan kritik didominasi oleh kata kunci '{top_neg_1}'.")
     render_mh_footer(f"Sumber: Ekstraksi Teks Bersih Korpus {m['topic_title']} ({m['vol']:,} baris)")
