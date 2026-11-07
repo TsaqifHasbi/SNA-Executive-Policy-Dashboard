@@ -112,6 +112,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Intersep cepat halaman legal via query params (misal: /?page=terms atau /?page=privacy)
+# Berjalan instan tanpa memuat dataset 197k baris untuk performa bot review
+_qp_page = (st.query_params.get("page") or "").lower().strip()
+if _qp_page in ["terms", "tos", "terms_of_service", "terms-of-service"]:
+    from src.legal_pages import render_terms_of_service
+    render_terms_of_service()
+    st.stop()
+elif _qp_page in ["privacy", "privacy_policy", "privacy-policy"]:
+    from src.legal_pages import render_privacy_policy
+    render_privacy_policy()
+    st.stop()
+
 # Standalone st.logo removed per user preference; logo is integrated into the header bar and cards.
 
 # Executive Clean Light Styling
@@ -529,6 +541,12 @@ with st.sidebar:
         </div>
     </div>
     """)
+
+    st.markdown("---")
+    st.markdown("<div style='font-size:11px; font-weight:700; color:#0F2942; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;'>Dokumen Kebijakan & Kepatuhan:</div>", unsafe_allow_html=True)
+    st.link_button("Terms of Service", "/terms-of-service", icon=":material/gavel:", use_container_width=True)
+    st.link_button("Privacy Policy", "/privacy-policy", icon=":material/policy:", use_container_width=True)
+    st.caption("Kepatuhan Resmi TikTok for Developers & Riset UNSOED")
 
 # Calculate Core KPIs
 kpis = calculate_kpis(df_filtered)
