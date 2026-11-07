@@ -140,7 +140,6 @@ def render_terms_of_service():
         <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 18px; border-radius:8px; font-size:13px; line-height:1.8;">
             <div><strong>Lembaga:</strong> Program Studi Informatika, Fakultas Teknik, Universitas Jenderal Soedirman</div>
             <div><strong>Lokasi:</strong> Purbalingga / Purwokerto, Jawa Tengah, Indonesia</div>
-            <div><strong>Repositori Proyek:</strong> <a href="https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard" target="_blank" style="color:#2563EB;">github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard</a></div>
             <div><strong>Web App:</strong> <a href="https://sna-executive-policy-dashboard.streamlit.app/" target="_blank" style="color:#2563EB;">sna-executive-policy-dashboard.streamlit.app</a></div>
         </div>
     </div>
@@ -244,7 +243,6 @@ def render_privacy_policy():
         <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 18px; border-radius:8px; font-size:13px; line-height:1.8;">
             <div><strong>Penyelenggara Riset:</strong> Laboratorium Riset Informatika, Fakultas Teknik, Universitas Jenderal Soedirman</div>
             <div><strong>Alamat:</strong> Jl. Mayjen Sungkono Km 5, Blater, Kalimanah, Purbalingga, Jawa Tengah 53371</div>
-            <div><strong>GitHub:</strong> <a href="https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard" target="_blank" style="color:#2563EB;">github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard</a></div>
             <div><strong>Portal:</strong> <a href="https://sna-executive-policy-dashboard.streamlit.app/" target="_blank" style="color:#2563EB;">sna-executive-policy-dashboard.streamlit.app</a></div>
         </div>
     </div>

@@ -26,6 +26,6 @@ The analytical models, sentiment predictions, and emotion classifications are ge
 
 ### 6. Contact Information
 For inquiries regarding these Terms of Service, please contact:
-- **Repository:** https://github.com/TsaqifHasbi/SNA-Executive-Policy-Dashboard
 - **Institution:** Department of Informatics, Faculty of Engineering, Universitas Jenderal Soedirman.
+- **Platform:** https://sna-executive-policy-dashboard.streamlit.app/
 
