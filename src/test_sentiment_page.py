@@ -101,8 +101,12 @@ NEGATIVE_TERMS = {
     'kecaman': 2.8, 'batal': 2.2, 'dibatalkan': 2.5, 'kacau': 2.5, 'kekacauan': 2.8,
     'cacat': 2.5, 'mundur': 2.2, 'kemunduran': 2.5, 'kontra': 2.0, 'anti': 2.0,
     'benci': 2.8, 'kebencian': 3.0, 'muak': 2.8, 'eneg': 2.5, 'jengkel': 2.5,
-    # Isu Korupsi & Fraud
+    # Isu Korupsi, Penyalahgunaan & Penyelewengan
     'korupsi': 3.2, 'korup': 3.2, 'bancakan': 3.0, 'curang': 2.8, 'kecurangan': 3.0,
+    'disalahgunakan': 3.5, 'menyalahgunakan': 3.5, 'penyalahgunaan': 3.5, 'salahgunakan': 3.5, 'salahguna': 3.5,
+    'diselewengkan': 3.5, 'menyelewengkan': 3.5, 'penyelewengan': 3.5, 'menyeleweng': 3.2,
+    'salah sasaran': 3.2, 'tidak tepat sasaran': 3.2, 'kurang tepat sasaran': 3.0, 'salah target': 2.8,
+    'kurang tepat': 2.8, 'tidak tepat': 2.8, 'salah alokasi': 2.8, 'penyimpangan': 3.2, 'disimpangkan': 3.2,
     'bohong': 2.8, 'kebohongan': 3.0, 'pembohong': 3.0, 'dibohongi': 3.0, 'palsu': 2.5,
     'maling': 3.2, 'rampok': 3.2, 'nilep': 3.0, 'tilep': 3.0, 'sunat': 2.8,
     'pencitraan': 2.5, 'penipuan': 3.0, 'tipu': 2.8, 'manipulasi': 2.8, 'pungli': 3.0,
@@ -168,7 +172,7 @@ EMOTION_KEYWORDS = {
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
     ],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan'],
     'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan', 'ngentot', 'peler', 'jembut', 'lonte'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
     'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita'],
@@ -397,16 +401,31 @@ def analyze_text_nlp(text):
     emo_scores = {k: 0.1 for k in EMOTION_KEYWORDS.keys()}
     for emo, kw_list in EMOTION_KEYWORDS.items():
         for kw in kw_list:
+            # Jika kata kunci positif dinegasikan (misal: "kurang tepat", "tidak percaya"), lewati dari Trust/Joy/Anticipation
+            if emo in ['Joy', 'Trust', 'Anticipation']:
+                neg_pat = rf'\b(?:tidak|tak|bukan|jangan|belum|gak|ga|nggak|tdk|kurang)\s+(?:\w+\s+)?{re.escape(kw)}\b'
+                if re.search(neg_pat, clean_text):
+                    continue
             if re.search(rf'\b{re.escape(kw)}\b', clean_text) or re.search(rf'\b{re.escape(kw)}\b', norm_text):
                 emo_scores[emo] += 2.8
                 
     # Evaluasi kecocokan morfologi emosi per kata
-    for w in words:
+    for i, w in enumerate(words):
+        is_w_neg = False
+        if i > 0 and words[i-1] in NEGATIONS:
+            is_w_neg = True
+        elif i > 1 and words[i-2] in NEGATIONS:
+            is_w_neg = True
+
         cands = get_morphology_candidates(w)
         for emo, kw_list in EMOTION_KEYWORDS.items():
             for kw in kw_list:
                 if kw in cands:
-                    emo_scores[emo] += 2.5
+                    if is_w_neg and emo in ['Joy', 'Trust', 'Anticipation']:
+                        emo_scores['Anger'] += 2.2
+                        emo_scores['Sadness'] += 1.5
+                    else:
+                        emo_scores[emo] += 2.5
 
     # Boost antisipasi & redam amarah jika terdapat klausa pencegahan/tata kelola
     if has_preventative or caution_score > 0:
@@ -429,16 +448,25 @@ def analyze_text_nlp(text):
         emo_scores['Joy'] = 0.05
         emo_scores['Trust'] = 0.05
                 
-    # Sinkronisasi emosi dengan polaritas sentimen
+    # Sinkronisasi emosi dengan polaritas sentimen (Sentiment-Valence Constraint)
     if pred_sent == "Positif":
-        emo_scores['Joy'] += pos_score * 0.8
-        emo_scores['Trust'] += pos_score * 0.7
-        emo_scores['Anticipation'] += pos_score * 0.5
+        emo_scores['Joy'] += pos_score * 1.5
+        emo_scores['Trust'] += pos_score * 1.2
+        emo_scores['Anticipation'] += pos_score * 0.8
+        # Redam emosi bertentangan (negatif)
+        emo_scores['Anger'] = 0.05
+        emo_scores['Disgust'] = 0.05
+        emo_scores['Fear'] = 0.05
+        emo_scores['Sadness'] = 0.05
     elif pred_sent == "Negatif":
-        emo_scores['Anger'] += neg_score * 0.8
-        emo_scores['Disgust'] += neg_score * 0.5
-        emo_scores['Fear'] += neg_score * 0.4
-        emo_scores['Sadness'] += neg_score * 0.4
+        emo_scores['Anger'] += neg_score * 1.5
+        emo_scores['Disgust'] += neg_score * 1.0
+        emo_scores['Fear'] += neg_score * 0.8
+        emo_scores['Sadness'] += neg_score * 0.8
+        # Redam mutlak emosi bertentangan (positif)
+        emo_scores['Joy'] = 0.02
+        emo_scores['Trust'] = 0.02
+        emo_scores['Anticipation'] = 0.02
     else:
         emo_scores['Neutral'] += 2.5
         emo_scores['Surprise'] += 0.5
@@ -646,6 +674,17 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
         elif sent == "Negatif":
             analysis['probs'] = {'Positif': 0.02, 'Netral': 0.03, 'Negatif': 0.95}
             analysis['confidence'] = 0.95
+
+    # Pastikan probabilitas emosi selaras dengan emosi hasil penyelarasan (valence alignment)
+    if emo != analysis['primary_emotion'] or (sent == "Negatif" and analysis['primary_emotion'] in ['Trust', 'Joy', 'Anticipation']):
+        analysis['primary_emotion'] = emo
+        new_probs = {k: 0.03 for k in analysis['emotion_probs']}
+        new_probs[emo] = 0.70
+        rem = 0.30 / max(1, (len(new_probs) - 1))
+        for k in new_probs:
+            if k != emo:
+                new_probs[k] = rem
+        analysis['emotion_probs'] = new_probs
 
     # Deteksi topik secara mandiri dari teks yang diuji (Dynamic Topic Detection)
     active_topic = detect_topic_from_text(text_input, fallback=fallback_topic)

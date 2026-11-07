@@ -62,6 +62,12 @@ STRONG_NEGATIVE_PHRASES = [
     'bingkai foto', 'sppg cuman ngabdi', 'sppg hanya ngabdi',
     'weekend in bali, always flying', 'broken perpajakannya',
     
+    # Isu Penyelewengan, Penyalahgunaan & Ketidaktepatan Sasaran
+    'disalahgunakan', 'menyalahgunakan', 'penyalahgunaan', 'salah gunakan', 'salah guna',
+    'diselewengkan', 'penyelewengan', 'menyelewengkan', 'menyeleweng',
+    'salah sasaran', 'tidak tepat sasaran', 'kurang tepat sasaran', 'salah target',
+    'kurang tepat', 'tidak tepat', 'salah alokasi', 'penyimpangan', 'disimpangkan',
+
     # Sarkasme mematikan
     'mematikan banget',
 ]
@@ -384,7 +390,8 @@ ANGER_TEXT_PATTERNS = [
     'pencurian', 'bancakan', 'maling', 'mana gas mana gas', 'self centered',
     'narcissistic', 'halu', 'ngayal', 'pura buta', 'pura tuli', 'marah', 'kesal',
     'geram', 'murka', 'benci', 'muak', 'ngamuk',
-    'ngegas', 'vendor nakal', 'pemakan anggaran', 'jangan sok paling pintar', 'ini nyawa anak'
+    'ngegas', 'vendor nakal', 'pemakan anggaran', 'jangan sok paling pintar', 'ini nyawa anak',
+    'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'kurang tepat', 'tidak tepat', 'salah alokasi'
 ]
 ANGER_EMOJIS = {'😡', '🤬', '👿', '😤', '🖕'}
 
