@@ -26,10 +26,12 @@ import streamlit.components.v1 as components_v1
 # Leksikon & Bobot Semantik Bahasa Indonesia untuk Kebijakan Publik
 # ------------------------------------------------------------------------------
 POSITIVE_TERMS = {
-    # Keberhasilan, Mutu, & Manfaat
+    # Keberhasilan, Mutu, Manfaat & Kegunaan
     'baik': 2.5, 'terbaik': 2.8, 'kebaikan': 2.5, 'membaik': 2.5, 'sebaik': 2.2, 'perbaikan': 2.2,
     'bagus': 2.5, 'hebat': 2.5, 'mantap': 2.5, 'mantul': 2.5, 'keren': 2.2, 'berhasil': 2.5,
     'sukses': 2.5, 'bermanfaat': 2.8, 'manfaat': 2.2, 'kemanfaatan': 2.5, 'membantu': 2.5,
+    'berguna': 3.0, 'guna': 2.5, 'kegunaan': 2.5, 'berfaedah': 2.8, 'faedah': 2.5, 'efektif': 2.8,
+    'penting': 2.5, 'berdampak': 2.5, 'tertolong': 2.8, 'menolong': 2.5, 'bernilai': 2.5, 'istimewa': 2.8,
     'terbantu': 2.2, 'bantu': 2.0, 'bantuan': 2.0, 'apresiasi': 2.5, 'mengapresiasi': 2.5,
     'dukung': 2.2, 'mendukung': 2.5, 'dukungan': 2.2, 'terima kasih': 2.2, 'alhamdulillah': 2.8,
     'alhamdulilah': 2.8, 'bersyukur': 2.5, 'syukur': 2.2, 'berkualitas': 2.5, 'kualitas': 2.0,
@@ -159,8 +161,8 @@ def get_morphology_candidates(word):
     return cands
 
 EMOTION_KEYWORDS = {
-    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang', 'bijak', 'bijaksana', 'salut', 'jempol'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran', 'bijak', 'bijaksana', 'kebijaksanaan', 'arif', 'cerdas', 'visioner'],
+    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang', 'bijak', 'bijaksana', 'salut', 'jempol', 'berguna', 'bermanfaat', 'berfaedah', 'efektif', 'membantu'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran', 'bijak', 'bijaksana', 'kebijaksanaan', 'arif', 'cerdas', 'visioner', 'berguna', 'bermanfaat', 'berfaedah', 'efektif', 'membantu'],
     'Anticipation': [
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
@@ -177,7 +179,8 @@ NEGATIONS = {'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', '
 INTENSIFIERS = {
     'sangat': 1.6, 'amat': 1.5, 'banget': 1.6, 'bgt': 1.5, 'sekali': 1.5,
     'luar biasa': 1.8, 'parah': 1.6, 'beneran': 1.4, 'sungguh': 1.5,
-    'paling': 1.6, 'terlalu': 1.5, 'bener-bener': 1.5, 'bener': 1.3
+    'paling': 1.6, 'terlalu': 1.5, 'bener-bener': 1.5, 'bener': 1.3,
+    'pol': 1.6, 'bet': 1.5, 'tenan': 1.5, 'pisan': 1.5, 'abis': 1.5, 'habis': 1.4
 }
 
 # Pola Frasa Pencegahan & Antisipasi Tata Kelola Kebijakan Publik
@@ -286,10 +289,17 @@ def analyze_text_nlp(text):
             is_negated = True
 
         intensifier_mult = 1.0
+        # Cek kata penguat sebelum kata sifat (misal: "sangat berguna", "amat bagus")
         if i > 0 and words[i-1] in INTENSIFIERS:
-            intensifier_mult = INTENSIFIERS[words[i-1]]
+            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i-1]])
         elif i > 1 and words[i-2] in INTENSIFIERS:
-            intensifier_mult = INTENSIFIERS[words[i-2]]
+            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i-2]])
+
+        # Cek kata penguat sesudah kata sifat (misal: "berguna banget", "enak pol", "mantap bet")
+        if i + 1 < len(words) and words[i+1] in INTENSIFIERS:
+            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i+1]])
+        elif i + 2 < len(words) and words[i+2] in INTENSIFIERS:
+            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i+2]])
             
         cands = get_morphology_candidates(w)
         pos_matches = [POSITIVE_TERMS[c] for c in cands if c in POSITIVE_TERMS]

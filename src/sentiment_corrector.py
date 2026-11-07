@@ -98,6 +98,9 @@ STRONG_POSITIVE_PHRASES = [
     # Doa & apresiasi program prioritas
     'sehat sehat', 'berkah', 'alhamdulillah', 'bersyukur', 'terima kasih',
     'apresiasi', 'berhasil', 'sukses', 'bermanfaat', 'dukung mbg',
+    'berguna banget', 'sangat berguna', 'berguna', 'amat berguna',
+    'sangat bermanfaat', 'bermanfaat banget', 'sangat membantu', 'membantu banget',
+    'sangat efektif', 'efektif banget', 'keren banget', 'mantap banget',
     
     # Program Sekolah Rakyat & Jaring Pengaman Sosial
     'sekolah rakyat mirip sekolah kalangan elit', 'mirip sekolah kalangan elit',
@@ -254,6 +257,12 @@ def correct_sentiment(text, current_sentiment, current_score=0.0):
     if is_defense:
         pos_signals += 3
         reasons.append('pembelaan_kebijakan_dari_penentang')
+        
+    # Cek frasa positif kuat lebih awal agar tidak salah divonis sebagai kemarahan saat HURUF BESAR (ALL CAPS)
+    has_pos, pos_p = _has_strong_positive(text_lower)
+    if has_pos:
+        pos_signals += 2
+        reasons.append(f'positif_kuat({pos_p})')
     
     # 1. Umpatan (bobot 3 - mutlak negatif jika bukan pembelaan kebijakan)
     if _has_profanity(text_lower):
@@ -273,9 +282,9 @@ def correct_sentiment(text, current_sentiment, current_score=0.0):
         neg_signals += 2
         reasons.append('sarkasme')
     
-    # 4. Caps lock kemarahan (>= 4 kata huruf kapital)
+    # 4. Caps lock kemarahan (>= 4 kata huruf kapital tanpa indikator positif/pembelaan)
     caps_count = _count_caps_words(raw_text)
-    if caps_count >= 4 and not is_pure_info:
+    if caps_count >= 4 and not is_pure_info and not has_pos and not is_defense:
         neg_signals += 1
         reasons.append('caps_kemarahan')
         
@@ -287,13 +296,7 @@ def correct_sentiment(text, current_sentiment, current_score=0.0):
         
     # --- DETEKSI POSITIF ---
     
-    # 6. Frasa positif kuat (makanan lezat, hiburan viral lucu/kocak, doa)
-    has_pos, pos_p = _has_strong_positive(text_lower)
-    if has_pos:
-        pos_signals += 2
-        reasons.append(f'positif_kuat({pos_p})')
-        
-    # 7. Emoji positif
+    # 6. Emoji positif
     pos_emoji_count = _count_emojis(text, POSITIVE_EMOJIS)
     if pos_emoji_count >= 1:
         pos_signals += 1
