@@ -62,6 +62,11 @@ STRONG_NEGATIVE_PHRASES = [
     'bingkai foto', 'sppg cuman ngabdi', 'sppg hanya ngabdi',
     'weekend in bali, always flying', 'broken perpajakannya',
     
+    # Isu Pemborosan, Buang Anggaran & Ketidakefektifan
+    'buang anggaran', 'buang-buang anggaran', 'buang uang', 'buang duit', 'buang-buang duit', 'buang-buang uang',
+    'bakar uang', 'bakar duit', 'hambur uang', 'hambur duit', 'hamburkan uang', 'sia-sia', 'sia sia',
+    'memilih pulang ketimbang', 'lebih memilih pulang', 'tidak betah', 'tak betah', 'ga betah',
+
     # Isu Penyelewengan, Penyalahgunaan & Ketidaktepatan Sasaran
     'disalahgunakan', 'menyalahgunakan', 'penyalahgunaan', 'salah gunakan', 'salah guna',
     'diselewengkan', 'penyelewengan', 'menyelewengkan', 'menyeleweng',
@@ -246,6 +251,7 @@ def correct_sentiment(text, current_sentiment, current_score=0.0):
         return current_sentiment, _sent_to_label(current_sentiment), current_score, ''
     
     text_lower = text.lower().strip()
+    text_lower = re.sub(r'([a-zA-Z]+)[²2]', r'\1-\1', text_lower)
     raw_text = text.strip()
     
     # 0. CEK BERITA/INFO FAKTUAL TANPA OPINI
@@ -391,7 +397,8 @@ ANGER_TEXT_PATTERNS = [
     'narcissistic', 'halu', 'ngayal', 'pura buta', 'pura tuli', 'marah', 'kesal',
     'geram', 'murka', 'benci', 'muak', 'ngamuk',
     'ngegas', 'vendor nakal', 'pemakan anggaran', 'jangan sok paling pintar', 'ini nyawa anak',
-    'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'kurang tepat', 'tidak tepat', 'salah alokasi'
+    'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'kurang tepat', 'tidak tepat', 'salah alokasi',
+    'buang anggaran', 'buang-buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'bakar uang'
 ]
 ANGER_EMOJIS = {'😡', '🤬', '👿', '😤', '🖕'}
 
@@ -410,6 +417,7 @@ def classify_emotion(text, sentiment_name='Netral', emojis=None):
     3. Penguatan simbolik emoji (jika ada)
     """
     text_l = str(text or '').lower()
+    text_l = re.sub(r'([a-zA-Z]+)[²2]', r'\1-\1', text_l)
     emojis_str = str(emojis or '')
     
     # 1. Valensi Negatif -> Marah, Takut, Jijik, Sedih
@@ -457,6 +465,7 @@ def align_emotion_valence_9class(text, predicted_sentiment, raw_emotion):
     sent = str(predicted_sentiment or '').strip()
     raw_emo = str(raw_emotion or '').strip()
     text_l = str(text or '').lower()
+    text_l = re.sub(r'([a-zA-Z]+)[²2]', r'\1-\1', text_l)
     
     # 1. Valensi Negatif
     if sent == 'Negatif':

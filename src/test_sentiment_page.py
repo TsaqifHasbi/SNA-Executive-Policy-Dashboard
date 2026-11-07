@@ -31,7 +31,7 @@ POSITIVE_TERMS = {
     'baik': 2.5, 'terbaik': 2.8, 'kebaikan': 2.5, 'membaik': 2.5, 'sebaik': 2.2, 'perbaikan': 2.2,
     'bagus': 2.5, 'hebat': 2.5, 'mantap': 2.5, 'mantul': 2.5, 'keren': 2.2, 'berhasil': 2.5,
     'sukses': 2.5, 'bermanfaat': 2.8, 'manfaat': 2.2, 'kemanfaatan': 2.5, 'membantu': 2.5,
-    'berguna': 3.0, 'guna': 2.5, 'kegunaan': 2.5, 'berfaedah': 2.8, 'faedah': 2.5, 'efektif': 2.8,
+    'berguna': 3.0, 'kegunaan': 2.5, 'berfaedah': 2.8, 'faedah': 2.5, 'efektif': 2.8,
     'penting': 2.5, 'berdampak': 2.5, 'tertolong': 2.8, 'menolong': 2.5, 'bernilai': 2.5, 'istimewa': 2.8,
     'terbantu': 2.2, 'bantu': 2.0, 'bantuan': 2.0, 'apresiasi': 2.5, 'mengapresiasi': 2.5,
     'dukung': 2.2, 'mendukung': 2.5, 'dukungan': 2.2, 'terima kasih': 2.2, 'alhamdulillah': 2.8,
@@ -111,6 +111,11 @@ NEGATIVE_TERMS = {
     'maling': 3.2, 'rampok': 3.2, 'nilep': 3.0, 'tilep': 3.0, 'sunat': 2.8,
     'pencitraan': 2.5, 'penipuan': 3.0, 'tipu': 2.8, 'manipulasi': 2.8, 'pungli': 3.0,
     'culas': 2.8, 'licik': 2.8, 'kelicikan': 3.0, 'hoax': 2.8, 'fitnah': 3.0,
+    # Isu Pemborosan & Anggaran Sia-Sia
+    'buang anggaran': 3.5, 'buang-buang anggaran': 3.5, 'buang uang': 3.2, 'buang duit': 3.2,
+    'buang-buang uang': 3.5, 'buang-buang duit': 3.5, 'bakar uang': 3.2, 'bakar duit': 3.2,
+    'hambur uang': 3.2, 'hambur duit': 3.2, 'hamburkan uang': 3.5, 'buang': 2.2, 'buang-buang': 2.8,
+    'sia-sia': 3.2, 'sia sia': 3.2, 'sia': 2.5,
     # Hambatan & Ketimpangan
     'terhambat': 2.2, 'hambat': 2.0, 'penghambat': 2.2,
     # Isu Higienitas & Medis (Disgust/Fear)
@@ -172,10 +177,10 @@ EMOTION_KEYWORDS = {
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
     ],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan', 'buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia'],
     'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan', 'ngentot', 'peler', 'jembut', 'lonte'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
-    'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita'],
+    'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita', 'sia-sia', 'sia sia', 'memilih pulang', 'putus sekolah', 'terlantar'],
     'Surprise': ['kaget', 'terkejut', 'heran', 'ternyata', 'waduh', 'astaga', 'syok', 'luar biasa', 'tak disangka', 'wow', 'anjir', 'gila'],
     'Neutral': ['siaran pers', 'pengumuman resmi', 'tata tertib', 'berita acara', 'statistik resmi', 'siaran berita']
 }
@@ -253,6 +258,8 @@ def analyze_text_nlp(text):
 
     raw_text = str(text)
     clean_text = raw_text.lower()
+    # Normalisasi reduplikasi Indonesia dengan angka 2 atau superscript ² (e.g. "sia²" -> "sia-sia", "lagi²" -> "lagi-lagi", "anak²" -> "anak-anak")
+    clean_text = re.sub(r'([a-zA-Z]+)[²2]', r'\1-\1', clean_text)
     norm_text = re.sub(r'(.)\1+', r'\1', clean_text)
     words = re.findall(r'\b[a-zA-Z0-9_-]+\b', clean_text)
     raw_words = re.findall(r'\b[a-zA-Z0-9_-]+\b', raw_text)
@@ -286,6 +293,14 @@ def analyze_text_nlp(text):
     pos_score = 0.0
     neg_score = 0.0
     caution_score = 0.0
+
+    # Evaluasi frasa multi-kata (e.g. "buang anggaran", "salah sasaran", "tidak tepat sasaran", "bakar uang")
+    for phrase, score in NEGATIVE_TERMS.items():
+        if ' ' in phrase and phrase in clean_text:
+            neg_score += score * 1.5
+    for phrase, score in POSITIVE_TERMS.items():
+        if ' ' in phrase and phrase in clean_text:
+            pos_score += score
     
     for i, w in enumerate(words):
         is_in_prevent_scope = (prevent_scope_idx != -1 and i >= prevent_scope_idx)
