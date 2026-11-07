@@ -90,11 +90,17 @@ def load_main_data():
         if col in df.columns:
             df[col] = df[col].fillna('').astype(str)
 
-    if 'raw_content' in df.columns:
-        if 'cleaned_content' in df.columns:
+    if 'cleaned_content' in df.columns:
+        if 'content' not in df.columns:
+            df['content'] = df['cleaned_content']
+        if 'raw_content' not in df.columns:
             df['raw_content'] = df['cleaned_content']
         else:
-            df['raw_content'] = df['raw_content'].fillna('').astype(str)
+            df['raw_content'] = df['cleaned_content']
+    elif 'raw_content' in df.columns:
+        df['raw_content'] = df['raw_content'].fillna('').astype(str)
+        if 'content' not in df.columns:
+            df['content'] = df['raw_content']
 
     if 'author' in df.columns:
         df['author'] = df['author'].fillna(df.get('handle', '')).fillna('anonim').astype(str)
@@ -140,6 +146,19 @@ def load_main_data():
     if 'year_month' not in df.columns:
         df['year_month'] = df['date'].dt.to_period('M').astype(str)
 
+    # Fail-safe valence alignment: Negative sentiments must never have Joy/Trust/Anticipation
+    if 'emotion' in df.columns and 'sentiment_name' in df.columns:
+        mismatched = (df['sentiment_name'] == 'Negatif') & (df['emotion'].isin(['Joy', 'Trust', 'Anticipation']))
+        if mismatched.any():
+            try:
+                from src.sentiment_corrector import align_emotion_valence_9class
+                df.loc[mismatched, 'emotion'] = [
+                    align_emotion_valence_9class(t, s, e)
+                    for t, s, e in zip(df.loc[mismatched, 'cleaned_content'], df.loc[mismatched, 'sentiment_name'], df.loc[mismatched, 'emotion'])
+                ]
+            except Exception:
+                pass
+
     # Detect emotion only if missing (parquet already contains precomputed aligned emotions)
     if 'emotion' not in df.columns:
         df['emotion'] = df['cleaned_content'].apply(detect_emotion)
@@ -180,4 +199,4 @@ def filter_dataset(df, selected_topic='Semua', selected_platform='Semua', start_
     return df[mask]
 
 
-# Cache reload trigger: 2026-10-20 Unicode NFKD (Fancy Fonts) & Full Hashtags Cleansing Applied
+# Cache reload trigger: 2026-11-07 Permanent Alignment 286k Corpus & Emotion-Valence Fix

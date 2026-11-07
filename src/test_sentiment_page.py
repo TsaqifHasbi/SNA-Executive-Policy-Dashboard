@@ -28,17 +28,21 @@ import streamlit.components.v1 as components_v1
 POSITIVE_TERMS = {
     # Keberhasilan, Mutu, & Manfaat
     'baik': 2.5, 'terbaik': 2.8, 'kebaikan': 2.5, 'membaik': 2.5, 'sebaik': 2.2, 'perbaikan': 2.2,
-    'bagus': 2.0, 'hebat': 2.2, 'mantap': 2.5, 'mantul': 2.5, 'keren': 2.0, 'berhasil': 2.5,
+    'bagus': 2.5, 'hebat': 2.5, 'mantap': 2.5, 'mantul': 2.5, 'keren': 2.2, 'berhasil': 2.5,
     'sukses': 2.5, 'bermanfaat': 2.8, 'manfaat': 2.2, 'kemanfaatan': 2.5, 'membantu': 2.5,
-    'terbantu': 2.2, 'bantu': 2.0, 'bantuan': 2.0, 'apresiasi': 2.2, 'mengapresiasi': 2.5,
-    'dukung': 2.2, 'mendukung': 2.5, 'dukungan': 2.2, 'terima kasih': 2.0, 'alhamdulillah': 2.5,
-    'alhamdulilah': 2.5, 'bersyukur': 2.2, 'syukur': 2.0, 'berkualitas': 2.5, 'kualitas': 2.0,
+    'terbantu': 2.2, 'bantu': 2.0, 'bantuan': 2.0, 'apresiasi': 2.5, 'mengapresiasi': 2.5,
+    'dukung': 2.2, 'mendukung': 2.5, 'dukungan': 2.2, 'terima kasih': 2.2, 'alhamdulillah': 2.8,
+    'alhamdulilah': 2.8, 'bersyukur': 2.5, 'syukur': 2.2, 'berkualitas': 2.5, 'kualitas': 2.0,
+    # Kebijaksanaan, Kepemimpinan & Intelektual Positif
+    'bijak': 3.0, 'bijaksana': 3.2, 'kebijaksanaan': 3.0, 'arif': 2.8, 'kearifan': 2.8,
+    'cerdas': 2.5, 'pintar': 2.5, 'jenius': 2.8, 'logis': 2.5, 'rasional': 2.5, 'visioner': 2.8,
+    'salut': 2.5, 'jempol': 2.5, 'patut': 2.2, 'pantas': 2.2,
     # Nutrisi, Higienitas, & Kesehatan
     'sehat': 2.5, 'menyehatkan': 2.8, 'kesehatan': 2.2, 'nutrisi': 2.2, 'bergizi': 2.8,
-    'gizi': 2.2, 'enak': 2.0, 'nikmat': 2.2, 'lezat': 2.5, 'kenyang': 2.0, 'higienis': 2.2,
+    'gizi': 2.2, 'enak': 2.2, 'nikmat': 2.5, 'lezat': 2.5, 'kenyang': 2.2, 'higienis': 2.5,
     'bersih': 2.2, 'kebersihan': 2.2, 'segar': 2.2,
     # Afeksi, Kecocokan, & Kebenaran
-    'benar': 2.2, 'kebenaran': 2.2, 'tepat': 2.2, 'ketepatan': 2.2, 'cocok': 2.2, 'pas': 2.0, 'sesuai': 2.0,
+    'benar': 2.2, 'kebenaran': 2.2, 'tepat': 2.5, 'ketepatan': 2.5, 'cocok': 2.2, 'pas': 2.2, 'sesuai': 2.2,
     'suka': 2.2, 'menyukainya': 2.2, 'cinta': 2.5, 'sayang': 2.2, 'peduli': 2.5, 'kepedulian': 2.5,
     # Karakter, Integritas & Keadilan
     'amanah': 2.8, 'terpercaya': 2.5, 'percaya': 2.2, 'kepercayaan': 2.2, 'transparan': 2.8,
@@ -60,6 +64,12 @@ NEGATIVE_TERMS = {
     'asu': 3.5, 'kampret': 3.0, 'sialan': 3.0, 'tai': 3.2, 'taik': 3.2, 'taek': 3.2,
     'keparat': 3.2, 'bedebah': 3.2, 'biadab': 3.5, 'laknat': 3.0, 'bangke': 3.0,
     'sompret': 2.8, 'setan': 3.0, 'iblis': 3.0, 'dajjal': 3.2,
+    'ngentot': 3.8, 'entot': 3.8, 'peler': 3.8, 'jembut': 3.8, 'ngewe': 3.8, 'lonte': 3.8,
+    'perek': 3.5, 'jablay': 3.5, 'pecun': 3.5, 'cuks': 3.5, 'cuk': 3.2, 'cok': 3.2,
+    'coeg': 2.8, 'ancuk': 3.5, 'ancok': 3.5, 'su': 3.0, 'bajing': 3.2,
+    # Pemaksaan, Sikap Arogan & Kediktatoran
+    'maksa': 3.2, 'memaksa': 3.2, 'pemaksaan': 3.5, 'dipaksa': 3.0, 'paksakan': 3.2,
+    'memaksakan': 3.2, 'arogan': 3.2, 'angkuh': 3.0, 'diktator': 3.5, 'otoriter': 3.5,
     # Ejekan Intelektual & Mental
     'tolol': 3.2, 'goblok': 3.2, 'goblog': 3.2, 'bego': 3.0, 'bloon': 3.0,
     'dungu': 3.2, 'pekok': 3.0, 'idiot': 3.0, 'bodoh': 2.8, 'pembodohan': 3.2, 'sesat': 2.8,
@@ -149,14 +159,14 @@ def get_morphology_candidates(word):
     return cands
 
 EMOTION_KEYWORDS = {
-    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran'],
+    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang', 'bijak', 'bijaksana', 'salut', 'jempol'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran', 'bijak', 'bijaksana', 'kebijaksanaan', 'arif', 'cerdas', 'visioner'],
     'Anticipation': [
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
     ],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam'],
-    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter'],
+    'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan', 'ngentot', 'peler', 'jembut', 'lonte'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
     'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita'],
     'Surprise': ['kaget', 'terkejut', 'heran', 'ternyata', 'waduh', 'astaga', 'syok', 'luar biasa', 'tak disangka', 'wow', 'anjir', 'gila'],
@@ -164,6 +174,11 @@ EMOTION_KEYWORDS = {
 }
 
 NEGATIONS = {'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', 'tdk', 'kurang'}
+INTENSIFIERS = {
+    'sangat': 1.6, 'amat': 1.5, 'banget': 1.6, 'bgt': 1.5, 'sekali': 1.5,
+    'luar biasa': 1.8, 'parah': 1.6, 'beneran': 1.4, 'sungguh': 1.5,
+    'paling': 1.6, 'terlalu': 1.5, 'bener-bener': 1.5, 'bener': 1.3
+}
 
 # Pola Frasa Pencegahan & Antisipasi Tata Kelola Kebijakan Publik
 PREVENTATIVE_PATTERNS = [
@@ -192,7 +207,7 @@ def detect_topic_from_text(text, fallback="MBG"):
         return "Sekolah Rakyat"
     elif re.search(r'\b(?:kdmp|koperasi\s+desa|merah\s+putih|kemenkop|koperasi)\b', lower):
         return "KDMP"
-    elif re.search(r'\b(?:mbg|makan\s+bergizi|makan\s+gratis|bapanas|katering|gizi|sarapan|spuk)\b', lower):
+    elif re.search(r'\b(?:mbg|mgb|makan\s+bergizi|makan\s+gratis|bapanas|katering|gizi|sarapan|spuk|sppg|bgn|ompreng)\b', lower):
         return "MBG"
     return fallback
 
@@ -246,6 +261,12 @@ def analyze_text_nlp(text):
             is_negated = True
         elif i > 1 and words[i-2] in NEGATIONS:
             is_negated = True
+
+        intensifier_mult = 1.0
+        if i > 0 and words[i-1] in INTENSIFIERS:
+            intensifier_mult = INTENSIFIERS[words[i-1]]
+        elif i > 1 and words[i-2] in INTENSIFIERS:
+            intensifier_mult = INTENSIFIERS[words[i-2]]
             
         cands = get_morphology_candidates(w)
         pos_matches = [POSITIVE_TERMS[c] for c in cands if c in POSITIVE_TERMS]
@@ -254,10 +275,10 @@ def analyze_text_nlp(text):
         best_pos = max(pos_matches) if pos_matches else 0.0
         best_neg = max(neg_matches) if neg_matches else 0.0
         
-        # Cek penekanan emosional huruf kapital (ALL CAPS)
+        # Cek penekanan emosional huruf kapital (ALL CAPS) & kata penguat (intensifier)
         caps_multiplier = 1.25 if (i < len(raw_words) and raw_words[i].isupper() and len(raw_words[i]) >= 3) else 1.0
-        best_pos *= caps_multiplier
-        best_neg *= caps_multiplier
+        best_pos *= (caps_multiplier * intensifier_mult)
+        best_neg *= (caps_multiplier * intensifier_mult)
         
         if best_pos > 0 and best_pos >= best_neg:
             if is_negated:

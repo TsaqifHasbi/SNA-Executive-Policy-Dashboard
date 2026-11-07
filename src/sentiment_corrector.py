@@ -17,6 +17,7 @@ import re
 PROFANITY = {
     'ajg', 'anjg', 'anjing', 'bangsat', 'bajingan', 'brengsek', 'tolol', 'bodoh',
     'goblok', 'goblog', 'idiot', 'bego', 'dungu', 'kontol', 'memek', 'ngentot',
+    'entot', 'peler', 'jembut', 'lonte', 'ngewe', 'cuks', 'cuk', 'cok', 'ancuk', 'ancok',
     'tai', 'taik', 'setan', 'iblis', 'keparat', 'kampret', 'jancok', 'jancuk',
     'asu', 'asw', 'bgst', 'anjir', 'anjrit', 'biadab', 'bedebah', 'sialan',
     'fuck', 'shit', 'damn', 'wtf', 'stfu', 'asshole', 'bullshit',
@@ -332,6 +333,8 @@ SADNESS_EMOJIS = {'😭', '😢', '💔', '🥺', '😔', '😞'}
 ANGER_TEXT_PATTERNS = [
     'ajg', 'anjg', 'anjing', 'bangsat', 'bajingan', 'brengsek', 'tolol', 'bodoh',
     'goblok', 'idiot', 'bego', 'dungu', 'biadab', 'bedebah', 'sialan', 'kampret',
+    'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'memaksa', 'pemaksaan',
+    'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter',
     'stop mbg', 'bubarin', 'bubarkan', 'hentikan program', 'turunkan harga',
     'hidup mahasiswa', 'demo', 'tuntutan', 'pemborosan', 'korupsi', 'koruptor',
     'pencurian', 'bancakan', 'maling', 'mana gas mana gas', 'self centered',
