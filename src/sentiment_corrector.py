@@ -109,6 +109,24 @@ STRONG_POSITIVE_PHRASES = [
     'memutus mata rantai kemiskinan', 'pendidikan gratis 100% berasrama',
 ]
 
+# Pola Pembelaan Kebijakan & Afirmasi Kebaikan Program (Pro-Policy Defense Patterns)
+# Mengantisipasi makian/slang yang sebenarnya ditujukan kepada pihak pengkritik atau sebagai kata seru kekaguman
+PRO_POLICY_DEFENSE_PATTERNS = [
+    # 1. Afirmasi kebaikan program: "udah baik dikasih makan gratis", "udah dibantu sekolah rakyat", "mending dapat makan gratis"
+    r'(?:udah|sudah)\s+(?:baik|bagus|enak|gratis|mending|dibantu|dikasih|diberi)\s+',
+    r'(?:mending|untung)\s+(?:ada|dikasih|diberi|dapat)\s+(?:mbg|makan\s+gratis|sekolah\s+rakyat|bantuan)',
+    # 2. Kurang bersyukur / masih nyinyir: "udah dikasih makan gratis masih aja nyinyir", "udah gratis masih aja protes"
+    r'(?:udah|sudah)\s+(?:gratis|dikasih|dibantu).*?(?:masih\s+(?:aja|saja|lu)?\s*(?:protes|nyinyir|ngeluh|bacot|komplain|banyak\s+omong|kurang))',
+    r'(?:ga|gak|tidak)\s+(?:tahu\s+diri|bersyukur|tau\s+diri|terima\s+kasih)',
+    # 3. Mengecam penentang program: "yang nolak mbg tolol", "buzzer yang jelekin mbg babi"
+    r'(?:yang|yg)\s+(?:nolak|nyinyir|hujat|kritik|nyerang|fitnah|benci|gasuka|gak\s+suka|jelek-jelekin|ngejelekin)\s+(?:mbg|kdmp|program|sekolah\s+rakyat).*?\b(?:tolol|goblok|bego|babi|anjing|dungu|kampret|bangsat|sialan)\b',
+    # 4. Melarang menjelekkan program: "jangan fitnah mbg anjing"
+    r'(?:jangan|jgn|ngapain)\s+(?:fitnah|nyinyir|hujat|jelekin|ngejelekin)\s+(?:mbg|kdmp|program|sekolah\s+rakyat)',
+    # 5. Slang penguat pujian (intensifier): "anjir enak banget", "cok mantap pol", "jancuk bergizi tenan"
+    r'\b(?:anjir|njir|cok|cuk|cuks|asu|jancuk|jancok|gila|goblok)\b\s+(?:banget\s+)?(?:enak|keren|mantap|mantul|lezat|nikmat|juara|mewah|lengkap|top|kenyang|bagus|berkah|membantu|bergizi)',
+    r'\b(?:enak|keren|mantap|mantul|lezat|nikmat|juara|mewah|lengkap|top|kenyang|bagus|bergizi)\b\s+(?:banget|bgt|bet|pol|tenan)?\s*(?:cok|cuk|cuks|anjir|njir|jancok|jancuk|asu)'
+]
+
 # Emoji yang jelas positif
 POSITIVE_EMOJIS = {'😋', '😊', '🥰', '❤️', '💖', '💕', '👍', '🙏', '😍', '🤩', '🎉', '🥳', '✨', '💪', '🔥', '🤤'}
 
@@ -229,11 +247,19 @@ def correct_sentiment(text, current_sentiment, current_score=0.0):
     neg_signals = 0
     pos_signals = 0
     reasons = []
+
+    # 0c. CEK PEMBELAAN KEBIJAKAN / KECAMAN KEPADA PENENTANG (PRO-POLICY DEFENSE)
+    # Contoh: "bangsat ,udah baik dikasih makan gratis dari mbg", "yang nolak mbg tolol"
+    is_defense = any(re.search(pat, text_lower) for pat in PRO_POLICY_DEFENSE_PATTERNS)
+    if is_defense:
+        pos_signals += 3
+        reasons.append('pembelaan_kebijakan_dari_penentang')
     
-    # 1. Umpatan (bobot 3 - mutlak negatif)
+    # 1. Umpatan (bobot 3 - mutlak negatif jika bukan pembelaan kebijakan)
     if _has_profanity(text_lower):
-        neg_signals += 3
-        reasons.append('umpatan')
+        if not is_defense:
+            neg_signals += 3
+            reasons.append('umpatan')
     
     # 2. Frasa negatif kuat
     has_neg, neg_p = _has_strong_negative(text_lower)
@@ -436,7 +462,7 @@ def align_emotion_valence_9class(text, predicted_sentiment, raw_emotion):
     # 2. Valensi Positif
     elif sent == 'Positif':
         if raw_emo in ['Anger', 'Disgust', 'Sadness', 'Fear']:
-            if any(w in text_l for w in ['dukung', 'percaya', 'kawal', 'yakin', 'amanah', 'hebat', 'harapan', 'terima kasih', 'bantuan']):
+            if any(re.search(pat, text_l) for pat in PRO_POLICY_DEFENSE_PATTERNS) or any(w in text_l for w in ['dukung', 'percaya', 'kawal', 'yakin', 'amanah', 'hebat', 'harapan', 'terima kasih', 'bantuan', 'baik']):
                 return 'Trust'
             if any(w in text_l for w in ['mirip', 'wow', 'elit', 'keren', 'gila']):
                 return 'Surprise'

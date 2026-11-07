@@ -195,6 +195,26 @@ PREVENTATIVE_PATTERNS = [
     r'perlu\s+pengawasan'
 ]
 
+# Pola Pembelaan Kebijakan & Afirmasi Kebaikan Program (Pro-Policy Defense Patterns)
+# Mengantisipasi makian/slang yang sebenarnya ditujukan kepada pihak pengkritik atau sebagai kata seru kekaguman
+PRO_POLICY_DEFENSE_PATTERNS = [
+    # 1. Afirmasi kebaikan program: "udah baik dikasih makan gratis", "udah dibantu sekolah rakyat", "mending dapat makan gratis"
+    r'(?:udah|sudah)\s+(?:baik|bagus|enak|gratis|mending|dibantu|dikasih|diberi)\s+',
+    r'(?:mending|untung)\s+(?:ada|dikasih|diberi|dapat)\s+(?:mbg|makan\s+gratis|sekolah\s+rakyat|bantuan)',
+    # 2. Kurang bersyukur / masih nyinyir: "udah dikasih makan gratis masih aja nyinyir", "udah gratis masih aja protes"
+    r'(?:udah|sudah)\s+(?:gratis|dikasih|dibantu).*?(?:masih\s+(?:aja|saja|lu)?\s*(?:protes|nyinyir|ngeluh|bacot|komplain|banyak\s+omong|kurang))',
+    r'(?:ga|gak|tidak)\s+(?:tahu\s+diri|bersyukur|tau\s+diri|terima\s+kasih)',
+    # 3. Mengecam penentang program: "yang nolak mbg tolol", "buzzer yang jelekin mbg babi"
+    r'(?:yang|yg)\s+(?:nolak|nyinyir|hujat|kritik|nyerang|fitnah|benci|gasuka|gak\s+suka|jelek-jelekin|ngejelekin)\s+(?:mbg|kdmp|program|sekolah\s+rakyat).*?\b(?:tolol|goblok|bego|babi|anjing|dungu|kampret|bangsat|sialan)\b',
+    # 4. Melarang menjelekkan program: "jangan fitnah mbg anjing"
+    r'(?:jangan|jgn|ngapain)\s+(?:fitnah|nyinyir|hujat|jelekin|ngejelekin)\s+(?:mbg|kdmp|program|sekolah\s+rakyat)',
+    # 5. Slang penguat pujian (intensifier): "anjir enak banget", "cok mantap pol", "jancuk bergizi tenan"
+    r'\b(?:anjir|njir|cok|cuk|cuks|asu|jancuk|jancok|gila|goblok)\b\s+(?:banget\s+)?(?:enak|keren|mantap|mantul|lezat|nikmat|juara|mewah|lengkap|top|kenyang|bagus|berkah|membantu|bergizi)',
+    r'\b(?:enak|keren|mantap|mantul|lezat|nikmat|juara|mewah|lengkap|top|kenyang|bagus|bergizi)\b\s+(?:banget|bgt|bet|pol|tenan)?\s*(?:cok|cuk|cuks|anjir|njir|jancok|jancuk|asu)'
+]
+
+DEFENSE_VENT_WORDS = {'bangsat', 'anjing', 'babi', 'tolol', 'goblok', 'bego', 'kampret', 'asu', 'jancuk', 'jancok', 'cok', 'cuk', 'cuks', 'sialan', 'setan', 'iblis'}
+
 def detect_topic_from_text(text, fallback="MBG"):
     """
     Mendeteksi topik kebijakan secara mandiri dari isi teks/opini
@@ -235,6 +255,9 @@ def analyze_text_nlp(text):
     
     # Deteksi klausa antisipasi / pencegahan (Preventative Context)
     has_preventative = any(re.search(p, clean_text) or re.search(p, norm_text) for p in PREVENTATIVE_PATTERNS)
+    
+    # Deteksi klausa pembelaan program / kecaman terhadap penentang (Pro-Policy Defense)
+    has_pro_defense = any(re.search(p, clean_text) or re.search(p, norm_text) for p in PRO_POLICY_DEFENSE_PATTERNS)
     
     # Temukan batas awal cakupan klausa pencegahan (misal mulai dari "jangan sampai ...")
     prevent_scope_idx = -1
@@ -294,7 +317,11 @@ def analyze_text_nlp(text):
             if is_negated:
                 pos_score += best_neg * 0.8
             else:
-                if is_in_prevent_scope:
+                if has_pro_defense and any(c in DEFENSE_VENT_WORDS for c in cands):
+                    # Makian/umpatan ditujukan kepada penentang kebijakan atau penegas kekaguman
+                    # Tidak membebani penilaian kebijakan, melainkan menambah intensitas pembelaan
+                    pos_score += best_neg * 0.5
+                elif is_in_prevent_scope:
                     # Kata risiko dalam klausa pencegahan (misal: "jangan sampai pungli/terhambat")
                     # Diperlakukan sebagai kewaspadaan antisipatif (risk mitigation), bukan tuduhan langsung
                     caution_score += best_neg * 1.5
@@ -305,6 +332,10 @@ def analyze_text_nlp(text):
     # Penguatan nilai konstruktif untuk opini yang memuat rekomendasi pencegahan
     if has_preventative:
         pos_score += 1.5
+        
+    # Penguatan nilai afirmasi pembelaan program dari kritik/nyinyiran
+    if has_pro_defense:
+        pos_score += 3.0
         
     diff = pos_score - neg_score
     total_val = pos_score + neg_score
@@ -356,6 +387,13 @@ def analyze_text_nlp(text):
         emo_scores['Trust'] += 2.0
         emo_scores['Anger'] = max(0.1, emo_scores['Anger'] * 0.25)
         emo_scores['Disgust'] = max(0.1, emo_scores['Disgust'] * 0.3)
+
+    # Boost kepercayaan & apresiasi jika terdapat pembelaan kebijakan
+    if has_pro_defense:
+        emo_scores['Trust'] += 5.0
+        emo_scores['Joy'] += 2.5
+        emo_scores['Anger'] = max(0.2, emo_scores['Anger'] * 0.25)
+        emo_scores['Disgust'] = max(0.2, emo_scores['Disgust'] * 0.2)
                 
     # Sinkronisasi emosi dengan polaritas sentimen
     if pred_sent == "Positif":
