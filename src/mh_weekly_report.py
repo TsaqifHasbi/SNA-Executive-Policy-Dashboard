@@ -99,12 +99,23 @@ def _get_slide_metrics(df, selected_topic='Semua', topic_label=None):
     t_clean = str(topic_label).replace('_', ' ')
     if t_clean.lower() == 'semua':
         t_clean = 'Seluruh Kebijakan Publik (MBG, Sekolah Rakyat, KDMP)'
+        t_short = 'Seluruh Kebijakan'
+        t_sub = 'MBG • Sekolah Rakyat • KDMP'
     elif t_clean == 'MBG':
         t_clean = 'Makan Bergizi Gratis (MBG)'
+        t_short = 'Makan Bergizi Gratis'
+        t_sub = 'Program MBG Nasional'
     elif t_clean == 'KDMP':
         t_clean = 'Koperasi Desa Merah Putih (KDMP)'
+        t_short = 'Koperasi Desa (KDMP)'
+        t_sub = 'Kemenkop & Ketahanan Pangan'
     elif t_clean == 'Sekolah Rakyat':
         t_clean = 'Program Sekolah Rakyat'
+        t_short = 'Sekolah Rakyat'
+        t_sub = 'Pendidikan & Bantuan Siswa'
+    else:
+        t_short = t_clean
+        t_sub = f"Fokus {t_clean}"
         
     return {
         'vol': vol,
@@ -126,7 +137,9 @@ def _get_slide_metrics(df, selected_topic='Semua', topic_label=None):
         'top_kws': top_kws,
         'top_kw_1': top_kw_1,
         'top_kw_2': top_kw_2,
-        'topic_title': t_clean
+        'topic_title': t_clean,
+        'topic_short': t_short,
+        'topic_sub': t_sub
     }
 
 def _get_frequent_words(df, max_words=25, sentiment_filter=None):
@@ -731,7 +744,7 @@ def render_slide_6_two_wordclouds(df, selected_topic='Semua', topic_label=None, 
         {"label": "Kata Teratas Umum", "val": top_word_1, "sub": f"{top_word_1_cnt:,} bobot frekuensi", "dot": "#10B981", "val_color": "#10B981"},
         {"label": "Kata Teratas Negatif", "val": top_neg_1, "sub": f"{top_neg_1_cnt:,} muatan kritik", "dot": "#EF4444", "val_color": "#EF4444"},
         {"label": "Kosakata Unik", "val": f"{total_left} Kata", "sub": "peta awan kata dominan", "dot": "#2563EB"},
-        {"label": "Fokus Topik", "val": m['top_kw_1'][:14], "sub": f"Topik: {m['topic_title'][:15]}", "dot": "#8B5CF6"},
+        {"label": "Fokus Kebijakan", "val": m.get('topic_short', m['topic_title']), "sub": m.get('topic_sub', f"Topik: {m['topic_title']}"), "dot": "#8B5CF6"},
         {"label": "Rasio Kritik", "val": f"{m['neg_p']}%", "sub": "dari total populasi", "dot": "#EF4444"}
     ]
     render_kpi_chips(chips)
@@ -1025,7 +1038,7 @@ def render_slide_10_stakeholder_mapping(df, selected_topic='Semua', topic_label=
 
     chips = [
         {"label": "Total Penulis", "val": f"{m['users']:,}", "sub": "akun unik", "dot": "#2563EB"},
-        {"label": "Top Akun Interaksi", "val": auth_df.iloc[0]['author'][:12] if len(auth_df) > 0 else "-", "sub": "paling viral", "dot": "#10B981"},
+        {"label": "Top Akun Interaksi", "val": (auth_df.iloc[0]['author'] if len(auth_df.iloc[0]['author']) <= 16 else f"{auth_df.iloc[0]['author'][:15]}…") if len(auth_df) > 0 else "-", "sub": "paling viral", "dot": "#10B981"},
         {"label": "Total Keterlibatan", "val": fmt_val(m['eng']), "sub": "seluruh platform", "dot": "#2563EB"},
         {"label": "Rasio Kritik", "val": f"{m['neg_p']}%", "sub": "proporsi negatif", "dot": "#EF4444"},
         {"label": "Kanal Dominan", "val": m['plat_df'].iloc[0]['platform'] if len(m['plat_df']) > 0 else "-", "sub": "terbanyak aktif", "dot": "#8B5CF6"}
