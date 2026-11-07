@@ -66,8 +66,22 @@ STRONG_NEGATIVE_PHRASES = [
     'mematikan banget',
 ]
 
-# Frasa sarkasme (terlihat positif/ringan tapi menyindir tajam)
+# Frasa sarkasme (terlihat positif/ringan tapi menyindir tajam atau diikuti realitas negatif)
 SARCASM_PATTERNS = [
+    # 1. Pujian semu + Realitas bahaya/korupsi/bencana/keracunan (dengan tanda baca apa pun)
+    r'(?:berguna|bermanfaat|hebat|keren|mantap|bagus|berkah)\s+(?:banget+|bgt+|sekali)[!.,?\s]+.*?(?:buat|untuk)\s+(?:bikin|buat)?\s*(?:keracunan|masuk\s+rs|mual|muntah|diare|mati|korban|bancakan|nilep|korupsi|bagi-bagi|vendor\s+nakal|pemborosan|utang|tekor|rusak|ancur|hancur)',
+    # 2. Pujian semu + bantahan realitas (tapi bohong/boong, tapi kenyataannya, tapi basi/ulat)
+    r'(?:berguna|bermanfaat|hebat|keren|mantap|bagus|enak)\s+(?:banget+|bgt+|sekali)[!.,?\s]+.*?(?:tapi|padahal|kenyataannya|faktanya|nyatanya)\s+.*?(?:bohong|boong|basi|busuk|ulat|cacing|racun|keracunan|rusak|ancur|hancur|bancakan|korup|zonk|sampah)',
+    # 3. Keracunan / Bencana yang dibungkus kata seru pujian di awal kalimat
+    r'(?:woi+|woy+|anjir|njir|gila)\s+.*?(?:berguna|bermanfaat|hebat|mantap|keren).*?(?:keracunan|bancakan|masuk\s+rs|opname|korup|nilep|basi|ulat)',
+    # 4. Saking bergunanya / saking bagusnya
+    r'saking\s+(?:berguna|bermanfaat|bagus|hebat|keren|enak).*?(?:sampe|sampai)\s+(?:keracunan|masuk\s+rs|rugi|muntah|basi|protes|demo|opname)',
+    # 5. Pas dibuka ternyata basi/berulat/zonk
+    r'(?:enak|lezat|nikmat)\s+(?:banget+|bgt+|sekali).*?(?:pas|waktu|saat)\s+(?:dibuka|dilihat|dimakan|diperiksa).*?(?:basi|ulat|cacing|bau|asam|zonk)',
+    # 6. Anggaran habis / utang numpuk
+    r'(?:keren|hebat|mantap)\s+(?:banget+|bgt+|sekali).*?(?:anggaran|apbn|duit).*?(?:habis|ludes|jebol|bancakan|utang)',
+    r'tepuk\s+tangan.*?(?:buat|atas).*?(?:keracunan|bancakan|korupsi|kebobrokan)',
+    # 7. Sindiran politik & kebijakan populer
     r'mana\s+gas\s+mana\s+gas',
     r'2024\s*:\s*oke\s+gas.*?2025\s*:\s*mana\s+gas',
     r'gila+\s+indah',
@@ -279,8 +293,9 @@ def correct_sentiment(text, current_sentiment, current_score=0.0):
     # 3. Sarkasme
     has_sarc, sarc_p = _has_sarcasm(text_lower)
     if has_sarc:
-        neg_signals += 2
-        reasons.append('sarkasme')
+        neg_signals += 4
+        pos_signals = 0  # Batal seluruh sinyal positif semu karena pujian bersifat ironis/sarkas
+        reasons.append(f'sarkasme({sarc_p})')
     
     # 4. Caps lock kemarahan (>= 4 kata huruf kapital tanpa indikator positif/pembelaan)
     caps_count = _count_caps_words(raw_text)

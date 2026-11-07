@@ -20,6 +20,7 @@ from src.mh_style import (
     render_status_badge
 )
 from src.sna_engine import SENTIMENT_COLORS, EMOTION_COLORS, generate_pyvis_html
+from src.sentiment_corrector import SARCASM_PATTERNS, correct_sentiment, align_emotion_valence_9class
 import streamlit.components.v1 as components_v1
 
 # ------------------------------------------------------------------------------
@@ -261,6 +262,9 @@ def analyze_text_nlp(text):
     
     # Deteksi klausa pembelaan program / kecaman terhadap penentang (Pro-Policy Defense)
     has_pro_defense = any(re.search(p, clean_text) or re.search(p, norm_text) for p in PRO_POLICY_DEFENSE_PATTERNS)
+
+    # Deteksi sarkasme kontekstual (pujian semu di awal tapi menyerang tajam di kelanjutan isi)
+    has_sarcasm = any(re.search(p, clean_text) or re.search(p, norm_text) for p in SARCASM_PATTERNS)
     
     # Temukan batas awal cakupan klausa pencegahan (misal mulai dari "jangan sampai ...")
     prevent_scope_idx = -1
@@ -290,16 +294,24 @@ def analyze_text_nlp(text):
 
         intensifier_mult = 1.0
         # Cek kata penguat sebelum kata sifat (misal: "sangat berguna", "amat bagus")
-        if i > 0 and words[i-1] in INTENSIFIERS:
-            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i-1]])
-        elif i > 1 and words[i-2] in INTENSIFIERS:
-            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i-2]])
+        if i > 0:
+            cands_prev1 = get_morphology_candidates(words[i-1])
+            m_p1 = [INTENSIFIERS[c] for c in cands_prev1 if c in INTENSIFIERS]
+            if m_p1: intensifier_mult = max(intensifier_mult, max(m_p1))
+        if i > 1:
+            cands_prev2 = get_morphology_candidates(words[i-2])
+            m_p2 = [INTENSIFIERS[c] for c in cands_prev2 if c in INTENSIFIERS]
+            if m_p2: intensifier_mult = max(intensifier_mult, max(m_p2))
 
-        # Cek kata penguat sesudah kata sifat (misal: "berguna banget", "enak pol", "mantap bet")
-        if i + 1 < len(words) and words[i+1] in INTENSIFIERS:
-            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i+1]])
-        elif i + 2 < len(words) and words[i+2] in INTENSIFIERS:
-            intensifier_mult = max(intensifier_mult, INTENSIFIERS[words[i+2]])
+        # Cek kata penguat sesudah kata sifat (misal: "berguna bangettt", "enak pol", "mantap bet")
+        if i + 1 < len(words):
+            cands_next1 = get_morphology_candidates(words[i+1])
+            m_n1 = [INTENSIFIERS[c] for c in cands_next1 if c in INTENSIFIERS]
+            if m_n1: intensifier_mult = max(intensifier_mult, max(m_n1))
+        if i + 2 < len(words):
+            cands_next2 = get_morphology_candidates(words[i+2])
+            m_n2 = [INTENSIFIERS[c] for c in cands_next2 if c in INTENSIFIERS]
+            if m_n2: intensifier_mult = max(intensifier_mult, max(m_n2))
             
         cands = get_morphology_candidates(w)
         pos_matches = [POSITIVE_TERMS[c] for c in cands if c in POSITIVE_TERMS]
@@ -346,6 +358,11 @@ def analyze_text_nlp(text):
     # Penguatan nilai afirmasi pembelaan program dari kritik/nyinyiran
     if has_pro_defense:
         pos_score += 3.0
+
+    # Pembalikan polaritas jika terdeteksi sarkasme (pujian semu di awal yang menyindir tajam di isi)
+    if has_sarcasm:
+        pos_score = 0.0
+        neg_score = max(neg_score + 3.0, 5.0)
         
     diff = pos_score - neg_score
     total_val = pos_score + neg_score
@@ -404,6 +421,13 @@ def analyze_text_nlp(text):
         emo_scores['Joy'] += 2.5
         emo_scores['Anger'] = max(0.2, emo_scores['Anger'] * 0.25)
         emo_scores['Disgust'] = max(0.2, emo_scores['Disgust'] * 0.2)
+
+    # Reaksi emosi sarkasme: rasa jijik (Disgust) dan amarah (Anger) atas sindiran tajam
+    if has_sarcasm:
+        emo_scores['Disgust'] += 6.0
+        emo_scores['Anger'] += 5.0
+        emo_scores['Joy'] = 0.05
+        emo_scores['Trust'] = 0.05
                 
     # Sinkronisasi emosi dengan polaritas sentimen
     if pred_sent == "Positif":
@@ -607,9 +631,21 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
 
     # Menjalankan Analisis NLP & IndoBERT
     analysis = analyze_text_nlp(text_input)
-    sent = analysis['sentiment']
-    pol = analysis['polarity']
-    emo = analysis['primary_emotion']
+    sent_raw = analysis['sentiment']
+    pol_raw = analysis['polarity']
+    
+    # Sinkronisasi dengan Post-Processing Correction Layer (Sarkasme, Pembelaan Kebijakan, Umpatan)
+    sent, _, pol_corr, corr_reason = correct_sentiment(text_input, sent_raw, pol_raw)
+    pol = pol_corr if corr_reason else pol_raw
+    emo = align_emotion_valence_9class(text_input, sent, analysis['primary_emotion'])
+    
+    if corr_reason:
+        if sent == "Positif":
+            analysis['probs'] = {'Positif': 0.95, 'Netral': 0.03, 'Negatif': 0.02}
+            analysis['confidence'] = 0.95
+        elif sent == "Negatif":
+            analysis['probs'] = {'Positif': 0.02, 'Netral': 0.03, 'Negatif': 0.95}
+            analysis['confidence'] = 0.95
 
     # Deteksi topik secara mandiri dari teks yang diuji (Dynamic Topic Detection)
     active_topic = detect_topic_from_text(text_input, fallback=fallback_topic)
