@@ -78,12 +78,17 @@ STRONG_NEGATIVE_PHRASES = [
     'balik masa penjajahan', 'balik ke zaman penjajahan', 'zaman belanda', 'zaman jepang', 'romusha', 'kerja rodi',
     '11 12', '11-12', 'sebelas dua belas', 'malah bukak', 'malah buka',
 
+    # Isu Ketidakmampuan & Kegagalan Birokrasi
+    'ga becus', 'gak becus', 'tidak becus', 'tak becus', 'bgn ga becus', 'bgn gak becus',
+
     # Sarkasme mematikan
     'mematikan banget',
 ]
 
 # Frasa sarkasme (terlihat positif/ringan tapi menyindir tajam atau diikuti realitas negatif)
 SARCASM_PATTERNS = [
+    # 0. Pujian semu kontras / sindiran peningkatan (makin berguna/hebat/mantap tapi disusul keracunan/korban/ga becus)
+    r'(?:makin|semakin)?\s*(?:berguna|bermanfaat|hebat|keren|mantap|bagus|sukses).*?(?:keracunan|diare|masuk\s+rs|mual|muntah|mati|korban|ga\s+becus|gak\s+becus|tidak\s+becus|korupsi|bancakan|nilep)',
     # 1. Pujian semu + Realitas bahaya/korupsi/bencana/keracunan (dengan tanda baca apa pun)
     r'(?:berguna|bermanfaat|hebat|keren|mantap|bagus|berkah)\s+(?:banget+|bgt+|sekali)[!.,?\s]+.*?(?:buat|untuk)\s+(?:bikin|buat)?\s*(?:keracunan|masuk\s+rs|mual|muntah|diare|mati|korban|bancakan|nilep|korupsi|bagi-bagi|vendor\s+nakal|pemborosan|utang|tekor|rusak|ancur|hancur)',
     # 2. Pujian semu + bantahan realitas (tapi bohong/boong, tapi kenyataannya, tapi basi/ulat)
@@ -409,7 +414,8 @@ ANGER_TEXT_PATTERNS = [
     'ngegas', 'vendor nakal', 'pemakan anggaran', 'jangan sok paling pintar', 'ini nyawa anak',
     'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'kurang tepat', 'tidak tepat', 'salah alokasi',
     'buang anggaran', 'buang-buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'bakar uang',
-    'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', '11 12', 'malah bukak', 'malah buka'
+    'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', '11 12', 'malah bukak', 'malah buka',
+    'ga becus', 'gak becus', 'tidak becus', 'tak becus', 'bgn ga becus', 'bgn gak becus', 'bgn tidak becus'
 ]
 ANGER_EMOJIS = {'😡', '🤬', '👿', '😤', '🖕'}
 
@@ -480,13 +486,17 @@ def align_emotion_valence_9class(text, predicted_sentiment, raw_emotion):
     
     # 1. Valensi Negatif
     if sent == 'Negatif':
-        # Cek leksikon amarah mutlak (ngegas, stop mbg, umpatan)
-        if any(w in text_l for w in ANGER_TEXT_PATTERNS):
+        # Cek leksikon amarah mutlak (ngegas, stop mbg, umpatan, ga becus)
+        if any(w in text_l for w in ANGER_TEXT_PATTERNS) or any(w in text_l for w in ['ga becus', 'gak becus', 'tidak becus', 'bgn ga becus']):
             return 'Anger'
             
         # Cek sensori jijik / mual / makanan basi / bau asam -> Disgust
         if any(w in text_l for w in DISGUST_TEXT_PATTERNS):
             return 'Disgust'
+
+        # Cek bahaya keracunan / racun -> Fear
+        if any(w in text_l for w in FEAR_TEXT_PATTERNS) or any(w in text_l for w in ['keracunan', 'racun', 'mematikan', 'bahaya']):
+            return 'Fear'
             
         # Cek headline sensasional / penutupan mendadak / kehebohan tak terduga -> Surprise
         if any(w in text_l for w in ['bikin heboh', 'ditutup permanen', 'apakah program mbg berhenti', 'tak terduga', 'geger', 'bingkai foto']):
@@ -496,6 +506,8 @@ def align_emotion_valence_9class(text, predicted_sentiment, raw_emotion):
         if raw_emo == 'Joy':
             if any(w in text_l for w in DISGUST_TEXT_PATTERNS):
                 return 'Disgust'
+            if any(w in text_l for w in FEAR_TEXT_PATTERNS) or any(w in text_l for w in ['keracunan', 'racun', 'mematikan', 'bahaya']):
+                return 'Fear'
             return 'Anger'
             
         # Koreksi Trust / Anticipation yang bersentimen Negatif (doa buruk / sindiran)
@@ -515,8 +527,11 @@ def align_emotion_valence_9class(text, predicted_sentiment, raw_emotion):
         return raw_emo
         
     # 3. Valensi Netral / Faktual
-    # Koreksi false-positive Joy pada statement protokoler kepresidenan / bimtek kedinasan
+    # Koreksi false-positive Joy jika teks memuat indikasi bahaya, keracunan, penipuan, atau kritik
     if raw_emo == 'Joy':
+        if any(w in text_l for w in ['keracunan', 'racun', 'korban', 'diare', 'mati', 'ga becus', 'gak becus', 'tidak becus', 'basi', 'busuk', 'bancakan', 'korupsi', 'sia-sia']):
+            return 'Fear' if any(w in text_l for w in ['keracunan', 'racun', 'diare']) else 'Anger'
+
         is_official = any(re.search(pat, text_l) for pat in [
             r'(?:presiden\s+prabowo(?:\s+subianto)?|pemerintah|badan\s+gizi\s+nasional|bgn)\s+(?:menegaskan|memberi\s+arahan|menginstruksikan|konsolidasi)',
             r'(?:bimbingan\s+teknis|bimtek|penjamah\s+makanan)'
