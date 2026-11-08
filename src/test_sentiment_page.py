@@ -263,21 +263,21 @@ POLICY_TARGET_DEFINITIONS = {
         'agency': 'Badan Gizi Nasional (BGN)',
         'handle': '@BadanGiziNasional',
         'hashtag': '#MBG',
-        'keywords': ['mbg', 'mgb', 'makan bergizi', 'makan gratis', 'bgn', 'badan gizi', 'ompreng', 'katering', 'keracunan', 'menu makan', 'makan siang']
+        'keywords': ['mbg', 'mgb', 'makan bergizi', 'makan gratis', 'makan siang gratis', 'bgn', 'badan gizi', 'ompreng']
     },
     'Sekolah Rakyat': {
         'title': 'Program Sekolah Rakyat',
         'agency': 'Kementerian Sosial / Kemendikbud',
         'handle': '@SekolahRakyat_RI',
         'hashtag': '#SekolahRakyat',
-        'keywords': ['sekolah rakyat', 'pendidikan', 'putus sekolah', 'siswa', 'guru', 'gedung sekolah', 'mencerdaskan', 'fasilitas sekolah']
+        'keywords': ['sekolah rakyat', 'program sekolah rakyat', 'sekolah gratis berasrama', 'sekolah dhuafa', 'putus sekolah', 'siswa sekolah rakyat']
     },
     'KDMP': {
         'title': 'Koperasi Desa Merah Putih (KDMP)',
         'agency': 'Kementerian Koperasi (Kemenkop)',
         'handle': '@Kemenkop_KDMP',
         'hashtag': '#KDMP',
-        'keywords': ['kdmp', 'koperasi desa', 'merah putih', 'koperasi', 'sembako desa', 'tengkulak', 'petani desa']
+        'keywords': ['kdmp', 'koperasi desa merah putih', 'koperasi desa', 'koperasi merah putih', 'kopdes', 'sembako desa']
     }
 }
 
@@ -285,7 +285,8 @@ def detect_present_policies(text):
     text_l = str(text or '').lower()
     found = []
     for policy, d in POLICY_TARGET_DEFINITIONS.items():
-        if any(re.search(rf'\b{re.escape(k)}\b', text_l) for k in d['keywords']):
+        all_indicators = d['keywords'] + [d['handle'].lower(), d['hashtag'].lower()]
+        if any(re.search(rf'\b{re.escape(k)}\b', text_l) or (k.startswith(('@', '#')) and k in text_l) for k in all_indicators):
             found.append(policy)
     return found
 
@@ -340,7 +341,7 @@ def decompose_targeted_policy_sentiment(text):
 
     for frag in fragments:
         frag_l = frag.lower()
-        matched_policies = [p for p in present_policies if any(re.search(rf'\b{re.escape(k)}\b', frag_l) for k in POLICY_TARGET_DEFINITIONS[p]['keywords'])]
+        matched_policies = [p for p in present_policies if any(re.search(rf'\b{re.escape(k)}\b', frag_l) or (k.startswith(('@', '#')) and k in frag_l) for k in POLICY_TARGET_DEFINITIONS[p]['keywords'] + [POLICY_TARGET_DEFINITIONS[p]['handle'].lower(), POLICY_TARGET_DEFINITIONS[p]['hashtag'].lower()])]
         if matched_policies:
             active_policy = matched_policies[0]
             for p in matched_policies:
