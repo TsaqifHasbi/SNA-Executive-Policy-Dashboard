@@ -234,21 +234,139 @@ PRO_POLICY_DEFENSE_PATTERNS = [
 
 DEFENSE_VENT_WORDS = {'bangsat', 'anjing', 'babi', 'tolol', 'goblok', 'bego', 'kampret', 'asu', 'jancuk', 'jancok', 'cok', 'cuk', 'cuks', 'sialan', 'setan', 'iblis'}
 
+# ==============================================================================
+# DEFINISI TARGET PROGRAM KEBIJAKAN PEMERINTAH (UNTUK DEKOMPOSISI ASPEK / ABSA)
+# ==============================================================================
+POLICY_TARGET_DEFINITIONS = {
+    'MBG': {
+        'title': 'Makan Bergizi Gratis (MBG)',
+        'agency': 'Badan Gizi Nasional (BGN)',
+        'handle': '@BadanGiziNasional',
+        'hashtag': '#MBG',
+        'keywords': ['mbg', 'mgb', 'makan bergizi', 'makan gratis', 'bgn', 'badan gizi', 'ompreng', 'katering', 'keracunan', 'menu makan', 'makan siang']
+    },
+    'Sekolah Rakyat': {
+        'title': 'Program Sekolah Rakyat',
+        'agency': 'Kementerian Sosial / Kemendikbud',
+        'handle': '@SekolahRakyat_RI',
+        'hashtag': '#SekolahRakyat',
+        'keywords': ['sekolah rakyat', 'pendidikan', 'putus sekolah', 'siswa', 'guru', 'gedung sekolah', 'mencerdaskan', 'fasilitas sekolah']
+    },
+    'KDMP': {
+        'title': 'Koperasi Desa Merah Putih (KDMP)',
+        'agency': 'Kementerian Koperasi (Kemenkop)',
+        'handle': '@Kemenkop_KDMP',
+        'hashtag': '#KDMP',
+        'keywords': ['kdmp', 'koperasi desa', 'merah putih', 'koperasi', 'sembako desa', 'tengkulak', 'petani desa']
+    }
+}
+
+def detect_present_policies(text):
+    text_l = str(text or '').lower()
+    found = []
+    for policy, d in POLICY_TARGET_DEFINITIONS.items():
+        if any(re.search(rf'\b{re.escape(k)}\b', text_l) for k in d['keywords']):
+            found.append(policy)
+    return found
+
 def detect_topic_from_text(text, fallback="MBG"):
     """
     Mendeteksi topik kebijakan secara mandiri dari isi teks/opini
     agar visualisasi SNA, entitas, dan klaster opini sinkron dengan konten.
     """
-    if not text:
-        return fallback
-    lower = text.lower()
-    if re.search(r'\b(?:sekolah\s+rakyat|pendidikan|putus\s+sekolah|guru|siswa|kemensos|kurikulum|pendidikanadil)\b', lower):
-        return "Sekolah Rakyat"
-    elif re.search(r'\b(?:kdmp|koperasi\s+desa|merah\s+putih|kemenkop|koperasi)\b', lower):
-        return "KDMP"
-    elif re.search(r'\b(?:mbg|mgb|makan\s+bergizi|makan\s+gratis|bapanas|katering|gizi|sarapan|spuk|sppg|bgn|ompreng)\b', lower):
-        return "MBG"
+    found = detect_present_policies(text)
+    if found:
+        return found[0]
     return fallback
+
+def decompose_targeted_policy_sentiment(text):
+    """
+    Melakukan Targeted Sentiment Decomposition (Aspect-Based Sentiment Analysis)
+    untuk menguraikan polaritas dan emosi per target kebijakan ketika warganet
+    membandingkan lebih dari satu program dalam satu struktur opini komparatif.
+    """
+    present_policies = detect_present_policies(text)
+    if len(present_policies) <= 1:
+        single_topic = present_policies[0] if present_policies else 'MBG'
+        return {
+            'is_multi_target': False,
+            'primary_topic': single_topic,
+            'topics': [single_topic],
+            'evaluations': {}
+        }
+    
+    # Split klausa komparasi berdasarkan tanda baca dan konjungsi pembanding
+    raw_clauses = re.split(r'([.?!;,\n]+|\b(?:daripada|dari pada|ketimbang|mending|tapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)\b)', text, flags=re.IGNORECASE)
+    
+    fragments = []
+    curr = ""
+    for frag in raw_clauses:
+        if not frag: continue
+        if re.match(r'^[.?!;,\n]+$', frag):
+            curr += frag
+            fragments.append(curr.strip())
+            curr = ""
+        elif re.match(r'^(?:daripada|dari pada|ketimbang|mending|tapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)$', frag, re.IGNORECASE):
+            if curr.strip():
+                fragments.append(curr.strip())
+            curr = frag + " "
+        else:
+            curr += frag
+    if curr.strip():
+        fragments.append(curr.strip())
+
+    topic_clauses = {p: [] for p in present_policies}
+    active_policy = present_policies[0]
+
+    for frag in fragments:
+        frag_l = frag.lower()
+        matched_policies = [p for p in present_policies if any(re.search(rf'\b{re.escape(k)}\b', frag_l) for k in POLICY_TARGET_DEFINITIONS[p]['keywords'])]
+        if matched_policies:
+            active_policy = matched_policies[0]
+            for p in matched_policies:
+                topic_clauses[p].append(frag)
+        else:
+            topic_clauses[active_policy].append(frag)
+
+    evaluations = {}
+    for p in present_policies:
+        clauses_text = " ".join(topic_clauses[p]).strip()
+        if not clauses_text:
+            clauses_text = text
+            
+        ana = analyze_text_nlp(clauses_text)
+        sent, _, pol_corr, corr_r = correct_sentiment(clauses_text, ana['sentiment'], ana['polarity'])
+        pol = pol_corr if corr_r else ana['polarity']
+        emo = align_emotion_valence_9class(clauses_text, sent, ana['primary_emotion'])
+        
+        probs = dict(ana['emotion_probs'])
+        if emo != ana['primary_emotion'] or (sent == 'Negatif' and ana['primary_emotion'] in ['Trust', 'Joy', 'Anticipation']):
+            probs = {k: 0.03 for k in probs}
+            probs[emo] = 0.70
+            rem = 0.30 / max(1, len(probs) - 1)
+            for k in probs:
+                if k != emo: probs[k] = rem
+
+        evaluations[p] = {
+            'topic': p,
+            'title': POLICY_TARGET_DEFINITIONS[p]['title'],
+            'agency': POLICY_TARGET_DEFINITIONS[p]['agency'],
+            'handle': POLICY_TARGET_DEFINITIONS[p]['handle'],
+            'hashtag': POLICY_TARGET_DEFINITIONS[p]['hashtag'],
+            'sentiment': sent,
+            'polarity': pol,
+            'confidence': ana['confidence'],
+            'primary_emotion': emo,
+            'emotion_probs': probs,
+            'reason': corr_r,
+            'excerpt': clauses_text
+        }
+
+    return {
+        'is_multi_target': True,
+        'topics': present_policies,
+        'evaluations': evaluations
+    }
 
 # ------------------------------------------------------------------------------
 # Algoritma Inferensi Kalimat
@@ -510,10 +628,11 @@ def analyze_text_nlp(text):
 # ------------------------------------------------------------------------------
 # Pembangun Graf Relasi SNA Mikro
 # ------------------------------------------------------------------------------
-def build_micro_sna_graph(author, analysis, topic="MBG", df_corpus=None):
+def build_micro_sna_graph(author, analysis, topic="MBG", df_corpus=None, targeted_decomp=None):
     """
     Membangun graf jaringan ego mikro berarah menghubungkan Penulis, Sentimen,
     Emosi, Akun Rujukan (@mentions), Tagar (#hashtags), dan Influencer Korpus.
+    Mendukung dekomposisi komparasi multi-kebijakan (Directed Aspect Edges).
     """
     G = nx.DiGraph()
     clean_author = f"@{author.strip().lstrip('@')}" if author else "@warganet_opini"
@@ -524,20 +643,33 @@ def build_micro_sna_graph(author, analysis, topic="MBG", df_corpus=None):
     sent_color = SENTIMENT_COLORS.get(sent, '#64748B')
     G.add_node(clean_author, color=sent_color, size=30, shape="dot", title=f"Aktor Pengunggah Opini ({sent})")
 
-    # 2. Add Mention Nodes
-    for m in analysis['mentions']:
-        m_node = f"@{m.strip().lstrip('@')}"
-        if m_node != clean_author:
-            G.add_node(m_node, color="#3B82F6", size=22, shape="dot", title=f"Akun Dirujuk / Target Aspirasi: {m_node}")
-            G.add_edge(clean_author, m_node, weight=2, label="mentions / rujukan")
+    # 2. Multi-Target Policy Connections (jika terdeteksi komparasi lintas kebijakan)
+    if targeted_decomp and targeted_decomp.get('is_multi_target'):
+        for p, ev in targeted_decomp['evaluations'].items():
+            ev_sent = ev['sentiment']
+            edge_col = "#10B981" if ev_sent == "Positif" else ("#EF4444" if ev_sent == "Negatif" else "#64748B")
+            
+            p_node = ev['handle']
+            G.add_node(p_node, color="#2563EB", size=26, shape="dot", title=f"Lembaga Target: {ev['agency']} ({ev['title']})")
+            G.add_edge(clean_author, p_node, weight=3, color=edge_col, label=f"{ev_sent} ({ev['polarity']:+.2f})")
+            
+            h_node = ev['hashtag']
+            G.add_node(h_node, color="#F59E0B", size=20, shape="square", title=f"Tagar Gerakan: {h_node}")
+            G.add_edge(clean_author, h_node, weight=2, color=edge_col, label=f"mengaitkan {h_node}")
+    else:
+        # Standard Single Topic Mention & Hashtags
+        for m in analysis['mentions']:
+            m_node = f"@{m.strip().lstrip('@')}"
+            if m_node != clean_author:
+                G.add_node(m_node, color="#3B82F6", size=22, shape="dot", title=f"Akun Dirujuk / Target Aspirasi: {m_node}")
+                G.add_edge(clean_author, m_node, weight=2, label="mentions / rujukan")
 
-    # 3. Add Hashtag Nodes
-    for h in analysis['hashtags']:
-        h_node = f"#{h.strip().lstrip('#')}"
-        G.add_node(h_node, color="#F59E0B", size=20, shape="square", title=f"Tagar Gerakan / Isu: {h_node}")
-        G.add_edge(clean_author, h_node, weight=1, label="mengusung isu")
+        for h in analysis['hashtags']:
+            h_node = f"#{h.strip().lstrip('#')}"
+            G.add_node(h_node, color="#F59E0B", size=20, shape="square", title=f"Tagar Gerakan / Isu: {h_node}")
+            G.add_edge(clean_author, h_node, weight=1, label="mengusung isu")
 
-    # 4. Connect to Real Corpus Influencers (if df_corpus is available)
+    # 3. Connect to Real Corpus Influencers (if df_corpus is available)
     if df_corpus is not None and not df_corpus.empty and 'author' in df_corpus.columns:
         sub = df_corpus
         if 'topic' in sub.columns and topic:
@@ -578,7 +710,8 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
         "🟢 MBG Positif (Trust & Joy)": "Program Makan Bergizi Gratis (MBG) sangat membantu anak-anak di sekolah dasar mendapatkan nutrisi sehat dan berkualitas! Pedagang katering lokal juga ikut merasakan berkah dan untung @kemdikbud @bapanas #MBG2026 #GenerasiSehat",
         "🔴 Aduan MBG Negatif (Anger & Disgust)": "Kecewa sekali dengan distribusi makanan MBG di sekolah kemarin! Makanan basi, jorok, dan ada anak yang mengeluh mual keracunan! Tolong jangan jadikan anggaran rakyat bancakan korupsi! @bpom_ri @dpr_ri #UsutTuntas",
         "🟡 KDMP Antisipasi (Harapan Transparansi)": "Koperasi Desa Merah Putih (KDMP) punya prospek dan peluang besar menyejahterakan warga pelosok jika dikelola secara adil, jujur, dan transparan @kemenkopukm #KDMP2026",
-        "🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)": "Sekolah Rakyat harus dipastikan tepat sasaran bagi anak putus sekolah dan kaum dhuafa, jangan sampai implementasi di lapangan tidak merata dan terhambat pungli @kemensos #PendidikanAdil"
+        "🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)": "Sekolah Rakyat harus dipastikan tepat sasaran bagi anak putus sekolah dan kaum dhuafa, jangan sampai implementasi di lapangan tidak merata dan terhambat pungli @kemensos #PendidikanAdil",
+        "⚖️ Komparasi Lintas Kebijakan (MBG vs SR)": "wah gila BGN kerjanya ga becus sampe saat ini masih banyak banget kasus keracunan dari pada buat MBG, mending uangnya buat Sekolah Rakyat lebih bermanfaat buat mereka yang mau belajar dari pada ngeracunin anak mending mencerdaskan anak"
     }
 
     # Session State Initialization
@@ -590,7 +723,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     # Container Card Input
     with st.container(border=True):
         st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:6px;'>PILIH CONTOH CEPAT (PRESET):</div>", unsafe_allow_html=True)
-        col_p1, col_p2, col_p3, col_p4 = st.columns(4)
+        col_p1, col_p2, col_p3, col_p4, col_p5 = st.columns(5)
         with col_p1:
             if st.button("MBG Positif", use_container_width=True, help="Uji opini positif MBG"):
                 st.session_state.test_input_text = PRESETS["🟢 MBG Positif (Trust & Joy)"]
@@ -610,6 +743,11 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             if st.button("Sekolah Rakyat", use_container_width=True, help="Uji evaluasi Sekolah Rakyat"):
                 st.session_state.test_input_text = PRESETS["🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)"]
                 st.session_state.test_author_handle = "relawan_pendidikan"
+                st.rerun()
+        with col_p5:
+            if st.button("Komparasi Lintas Isu", use_container_width=True, help="Uji dekomposisi opini multitarget (MBG vs Sekolah Rakyat)"):
+                st.session_state.test_input_text = PRESETS["⚖️ Komparasi Lintas Kebijakan (MBG vs SR)"]
+                st.session_state.test_author_handle = "analis_kebijakan"
                 st.rerun()
 
         c_author, c_text = st.columns([1.2, 3.8])
@@ -655,6 +793,9 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     # Deteksi topik secara mandiri dari teks yang diuji (Dynamic Topic Detection)
     active_topic = detect_topic_from_text(text_input, fallback=fallback_topic)
 
+    # Targeted Sentiment Decomposition (Aspect-Based Sentiment Analysis)
+    targeted_decomp = decompose_targeted_policy_sentiment(text_input)
+
     # Penentuan Warna Badge Sentimen & Emosi
     if sent == "Positif":
         sent_color = "#10B981"
@@ -688,55 +829,107 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     # TAMPILAN KARTU HASIL INFERENSI
     # ==========================================================================
     st.write("")
-    c_res1, c_res2, c_res3 = st.columns([1.6, 1.6, 1.8])
+    if targeted_decomp.get('is_multi_target'):
+        st.markdown("""
+        <div style="background:linear-gradient(90deg, #1E3A8A 0%, #1D4ED8 100%); color:white; padding:12px 18px; border-radius:10px; margin-bottom:12px; box-shadow:0 2px 8px rgba(30,58,138,0.15);">
+            <div style="font-size:11.5px; font-weight:800; letter-spacing:0.5px;">🎯 TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED OPINION MINING)</div>
+            <div style="font-size:12.5px; opacity:0.95; margin-top:2px;">
+                Terdeteksi komparasi lintas kebijakan dalam satu opini warganet. Model mengurai polaritas & dimensi emosi spesifik per target kebijakan publik.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        num_targets = len(targeted_decomp['evaluations'])
+        cols_target = st.columns(num_targets)
+        for idx, (p_name, ev) in enumerate(targeted_decomp['evaluations'].items()):
+            p_sent = ev['sentiment']
+            p_pol = ev['polarity']
+            p_emo = ev['primary_emotion']
+            p_emo_hex = EMOTION_COLORS.get(p_emo, "#2563EB")
+            if p_sent == "Positif":
+                t_color = "#10B981"
+                t_bg = "#ECFDF5"
+            elif p_sent == "Negatif":
+                t_color = "#EF4444"
+                t_bg = "#FEF2F2"
+            else:
+                t_color = "#64748B"
+                t_bg = "#F8FAFC"
+                
+            with cols_target[idx]:
+                with st.container(border=True):
+                    st.markdown(f"""
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div style="font-size:10px; font-weight:800; color:#64748B; letter-spacing:0.5px;">TARGET EVALUASI KEBIJAKAN</div>
+                            <div style="font-size:16px; font-weight:800; color:#0F2942;">{ev['title']}</div>
+                            <div style="font-size:11px; color:#2563EB; font-weight:600; margin-top:1px;">{ev['agency']} ({ev['handle']})</div>
+                        </div>
+                        <span style="background:{t_bg}; color:{t_color}; font-size:14px; font-weight:800; padding:4px 12px; border-radius:6px; border:1px solid {t_color}40;">
+                            {p_sent.upper()}
+                        </span>
+                    </div>
+                    <hr style="margin:8px 0; border:none; border-top:1px solid #E2E8F0;">
+                    <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569; margin-bottom:6px;">
+                        <span>Polaritas: <b style="color:{t_color};">{p_pol:+.2f}</b></span>
+                        <span>Keyakinan: <b>{ev['confidence']*100:.1f}%</b></span>
+                        <span>Emosi: <b style="color:{p_emo_hex};">{p_emo}</b></span>
+                    </div>
+                    <div style="font-size:10.5px; color:#64748B; margin-bottom:4px; font-weight:700;">Klausa Terarah Terkait:</div>
+                    <div style="background:#F8FAFC; border-left:3px solid {t_color}; padding:6px 10px; border-radius:4px; font-size:11px; color:#334155; line-height:1.4; font-style:italic;">
+                        "{ev['excerpt']}"
+                    </div>
+                    """, unsafe_allow_html=True)
+    else:
+        c_res1, c_res2, c_res3 = st.columns([1.6, 1.6, 1.8])
 
-    with c_res1:
-        with st.container(border=True):
-            st.markdown(f"""
-            <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">PREDIKSI SENTIMEN (INDOBERT)</div>
-            <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
-                <span style="background:{sent_bg}; color:{sent_color}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {sent_color}40;">
-                    {sent.upper()}
-                </span>
-            </div>
-            <div style="font-size:12px; color:#475569;">Keyakinan Model: <b>{analysis['confidence']*100:.1f}%</b></div>
-            <div style="font-size:11.5px; color:#64748B; margin-top:4px;">Skor Polaritas Kontinu: <b>{pol:+.2f}</b> (Skala -1.0 s/d +1.0)</div>
-            """, unsafe_allow_html=True)
-            
-            # Progress bar probabilitas
-            st.progress(float(analysis['probs'].get(sent, 0.5)))
+        with c_res1:
+            with st.container(border=True):
+                st.markdown(f"""
+                <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">PREDIKSI SENTIMEN (INDOBERT)</div>
+                <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
+                    <span style="background:{sent_bg}; color:{sent_color}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {sent_color}40;">
+                        {sent.upper()}
+                    </span>
+                </div>
+                <div style="font-size:12px; color:#475569;">Keyakinan Model: <b>{analysis['confidence']*100:.1f}%</b></div>
+                <div style="font-size:11.5px; color:#64748B; margin-top:4px;">Skor Polaritas Kontinu: <b>{pol:+.2f}</b> (Skala -1.0 s/d +1.0)</div>
+                """, unsafe_allow_html=True)
+                
+                # Progress bar probabilitas
+                st.progress(float(analysis['probs'].get(sent, 0.5)))
 
-    with c_res2:
-        with st.container(border=True):
-            st.markdown(f"""
-            <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">9 DIMENSI EMOSI (PLUTCHIK MODEL)</div>
-            <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
-                <span style="background:{emo_hex}15; color:{emo_hex}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {emo_hex}40;">
-                    {emo}
-                </span>
-            </div>
-            <div style="font-size:12px; color:#475569;">Intensitas Emosi: <b>{analysis['emotion_probs'][emo]*100:.1f}%</b></div>
-            <div style="font-size:11px; color:#64748B; margin-top:4px; line-height:1.4;">
-                {EMOTION_POLICY_DESC.get(emo, '')}
-            </div>
-            """, unsafe_allow_html=True)
+        with c_res2:
+            with st.container(border=True):
+                st.markdown(f"""
+                <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">9 DIMENSI EMOSI (PLUTCHIK MODEL)</div>
+                <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
+                    <span style="background:{emo_hex}15; color:{emo_hex}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {emo_hex}40;">
+                        {emo}
+                    </span>
+                </div>
+                <div style="font-size:12px; color:#475569;">Intensitas Emosi: <b>{analysis['emotion_probs'][emo]*100:.1f}%</b></div>
+                <div style="font-size:11px; color:#64748B; margin-top:4px; line-height:1.4;">
+                    {EMOTION_POLICY_DESC.get(emo, '')}
+                </div>
+                """, unsafe_allow_html=True)
 
-    with c_res3:
-        with st.container(border=True):
-            mentions_str = ", ".join([f"@{m}" for m in analysis['mentions']]) if analysis['mentions'] else "Tidak ada"
-            hashtags_str = ", ".join([f"#{h}" for h in analysis['hashtags']]) if analysis['hashtags'] else "Tidak ada"
-            st.markdown(f"""
-            <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">ENTITAS SNA & RUJUKAN KEBIJAKAN</div>
-            <div style="font-size:12px; color:#0F2942; margin-top:8px;">
-                Akun Penulis: <b>@{author_input.lstrip('@')}</b><br>
-                Target Rujukan: <b>{mentions_str}</b><br>
-                Tagar Gerakan: <b>{hashtags_str}</b><br>
-                Fokus Topik: <b>{active_topic}</b>
-            </div>
-            <div style="font-size:11px; color:#2563EB; font-weight:600; margin-top:6px;">
-                Terdifusi ke klaster opini {sent.lower()}
-            </div>
-            """, unsafe_allow_html=True)
+        with c_res3:
+            with st.container(border=True):
+                mentions_str = ", ".join([f"@{m}" for m in analysis['mentions']]) if analysis['mentions'] else "Tidak ada"
+                hashtags_str = ", ".join([f"#{h}" for h in analysis['hashtags']]) if analysis['hashtags'] else "Tidak ada"
+                st.markdown(f"""
+                <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">ENTITAS SNA & RUJUKAN KEBIJAKAN</div>
+                <div style="font-size:12px; color:#0F2942; margin-top:8px;">
+                    Akun Penulis: <b>@{author_input.lstrip('@')}</b><br>
+                    Target Rujukan: <b>{mentions_str}</b><br>
+                    Tagar Gerakan: <b>{hashtags_str}</b><br>
+                    Fokus Topik: <b>{active_topic}</b>
+                </div>
+                <div style="font-size:11px; color:#2563EB; font-weight:600; margin-top:6px;">
+                    Terdifusi ke klaster opini {sent.lower()}
+                </div>
+                """, unsafe_allow_html=True)
 
     # ==========================================================================
     # VISUALISASI DETIL: PROBABILITAS EMOSI & GRAF SNA MIKRO
@@ -746,32 +939,61 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
 
     with c_chart:
         with st.container(border=True):
-            st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:8px;'>SPEKTRUM PROBABILITAS 9 EMOSI</div>", unsafe_allow_html=True)
-            
-            # Sort emotions by probability
-            sorted_emos = sorted(analysis['emotion_probs'].items(), key=lambda x: x[1], reverse=True)
-            e_names = [x[0] for x in sorted_emos]
-            e_vals = [round(x[1] * 100, 1) for x in sorted_emos]
-            e_colors = [EMOTION_COLORS.get(x, '#64748B') for x in e_names]
+            if targeted_decomp.get('is_multi_target'):
+                st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:8px;'>KOMPARASI EMOSI LINTAS KEBIJAKAN</div>", unsafe_allow_html=True)
+                fig_emo = go.Figure()
+                
+                for p_name, ev in targeted_decomp['evaluations'].items():
+                    p_col = "#10B981" if ev['sentiment'] == "Positif" else ("#EF4444" if ev['sentiment'] == "Negatif" else "#64748B")
+                    sorted_p_emos = sorted(ev['emotion_probs'].items(), key=lambda x: x[1], reverse=True)[:5]
+                    e_p_names = [x[0] for x in sorted_p_emos]
+                    e_p_vals = [round(x[1] * 100, 1) for x in sorted_p_emos]
+                    fig_emo.add_trace(go.Bar(
+                        name=f"{p_name} ({ev['sentiment']})",
+                        y=e_p_names[::-1],
+                        x=e_p_vals[::-1],
+                        orientation='h',
+                        marker_color=p_col,
+                        text=[f"{v}%" for v in e_p_vals[::-1]],
+                        textposition='inside',
+                        textfont=dict(color='#FFFFFF', size=10, family='Plus Jakarta Sans, sans-serif')
+                    ))
+                fig_emo.update_layout(
+                    barmode='group',
+                    height=340,
+                    margin=dict(l=10, r=10, t=30, b=10),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False),
+                    yaxis=dict(showgrid=False, tickfont=dict(size=11, color='#0F2942', family='Plus Jakarta Sans, sans-serif'))
+                )
+                st.plotly_chart(fig_emo, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:8px;'>SPEKTRUM PROBABILITAS 9 EMOSI</div>", unsafe_allow_html=True)
+                sorted_emos = sorted(analysis['emotion_probs'].items(), key=lambda x: x[1], reverse=True)
+                e_names = [x[0] for x in sorted_emos]
+                e_vals = [round(x[1] * 100, 1) for x in sorted_emos]
+                e_colors = [EMOTION_COLORS.get(x, '#64748B') for x in e_names]
 
-            fig_emo = go.Figure(go.Bar(
-                x=e_vals[::-1],
-                y=e_names[::-1],
-                orientation='h',
-                marker=dict(color=e_colors[::-1], line=dict(width=0)),
-                text=[f"{v}%" for v in e_vals[::-1]],
-                textposition='inside',
-                textfont=dict(color='#FFFFFF', size=11, family='Plus Jakarta Sans, sans-serif')
-            ))
-            fig_emo.update_layout(
-                height=340,
-                margin=dict(l=10, r=10, t=10, b=10),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                xaxis=dict(showgrid=True, gridcolor='#F1F5F9', range=[0, max(e_vals) * 1.25], zeroline=False),
-                yaxis=dict(showgrid=False, tickfont=dict(size=11, color='#0F2942', family='Plus Jakarta Sans, sans-serif'))
-            )
-            st.plotly_chart(fig_emo, use_container_width=True, config={'displayModeBar': False})
+                fig_emo = go.Figure(go.Bar(
+                    x=e_vals[::-1],
+                    y=e_names[::-1],
+                    orientation='h',
+                    marker=dict(color=e_colors[::-1], line=dict(width=0)),
+                    text=[f"{v}%" for v in e_vals[::-1]],
+                    textposition='inside',
+                    textfont=dict(color='#FFFFFF', size=11, family='Plus Jakarta Sans, sans-serif')
+                ))
+                fig_emo.update_layout(
+                    height=340,
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(showgrid=True, gridcolor='#F1F5F9', range=[0, max(e_vals) * 1.25], zeroline=False),
+                    yaxis=dict(showgrid=False, tickfont=dict(size=11, color='#0F2942', family='Plus Jakarta Sans, sans-serif'))
+                )
+                st.plotly_chart(fig_emo, use_container_width=True, config={'displayModeBar': False})
 
     with c_sna:
         with st.container(border=True):
@@ -783,7 +1005,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             """, unsafe_allow_html=True)
 
             # Bangun Graf SNA Mikro
-            G_micro = build_micro_sna_graph(author_input, analysis, topic=active_topic, df_corpus=df)
+            G_micro = build_micro_sna_graph(author_input, analysis, topic=active_topic, df_corpus=df, targeted_decomp=targeted_decomp)
             
             # Generate HTML PyVis
             try:
@@ -823,12 +1045,20 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                 )
                 st.plotly_chart(fig_net, use_container_width=True, config={'displayModeBar': False})
 
-            st.markdown("""
-            <div style="display:flex; justify-content:space-between; font-size:10.5px; color:#64748B; margin-top:4px;">
-                <span><b>Legenda:</b> Hijau = Opini Positif | Merah = Opini Negatif | Biru = Akun Rujukan (@) | Kuning = Tagar (#)</span>
-                <span>Interaktif: Klik, tahan, atau geser titik untuk eksplorasi relasi</span>
-            </div>
-            """, unsafe_allow_html=True)
+            if targeted_decomp.get('is_multi_target'):
+                st.markdown("""
+                <div style="display:flex; justify-content:space-between; font-size:10.5px; color:#64748B; margin-top:4px;">
+                    <span><b>Relasi Komparasi Terarah:</b> Hijau = Dukungan/Afirmatif | Merah = Kritik/Aduan | Biru = Lembaga Penyelenggara</span>
+                    <span>Interaktif: Klik & geser simpul untuk analisis klaster</span>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                <div style="display:flex; justify-content:space-between; font-size:10.5px; color:#64748B; margin-top:4px;">
+                    <span><b>Legenda:</b> Hijau = Opini Positif | Merah = Opini Negatif | Biru = Akun Rujukan (@) | Kuning = Tagar (#)</span>
+                    <span>Interaktif: Klik, tahan, atau geser titik untuk eksplorasi relasi</span>
+                </div>
+                """, unsafe_allow_html=True)
 
     # Footer Standard
     render_mh_footer(f"Laboratorium Uji Sentimen & Emosi IndoBERT • Korpus Kebijakan Publik {active_topic}")
