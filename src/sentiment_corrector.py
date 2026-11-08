@@ -81,13 +81,41 @@ STRONG_NEGATIVE_PHRASES = [
     # Isu Ketidakmampuan & Kegagalan Birokrasi
     'ga becus', 'gak becus', 'tidak becus', 'tak becus', 'bgn ga becus', 'bgn gak becus',
 
+    # Isu Ketiadaan Manfaat, Kesia-siaan & Kekecewaan Efektivitas Kebijakan
+    'gada manfaat', 'gada manfaatnya', 'gaada manfaat', 'gaada manfaatnya',
+    'ga ada manfaat', 'ga ada manfaatnya', 'gak ada manfaat', 'gak ada manfaatnya',
+    'ngga ada manfaat', 'nggak ada manfaat', 'tidak ada manfaat', 'tidak ada manfaatnya',
+    'tak ada manfaat', 'tak ada manfaatnya', 'kurang bermanfaat', 'belum ada manfaat',
+    'gada guna', 'gada gunanya', 'gaada guna', 'gaada gunanya',
+    'ga ada guna', 'ga ada gunanya', 'gak ada guna', 'gak ada gunanya',
+    'tidak ada guna', 'tidak ada gunanya', 'tak ada guna', 'tak ada gunanya',
+    'gada faedah', 'gada faedahnya', 'gaada faedah', 'gaada faedahnya',
+    'ga ada faedah', 'ga ada faedahnya', 'tidak ada faedah', 'tidak ada faedahnya',
+    'gada efek', 'gada efeknya', 'gaada efek', 'gaada efeknya', 'ga ada efek', 'tidak ada efek',
+    'gada hasil', 'gada hasilnya', 'gaada hasil', 'gaada hasilnya', 'ga ada hasil', 'tidak ada hasil',
+    'gada dampak', 'gada dampaknya', 'gaada dampak', 'gaada dampaknya', 'ga ada dampak', 'tidak ada dampak',
+    'gada kemajuan', 'gaada kemajuan', 'gada perkembangan', 'gaada perkembangan',
+    'gada perubahan', 'gaada perubahan', 'tidak ada perubahan',
+    'gada kejelasan', 'gaada kejelasan', 'ga jelas', 'gak jelas', 'kaga jelas', 'tidak jelas',
+    'mana buktinya', 'mana hasilnya', 'mana janjinya', 'mana kerjanya', 'mana realisasinya',
+    'cuma pencitraan', 'hanya pencitraan', 'cuma formalitas', 'hanya formalitas',
+    'cuma buang anggaran', 'hanya buang anggaran', 'cuma buang duit', 'cuma bakar duit',
+    'apasi tujuan', 'apa sih tujuan', 'apa tujuannya', 'buat apa sih', 'untuk apa sih',
+    'kok sampe detik ini', 'kok sampe sekarang', 'kok sampai sekarang',
+
     # Sarkasme mematikan
     'mematikan banget',
 ]
 
-# Frasa sarkasme (terlihat positif/ringan tapi menyindir tajam atau diikuti realitas negatif)
+# Frasa sarkasme & keluhan sinis (terlihat positif/ringan tapi menyindir tajam atau diikuti realitas negatif)
 SARCASM_PATTERNS = [
-    # 0. Pujian semu kontras / sindiran peningkatan (makin berguna/hebat/mantap tapi disusul keracunan/korban/ga becus)
+    # 0. Keluhan Retoris & Sinisme Ketiadaan Manfaat Kebijakan
+    r'\b(?:apasi|apa\s*si|apa\s*sih|apaan\s*sih|buat\s*apa|untuk\s*apa)\b.*?\b(?:tujuan|urgensi|faedah|fungsi|manfaat|guna)\b',
+    r'\b(?:apasi|apa\s*si|apa\s*sih|buat\s*apa|untuk\s*apa)\b.*?\b(?:kok|kenapa|tapi|malah)\b.*?\b(?:ga|gak|ngga|nggak|gada|gaada|belum|tidak|nihil)\b',
+    r'\b(?:kok|kenapa)\b.*?\b(?:sampe\s+detik\s+ini|sampe\s+sekarang|sampai\s+sekarang|hingga\s+kini|hingga\s+saat\s+ini|sampe\s+hari\s+ini)\b.*?\b(?:gada|gaada|ga|gak|ngga|nggak|belum|tidak|nihil)\b',
+    r'\b(?:gada|gaada|ga\s+ada|gak\s+ada|nggak\s+ada|tidak\s+ada|tak\s+ada)\s+(?:manfaat|manfaatnya|guna|gunanya|faedah|faedahnya|efek|efeknya|hasil|hasilnya|dampak|dampaknya|bukti|buktinya|perubahan|kejelasan)\b',
+    r'\bkatanya\b.*?\b(?:tapi|namun|padahal|malah|nyatanya|faktanya)\b.*?\b(?:ga|gak|ngga|nggak|gada|gaada|belum|tidak|bukan|kurang|nihil)\b',
+    # 0b. Pujian semu kontras / sindiran peningkatan (makin berguna/hebat/mantap tapi disusul keracunan/korban/ga becus)
     r'(?:makin|semakin)?\s*(?:berguna|bermanfaat|hebat|keren|mantap|bagus|sukses).*?(?:keracunan|diare|masuk\s+rs|mual|muntah|mati|korban|ga\s+becus|gak\s+becus|tidak\s+becus|korupsi|bancakan|nilep)',
     # 1. Pujian semu + Realitas bahaya/korupsi/bencana/keracunan (dengan tanda baca apa pun)
     r'(?:berguna|bermanfaat|hebat|keren|mantap|bagus|berkah)\s+(?:banget+|bgt+|sekali)[!.,?\s]+.*?(?:buat|untuk)\s+(?:bikin|buat)?\s*(?:keracunan|masuk\s+rs|mual|muntah|diare|mati|korban|bancakan|nilep|korupsi|bagi-bagi|vendor\s+nakal|pemborosan|utang|tekor|rusak|ancur|hancur)',
@@ -415,7 +443,10 @@ ANGER_TEXT_PATTERNS = [
     'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'kurang tepat', 'tidak tepat', 'salah alokasi',
     'buang anggaran', 'buang-buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'bakar uang',
     'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', '11 12', 'malah bukak', 'malah buka',
-    'ga becus', 'gak becus', 'tidak becus', 'tak becus', 'bgn ga becus', 'bgn gak becus', 'bgn tidak becus'
+    'ga becus', 'gak becus', 'tidak becus', 'tak becus', 'bgn ga becus', 'bgn gak becus', 'bgn tidak becus',
+    'gada manfaat', 'gada manfaatnya', 'gaada manfaat', 'gaada manfaatnya', 'ga ada manfaat', 'gak ada manfaat', 'tidak ada manfaat',
+    'gada guna', 'gada gunanya', 'gaada guna', 'tidak ada guna', 'gada faedah', 'gada efek', 'gada hasil',
+    'apasi tujuan', 'apa sih tujuan', 'apa tujuannya', 'kok sampe detik ini', 'kok sampe sekarang', 'mana buktinya', 'mana hasilnya'
 ]
 ANGER_EMOJIS = {'😡', '🤬', '👿', '😤', '🖕'}
 

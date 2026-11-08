@@ -117,6 +117,22 @@ NEGATIVE_TERMS = {
     'buang-buang uang': 3.5, 'buang-buang duit': 3.5, 'bakar uang': 3.2, 'bakar duit': 3.2,
     'hambur uang': 3.2, 'hambur duit': 3.2, 'hamburkan uang': 3.5, 'buang': 2.2, 'buang-buang': 2.8,
     'sia-sia': 3.2, 'sia sia': 3.2, 'sia': 2.5,
+    # Ketiadaan Manfaat, Kesia-siaan & Kekecewaan Efektivitas
+    'gada manfaat': 3.5, 'gada manfaatnya': 3.5, 'gaada manfaat': 3.5, 'gaada manfaatnya': 3.5,
+    'ga ada manfaat': 3.5, 'ga ada manfaatnya': 3.5, 'gak ada manfaat': 3.5, 'gak ada manfaatnya': 3.5,
+    'tidak ada manfaat': 3.5, 'tidak ada manfaatnya': 3.5, 'tak ada manfaat': 3.5, 'kurang bermanfaat': 3.0,
+    'gada guna': 3.5, 'gada gunanya': 3.5, 'gaada guna': 3.5, 'gaada gunanya': 3.5,
+    'ga ada guna': 3.5, 'ga ada gunanya': 3.5, 'gak ada guna': 3.5, 'gak ada gunanya': 3.5,
+    'tidak ada guna': 3.5, 'tidak ada gunanya': 3.5,
+    'gada faedah': 3.5, 'gada faedahnya': 3.5, 'gaada faedah': 3.5, 'gaada faedahnya': 3.5,
+    'ga ada faedah': 3.5, 'tidak ada faedah': 3.5,
+    'gada efek': 3.2, 'gada efeknya': 3.2, 'gaada efek': 3.2, 'ga ada efek': 3.2, 'tidak ada efek': 3.2,
+    'gada hasil': 3.2, 'gada hasilnya': 3.2, 'gaada hasil': 3.2, 'ga ada hasil': 3.2, 'tidak ada hasil': 3.2,
+    'gada dampak': 3.2, 'gada dampaknya': 3.2, 'tidak ada dampak': 3.2,
+    'gada kejelasan': 3.2, 'gaada kejelasan': 3.2, 'ga jelas': 3.0, 'gak jelas': 3.0, 'tidak jelas': 3.0,
+    'mana buktinya': 3.2, 'mana hasilnya': 3.2, 'mana janjinya': 3.2, 'mana kerjanya': 3.2,
+    'apasi tujuan': 3.2, 'apa sih tujuan': 3.2, 'apa tujuannya': 3.2, 'buat apa sih': 3.0,
+    'kok sampe detik ini': 3.2, 'kok sampe sekarang': 3.2, 'kok sampai sekarang': 3.2,
     # Perbandingan Pejoratif Kolonial & Kemunduran Zaman
     'penjajahan': 3.5, 'penjajah': 3.5, 'kolonial': 3.0, 'kolonialisme': 3.2,
     'masa penjajahan': 3.5, 'zaman penjajahan': 3.5, 'jaman penjajahan': 3.5, 'era penjajahan': 3.5,
@@ -184,7 +200,7 @@ EMOTION_KEYWORDS = {
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
     ],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan', 'buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', 'romusha', 'kerja rodi', '11 12', 'malah bukak', 'malah buka'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan', 'buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', 'romusha', 'kerja rodi', '11 12', 'malah bukak', 'malah buka', 'gada manfaat', 'gada manfaatnya', 'gaada manfaat', 'ga ada manfaat', 'gak ada manfaat', 'tidak ada manfaat', 'gada guna', 'gada gunanya', 'gaada guna', 'tidak ada guna', 'apasi tujuan', 'apa sih tujuan', 'kok sampe detik ini'],
     'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan', 'ngentot', 'peler', 'jembut', 'lonte'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
     'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita', 'sia-sia', 'sia sia', 'memilih pulang', 'putus sekolah', 'terlantar'],
@@ -192,7 +208,10 @@ EMOTION_KEYWORDS = {
     'Neutral': ['siaran pers', 'pengumuman resmi', 'tata tertib', 'berita acara', 'statistik resmi', 'siaran berita']
 }
 
-NEGATIONS = {'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', 'tdk', 'kurang'}
+NEGATIONS = {
+    'tidak', 'tak', 'bukan', 'jangan', 'belum', 'gak', 'ga', 'nggak', 'tdk', 'kurang',
+    'gada', 'gaada', 'kaga', 'kagak', 'nda', 'ndak', 'ngga', 'gk', 'g', 'tanpa', 'nihil', 'nol'
+}
 INTENSIFIERS = {
     'sangat': 1.6, 'amat': 1.5, 'banget': 1.6, 'bgt': 1.5, 'sekali': 1.5,
     'luar biasa': 1.8, 'parah': 1.6, 'beneran': 1.4, 'sungguh': 1.5,
@@ -423,7 +442,11 @@ def analyze_text_nlp(text):
             neg_score += score * 1.5
     for phrase, score in POSITIVE_TERMS.items():
         if ' ' in phrase and phrase in clean_text:
-            pos_score += score
+            neg_pat_p = rf'\b(?:tidak|tak|bukan|jangan|belum|gak|ga|nggak|tdk|kurang|gada|gaada|kaga|kagak|nda|ndak|tanpa)\s+{re.escape(phrase)}\b'
+            if re.search(neg_pat_p, clean_text):
+                neg_score += score * 1.2
+            else:
+                pos_score += score
     
     for i, w in enumerate(words):
         is_in_prevent_scope = (prevent_scope_idx != -1 and i >= prevent_scope_idx)
@@ -539,9 +562,9 @@ def analyze_text_nlp(text):
     emo_scores = {k: 0.1 for k in EMOTION_KEYWORDS.keys()}
     for emo, kw_list in EMOTION_KEYWORDS.items():
         for kw in kw_list:
-            # Jika kata kunci positif dinegasikan (misal: "kurang tepat", "tidak percaya"), lewati dari Trust/Joy/Anticipation
+            # Jika kata kunci positif dinegasikan (misal: "kurang tepat", "tidak percaya", "gada manfaatnya"), lewati dari Trust/Joy/Anticipation
             if emo in ['Joy', 'Trust', 'Anticipation']:
-                neg_pat = rf'\b(?:tidak|tak|bukan|jangan|belum|gak|ga|nggak|tdk|kurang)\s+(?:\w+\s+)?{re.escape(kw)}\b'
+                neg_pat = rf'\b(?:tidak|tak|bukan|jangan|belum|gak|ga|nggak|tdk|kurang|gada|gaada|kaga|kagak|nda|ndak|ngga|gk|tanpa|nihil)\s+(?:\w+\s+)?{re.escape(kw)}\b'
                 if re.search(neg_pat, clean_text):
                     continue
             if re.search(rf'\b{re.escape(kw)}\b', clean_text) or re.search(rf'\b{re.escape(kw)}\b', norm_text):
@@ -892,13 +915,14 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                     """, unsafe_allow_html=True)
     else:
         c_res1, c_res2, c_res3 = st.columns([1.6, 1.6, 1.8])
+        engine_badge = "INDOBERT NEURAL LIVE" if analysis.get('is_deep_learning') else "INDOBERT HYBRID LIVE"
 
         with c_res1:
             with st.container(border=True):
                 st.markdown(f"""
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px; text-transform:uppercase;">Prediksi Sentimen (IndoBERT)</span>
-                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px; border:1px solid #C7D2FE;">INDOBERT LIVE</span>
+                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px; border:1px solid #C7D2FE;">{engine_badge}</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{sent_bg}; color:{sent_color}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {sent_color}40;">
