@@ -316,38 +316,56 @@ def decompose_targeted_policy_sentiment(text):
             'evaluations': {}
         }
     
-    # Split klausa komparasi berdasarkan tanda baca dan konjungsi pembanding
-    raw_clauses = re.split(r'([.?!;,\n]+|\b(?:daripada|dari pada|ketimbang|mending|tapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)\b)', text, flags=re.IGNORECASE)
+    # Deteksi apakah opini merupakan komparasi pertentangan (contrastive trade-off)
+    # atau evaluasi kolektif setara (coordinated multi-target / satu kesatuan)
+    CONTRASTIVE_PATTERNS = [
+        r'\b(?:daripada|dari pada|ketimbang|dibanding|dibandingkan)\b',
+        r'\b(?:mending|mendingan|better|lebih\s+baik)\b',
+        r'\b(?:tapi|tetapi|namun|padahal|sedangkan|sementara)\b',
+    ]
+    has_contrast = any(re.search(p, text, flags=re.IGNORECASE) for p in CONTRASTIVE_PATTERNS)
     
-    fragments = []
-    curr = ""
-    for frag in raw_clauses:
-        if not frag: continue
-        if re.match(r'^[.?!;,\n]+$', frag):
-            curr += frag
-            fragments.append(curr.strip())
-            curr = ""
-        elif re.match(r'^(?:daripada|dari pada|ketimbang|mending|tapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)$', frag, re.IGNORECASE):
-            if curr.strip():
-                fragments.append(curr.strip())
-            curr = frag + " "
-        else:
-            curr += frag
-    if curr.strip():
-        fragments.append(curr.strip())
-
     topic_clauses = {p: [] for p in present_policies}
-    active_policy = present_policies[0]
+    
+    if not has_contrast:
+        # EVALUASI KOLEKTIF SETARA (SATU KESATUAN):
+        # Jika tidak ada konjungsi pertentangan (misal hanya dijeda koma / dan / sama / serta),
+        # seluruh kebijakan dievaluasi dalam satu kesatuan kalimat utuh agar sentimennya sinkron.
+        for p in present_policies:
+            topic_clauses[p].append(text.strip())
+    else:
+        # KOMPARASI PERTENTANGAN (ASPECT-BASED DECOMPOSITION):
+        # Split hanya pada konjungsi kontras dan terminasi kalimat (JANGAN potong pada koma deret!)
+        raw_clauses = re.split(r'([.?!;\n]+|\b(?:daripada|dari pada|ketimbang|mending|mendingan|better|tapi|tetapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)\b)', text, flags=re.IGNORECASE)
+        
+        fragments = []
+        curr = ""
+        for frag in raw_clauses:
+            if not frag: continue
+            if re.match(r'^[.?!;\n]+$', frag):
+                curr += frag
+                fragments.append(curr.strip())
+                curr = ""
+            elif re.search(r'^(?:daripada|dari pada|ketimbang|mending|mendingan|better|tapi|tetapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)$', frag, re.IGNORECASE):
+                if curr.strip():
+                    fragments.append(curr.strip())
+                curr = frag + " "
+            else:
+                curr += frag
+        if curr.strip():
+            fragments.append(curr.strip())
 
-    for frag in fragments:
-        frag_l = frag.lower()
-        matched_policies = [p for p in present_policies if any(re.search(rf'\b{re.escape(k)}\b', frag_l) or (k.startswith(('@', '#')) and k in frag_l) for k in POLICY_TARGET_DEFINITIONS[p]['keywords'] + [POLICY_TARGET_DEFINITIONS[p]['handle'].lower(), POLICY_TARGET_DEFINITIONS[p]['hashtag'].lower()])]
-        if matched_policies:
-            active_policy = matched_policies[0]
-            for p in matched_policies:
-                topic_clauses[p].append(frag)
-        else:
-            topic_clauses[active_policy].append(frag)
+        active_policies = list(present_policies)
+        for frag in fragments:
+            frag_l = frag.lower()
+            matched_policies = [p for p in present_policies if any(re.search(rf'\b{re.escape(k)}\b', frag_l) or (k.startswith(('@', '#')) and k in frag_l) for k in POLICY_TARGET_DEFINITIONS[p]['keywords'] + [POLICY_TARGET_DEFINITIONS[p]['handle'].lower(), POLICY_TARGET_DEFINITIONS[p]['hashtag'].lower()])]
+            if matched_policies:
+                active_policies = matched_policies
+                for p in matched_policies:
+                    topic_clauses[p].append(frag)
+            else:
+                for p in active_policies:
+                    topic_clauses[p].append(frag)
 
     evaluations = {}
     for p in present_policies:
@@ -378,6 +396,7 @@ def decompose_targeted_policy_sentiment(text):
 
     return {
         'is_multi_target': True,
+        'is_contrastive': has_contrast,
         'topics': present_policies,
         'evaluations': evaluations
     }
@@ -830,7 +849,16 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     # ==========================================================================
     st.write("")
     if targeted_decomp.get('is_multi_target'):
-        st.markdown("""
+        if targeted_decomp.get('is_contrastive'):
+            b_title = "TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED CONTRAST)"
+            b_desc = "Terdeteksi perbandingan kontras lintas kebijakan publik. Model mengurai polaritas & dimensi emosi secara terpisah per target program."
+            b_badge = "MULTI-TARGET CONTRAST"
+        else:
+            b_title = "TARGETED SENTIMENT EVALUATION (COLLECTIVE MULTI-POLICY OPINION)"
+            b_desc = "Terdeteksi evaluasi kebijakan kolektif (subjek majemuk setara). Seluruh program dianalisis dalam satu kesatuan opini publik yang utuh."
+            b_badge = "MULTI-POLICY CO-EVALUATION"
+
+        st.markdown(f"""
         <div style="background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%); color: #FFFFFF; padding: 14px 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="background: rgba(255, 255, 255, 0.12); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.2);">
@@ -841,14 +869,14 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                     </svg>
                 </div>
                 <div>
-                    <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;">TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED OPINION MINING)</div>
+                    <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;">{b_title}</div>
                     <div style="font-size: 12px; color: rgba(255, 255, 255, 0.88); margin-top: 2px;">
-                        Terdeteksi perbandingan opini lintas kebijakan dalam satu komentar. Model mengurai polaritas & dimensi emosi secara terpisah per target program publik.
+                        {b_desc}
                     </div>
                 </div>
             </div>
             <div style="background: rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; white-space: nowrap; border: 1px solid rgba(255, 255, 255, 0.25);">
-                MULTI-TARGET ABSA
+                {b_badge}
             </div>
         </div>
         """, unsafe_allow_html=True)

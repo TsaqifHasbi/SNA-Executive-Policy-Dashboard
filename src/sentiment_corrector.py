@@ -103,6 +103,14 @@ STRONG_NEGATIVE_PHRASES = [
     'apasi tujuan', 'apa sih tujuan', 'apa tujuannya', 'buat apa sih', 'untuk apa sih',
     'kok sampe detik ini', 'kok sampe sekarang', 'kok sampai sekarang',
 
+    # Politisasi, Manipulasi Kekuasaan & Sinisme Kepentingan Politik
+    'cara licik', 'kelicikan', 'licik', 'siasat licik',
+    'kepentingan politik', 'kepentingan penguasa', 'kepentingan segelintir',
+    'alat politik', 'tunggangan politik', 'politisasi', 'dipolitisasi',
+    'kampanye terselubung', 'beli suara', 'suap rakyat',
+    'demi kekuasaan', 'demi pemilu', 'motif politik', 'langgengkan kekuasaan',
+    'biar jadi pendukung', 'agar jadi pendukung',
+
     # Sarkasme mematikan
     'mematikan banget',
 ]
@@ -446,7 +454,8 @@ ANGER_TEXT_PATTERNS = [
     'ga becus', 'gak becus', 'tidak becus', 'tak becus', 'bgn ga becus', 'bgn gak becus', 'bgn tidak becus',
     'gada manfaat', 'gada manfaatnya', 'gaada manfaat', 'gaada manfaatnya', 'ga ada manfaat', 'gak ada manfaat', 'tidak ada manfaat',
     'gada guna', 'gada gunanya', 'gaada guna', 'tidak ada guna', 'gada faedah', 'gada efek', 'gada hasil',
-    'apasi tujuan', 'apa sih tujuan', 'apa tujuannya', 'kok sampe detik ini', 'kok sampe sekarang', 'mana buktinya', 'mana hasilnya'
+    'apasi tujuan', 'apa sih tujuan', 'apa tujuannya', 'kok sampe detik ini', 'kok sampe sekarang', 'mana buktinya', 'mana hasilnya',
+    'cara licik', 'licik', 'kelicikan', 'siasat licik', 'alat politik', 'politisasi', 'kepentingan penguasa'
 ]
 ANGER_EMOJIS = {'😡', '🤬', '👿', '😤', '🖕'}
 
