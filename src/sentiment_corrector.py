@@ -73,6 +73,11 @@ STRONG_NEGATIVE_PHRASES = [
     'salah sasaran', 'tidak tepat sasaran', 'kurang tepat sasaran', 'salah target',
     'kurang tepat', 'tidak tepat', 'salah alokasi', 'penyimpangan', 'disimpangkan',
 
+    # Perbandingan Pejoratif Kolonial & Kemunduran Zaman
+    'penjajahan', 'penjajah', 'zaman penjajahan', 'masa penjajahan', 'era penjajahan', 'jaman penjajahan',
+    'balik masa penjajahan', 'balik ke zaman penjajahan', 'zaman belanda', 'zaman jepang', 'romusha', 'kerja rodi',
+    '11 12', '11-12', 'sebelas dua belas', 'malah bukak', 'malah buka',
+
     # Sarkasme mematikan
     'mematikan banget',
 ]
@@ -105,6 +110,11 @@ SARCASM_PATTERNS = [
     r'molto.*?mbg\s+mematikan',
     r'private\s+jet.*?denpasar',
     r'weekend\s+in\s+bali',
+    # 8. Retorika kemunduran / perbandingan masa penjajahan / satir era kolonial
+    r'(?:balik|kembali)\s+(?:ke\s+)?(?:masa|zaman|jaman|era)\s+(?:penjajahan|belanda|jepang|kolonial)',
+    r'(?:zaman|jaman|era|masa)\s+penjajahan\s+(?:kah|kali|ya|bray)',
+    r'\b11\s*[-/]?\s*12\b.*?(?:sekolah\s+rakyat|mbg|kdmp|kebijakan|pemerintah)',
+    r'(?:bukannya|tinggal)\s+.*?\s+malah\s+(?:buka|bukak|bikin|buat)\s+(?:sekolah\s+rakyat|program)',
 ]
 
 # ============================================================
@@ -398,7 +408,8 @@ ANGER_TEXT_PATTERNS = [
     'geram', 'murka', 'benci', 'muak', 'ngamuk',
     'ngegas', 'vendor nakal', 'pemakan anggaran', 'jangan sok paling pintar', 'ini nyawa anak',
     'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'kurang tepat', 'tidak tepat', 'salah alokasi',
-    'buang anggaran', 'buang-buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'bakar uang'
+    'buang anggaran', 'buang-buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'bakar uang',
+    'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', '11 12', 'malah bukak', 'malah buka'
 ]
 ANGER_EMOJIS = {'😡', '🤬', '👿', '😤', '🖕'}
 

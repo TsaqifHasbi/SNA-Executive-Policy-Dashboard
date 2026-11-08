@@ -116,6 +116,12 @@ NEGATIVE_TERMS = {
     'buang-buang uang': 3.5, 'buang-buang duit': 3.5, 'bakar uang': 3.2, 'bakar duit': 3.2,
     'hambur uang': 3.2, 'hambur duit': 3.2, 'hamburkan uang': 3.5, 'buang': 2.2, 'buang-buang': 2.8,
     'sia-sia': 3.2, 'sia sia': 3.2, 'sia': 2.5,
+    # Perbandingan Pejoratif Kolonial & Kemunduran Zaman
+    'penjajahan': 3.5, 'penjajah': 3.5, 'kolonial': 3.0, 'kolonialisme': 3.2,
+    'masa penjajahan': 3.5, 'zaman penjajahan': 3.5, 'jaman penjajahan': 3.5, 'era penjajahan': 3.5,
+    'balik masa penjajahan': 3.8, 'balik ke zaman penjajahan': 3.8, 'zaman belanda': 3.2, 'zaman jepang': 3.2,
+    'romusha': 3.5, 'kerja rodi': 3.5, '11 12': 2.8, '11-12': 2.8, 'sebelas dua belas': 2.8,
+    'tinggal benerin': 2.5, 'malah bukak': 2.8, 'malah buka': 2.5,
     # Hambatan & Ketimpangan
     'terhambat': 2.2, 'hambat': 2.0, 'penghambat': 2.2,
     # Isu Higienitas & Medis (Disgust/Fear)
@@ -177,7 +183,7 @@ EMOTION_KEYWORDS = {
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
     ],
-    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan', 'buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia'],
+    'Anger': ['marah', 'geram', 'emosi', 'kesal', 'ngamuk', 'anjing', 'babi', 'bangsat', 'bajingan', 'brengsek', 'kontol', 'pantek', 'jancuk', 'jancok', 'asu', 'tolol', 'goblok', 'goblog', 'bego', 'kampret', 'sialan', 'laknat', 'keparat', 'maling', 'korup', 'korupsi', 'rampok', 'nilep', 'bancakan', 'biadab', 'dungu', 'kacung', 'jongos', 'antek', 'penjilat', 'budak', 'pengkhianat', 'perusak', 'merusak', 'rusak', 'hancur', 'negatif', 'mubazir', 'boros', 'protes', 'kecam', 'ngentot', 'entot', 'cuks', 'cuk', 'cok', 'maksa', 'pemaksaan', 'peler', 'jembut', 'lonte', 'ngewe', 'arogan', 'otoriter', 'disalahgunakan', 'penyalahgunaan', 'menyalahgunakan', 'salahguna', 'diselewengkan', 'penyelewengan', 'salah sasaran', 'tidak tepat sasaran', 'kurang tepat', 'tidak tepat', 'penyimpangan', 'buang anggaran', 'buang uang', 'buang duit', 'sia-sia', 'sia sia', 'penjajahan', 'penjajah', 'masa penjajahan', 'zaman penjajahan', 'balik masa penjajahan', 'romusha', 'kerja rodi', '11 12', 'malah bukak', 'malah buka'],
     'Disgust': ['jijik', 'basi', 'bau', 'jorok', 'mual', 'muntah', 'busuk', 'najis', 'pencitraan', 'kemunafikan', 'palsu', 'tai', 'taik', 'taek', 'sampah', 'ampas', 'menjijikkan', 'ilfeel', 'hina', 'kacung', 'jongos', 'boneka', 'buzzer', 'munafik', 'mubazir', 'boros', 'pemborosan', 'ngentot', 'peler', 'jembut', 'lonte'],
     'Fear': ['takut', 'khawatir', 'cemas', 'waswas', 'was-was', 'bahaya', 'ancaman', 'keracunan', 'beracun', 'krisis', 'resiko', 'risiko', 'panik', 'seram', 'mengancam'],
     'Sadness': ['sedih', 'kecewa', 'prihatin', 'sengsara', 'kasihan', 'tangis', 'duka', 'rugi', 'merugikan', 'terpuruk', 'terbengkalai', 'miris', 'pilu', 'perusak', 'rusak', 'kegagalan', 'derita', 'sia-sia', 'sia sia', 'memilih pulang', 'putus sekolah', 'terlantar'],
