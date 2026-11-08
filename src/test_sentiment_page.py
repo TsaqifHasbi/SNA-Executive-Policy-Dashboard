@@ -562,7 +562,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     render_mh_title(
         "Laboratorium Inferensi Opini Publik",
         "Uji Sentimen, 9 Dimensi Emosi & Pemetaan SNA Interaktif",
-        "Eksplorasi respons model Deep Learning IndoBERT terhadap teks bebas maupun tautan postingan digital multiplatform."
+        "Eksplorasi respons model Deep Learning IndoBERT terhadap opini publik warganet dan aduan kebijakan secara interaktif."
     )
 
     fallback_topic = topic_label or selected_topic or "MBG"
@@ -583,94 +583,39 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
 
     # Container Card Input
     with st.container(border=True):
-        tab_text, tab_url = st.tabs([
-            "Input Teks / Opini Langsung",
-            "Input Tautan / URL Postingan"
-        ])
+        st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:6px;'>PILIH CONTOH CEPAT (PRESET):</div>", unsafe_allow_html=True)
+        col_p1, col_p2, col_p3, col_p4 = st.columns(4)
+        with col_p1:
+            if st.button("MBG Positif", use_container_width=True, help="Uji opini positif MBG"):
+                st.session_state.test_input_text = PRESETS["🟢 MBG Positif (Trust & Joy)"]
+                st.session_state.test_author_handle = "orangtua_siswa"
+                st.rerun()
+        with col_p2:
+            if st.button("Aduan Negatif", use_container_width=True, help="Uji aduan negatif / keracunan"):
+                st.session_state.test_input_text = PRESETS["🔴 Aduan MBG Negatif (Anger & Disgust)"]
+                st.session_state.test_author_handle = "warga_kritis"
+                st.rerun()
+        with col_p3:
+            if st.button("Antisipasi KDMP", use_container_width=True, help="Uji sentimen harapan KDMP"):
+                st.session_state.test_input_text = PRESETS["🟡 KDMP Antisipasi (Harapan Transparansi)"]
+                st.session_state.test_author_handle = "tokoh_desa"
+                st.rerun()
+        with col_p4:
+            if st.button("Sekolah Rakyat", use_container_width=True, help="Uji evaluasi Sekolah Rakyat"):
+                st.session_state.test_input_text = PRESETS["🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)"]
+                st.session_state.test_author_handle = "relawan_pendidikan"
+                st.rerun()
 
-        with tab_text:
-            st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:6px;'>PILIH CONTOH CEPAT (PRESET):</div>", unsafe_allow_html=True)
-            col_p1, col_p2, col_p3, col_p4 = st.columns(4)
-            with col_p1:
-                if st.button("MBG Positif", use_container_width=True, help="Uji opini positif MBG"):
-                    st.session_state.test_input_text = PRESETS["🟢 MBG Positif (Trust & Joy)"]
-                    st.session_state.test_author_handle = "orangtua_siswa"
-                    st.rerun()
-            with col_p2:
-                if st.button("Aduan Negatif", use_container_width=True, help="Uji aduan negatif / keracunan"):
-                    st.session_state.test_input_text = PRESETS["🔴 Aduan MBG Negatif (Anger & Disgust)"]
-                    st.session_state.test_author_handle = "warga_kritis"
-                    st.rerun()
-            with col_p3:
-                if st.button("Antisipasi KDMP", use_container_width=True, help="Uji sentimen harapan KDMP"):
-                    st.session_state.test_input_text = PRESETS["🟡 KDMP Antisipasi (Harapan Transparansi)"]
-                    st.session_state.test_author_handle = "tokoh_desa"
-                    st.rerun()
-            with col_p4:
-                if st.button("Sekolah Rakyat", use_container_width=True, help="Uji evaluasi Sekolah Rakyat"):
-                    st.session_state.test_input_text = PRESETS["🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)"]
-                    st.session_state.test_author_handle = "relawan_pendidikan"
-                    st.rerun()
-
-            c_author, c_text = st.columns([1.2, 3.8])
-            with c_author:
-                author_input = st.text_input("Akun Pengunggah / Aktor:", value=st.session_state.test_author_handle, help="Identitas akun untuk analisis simpul jaringan (SNA)")
-            with c_text:
-                text_input = st.text_area(
-                    "Kalimat / Opini Publik yang Diuji:",
-                    value=st.session_state.test_input_text,
-                    height=100,
-                    help="Ketik atau tempel opini warganet, aduan, atau cuitan untuk diinferensi model IndoBERT"
-                )
-
-        with tab_url:
-            st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:6px;'>EKSTRAKSI POSTINGAN DARI TAUTAN MULTIPLATFORM:</div>", unsafe_allow_html=True)
-            c_url_in, c_url_btn = st.columns([3.8, 1.2], vertical_alignment="bottom")
-            with c_url_in:
-                url_query = st.text_input(
-                    "Masukkan Tautan / Link URL:",
-                    placeholder="https://x.com/username/status/... atau https://instagram.com/p/...",
-                    help="Tempelkan link Twitter/X, Instagram, Facebook, TikTok, YouTube, Threads, atau Berita"
-                )
-            with c_url_btn:
-                btn_fetch_url = st.button("Cari & Ekstrak", use_container_width=True, icon=":material/search:")
-
-            # Quick Sample URL dari Korpus yang Ada
-            if df is not None and not df.empty and 'url' in df.columns:
-                valid_urls = df[df['url'].str.contains('http', case=False, na=False)]
-                if not valid_urls.empty:
-                    st.markdown("<div style='font-size:11px; color:#64748B; margin-top:4px;'>Contoh link dari korpus:</div>", unsafe_allow_html=True)
-                    c_sm1, c_sm2 = st.columns(2)
-                    sample_rows = valid_urls.sample(min(2, len(valid_urls)), random_state=42)
-                    for col_target, (_, r) in zip([c_sm1, c_sm2], sample_rows.iterrows()):
-                        with col_target:
-                            u_sample = str(r['url'])
-                            u_plat = str(r.get('platform', 'Media'))
-                            u_label = f"[{u_plat}] {u_sample[:40]}..."
-                            if st.button(u_label, key=f"btn_u_{r.name}", use_container_width=True):
-                                text_input = str(r.get('cleaned_content') or r.get('raw_content', ''))
-                                author_input = str(r.get('author', 'netizen_korpus'))
-                                st.session_state.test_input_text = text_input
-                                st.session_state.test_author_handle = author_input
-                                st.rerun()
-
-            if btn_fetch_url and url_query:
-                # Cari apakah URL ada di korpus dataset
-                matched_row = None
-                if df is not None and not df.empty and 'url' in df.columns:
-                    matches = df[df['url'].str.contains(url_query.strip(), regex=False, case=False, na=False)]
-                    if not matches.empty:
-                        matched_row = matches.iloc[0]
-
-                if matched_row is not None:
-                    st.success(f"Tautan ditemukan dalam Korpus Terfilter! [Platform: {matched_row.get('platform', '-')}]")
-                    text_input = str(matched_row.get('cleaned_content') or matched_row.get('raw_content', ''))
-                    author_input = str(matched_row.get('author', 'netizen_korpus'))
-                    st.session_state.test_input_text = text_input
-                    st.session_state.test_author_handle = author_input
-                    st.rerun()
-                else:
-                    st.info("Tautan belum tercatat di korpus lokal. Menggunakan teks aktif untuk inferensi real-time.")
+        c_author, c_text = st.columns([1.2, 3.8])
+        with c_author:
+            author_input = st.text_input("Akun Pengunggah / Aktor:", value=st.session_state.test_author_handle, help="Identitas akun untuk analisis simpul jaringan (SNA)")
+        with c_text:
+            text_input = st.text_area(
+                "Kalimat / Opini Publik yang Diuji:",
+                value=st.session_state.test_input_text,
+                height=100,
+                help="Ketik atau tempel opini warganet, aduan, atau cuitan untuk diinferensi model IndoBERT"
+            )
 
     # Menjalankan Analisis NLP & IndoBERT
     analysis = analyze_text_nlp(text_input)
