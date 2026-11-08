@@ -21,6 +21,7 @@ from src.mh_style import (
 )
 from src.sna_engine import SENTIMENT_COLORS, EMOTION_COLORS, generate_pyvis_html
 from src.sentiment_corrector import SARCASM_PATTERNS, correct_sentiment, align_emotion_valence_9class
+from src.indobert_engine import predict_real_indobert
 import streamlit.components.v1 as components_v1
 
 # ------------------------------------------------------------------------------
@@ -334,18 +335,11 @@ def decompose_targeted_policy_sentiment(text):
         if not clauses_text:
             clauses_text = text
             
-        ana = analyze_text_nlp(clauses_text)
-        sent, _, pol_corr, corr_r = correct_sentiment(clauses_text, ana['sentiment'], ana['polarity'])
-        pol = pol_corr if corr_r else ana['polarity']
-        emo = align_emotion_valence_9class(clauses_text, sent, ana['primary_emotion'])
-        
+        ana = predict_real_indobert(clauses_text)
+        sent = ana['sentiment']
+        pol = ana['polarity']
+        emo = ana['primary_emotion']
         probs = dict(ana['emotion_probs'])
-        if emo != ana['primary_emotion'] or (sent == 'Negatif' and ana['primary_emotion'] in ['Trust', 'Joy', 'Anticipation']):
-            probs = {k: 0.03 for k in probs}
-            probs[emo] = 0.70
-            rem = 0.30 / max(1, len(probs) - 1)
-            for k in probs:
-                if k != emo: probs[k] = rem
 
         evaluations[p] = {
             'topic': p,
@@ -358,7 +352,7 @@ def decompose_targeted_policy_sentiment(text):
             'confidence': ana['confidence'],
             'primary_emotion': emo,
             'emotion_probs': probs,
-            'reason': corr_r,
+            'reason': ana.get('guardrail_applied'),
             'excerpt': clauses_text
         }
 
@@ -761,34 +755,11 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                 help="Ketik atau tempel opini warganet, aduan, atau cuitan untuk diinferensi model IndoBERT"
             )
 
-    # Menjalankan Analisis NLP & IndoBERT
-    analysis = analyze_text_nlp(text_input)
-    sent_raw = analysis['sentiment']
-    pol_raw = analysis['polarity']
-    
-    # Sinkronisasi dengan Post-Processing Correction Layer (Sarkasme, Pembelaan Kebijakan, Umpatan)
-    sent, _, pol_corr, corr_reason = correct_sentiment(text_input, sent_raw, pol_raw)
-    pol = pol_corr if corr_reason else pol_raw
-    emo = align_emotion_valence_9class(text_input, sent, analysis['primary_emotion'])
-    
-    if corr_reason:
-        if sent == "Positif":
-            analysis['probs'] = {'Positif': 0.95, 'Netral': 0.03, 'Negatif': 0.02}
-            analysis['confidence'] = 0.95
-        elif sent == "Negatif":
-            analysis['probs'] = {'Positif': 0.02, 'Netral': 0.03, 'Negatif': 0.95}
-            analysis['confidence'] = 0.95
-
-    # Pastikan probabilitas emosi selaras dengan emosi hasil penyelarasan (valence alignment)
-    if emo != analysis['primary_emotion'] or (sent == "Negatif" and analysis['primary_emotion'] in ['Trust', 'Joy', 'Anticipation']):
-        analysis['primary_emotion'] = emo
-        new_probs = {k: 0.03 for k in analysis['emotion_probs']}
-        new_probs[emo] = 0.70
-        rem = 0.30 / max(1, (len(new_probs) - 1))
-        for k in new_probs:
-            if k != emo:
-                new_probs[k] = rem
-        analysis['emotion_probs'] = new_probs
+    # Menjalankan Analisis Deep Learning IndoBERT Asli (PyTorch CPU) + Guardrail
+    analysis = predict_real_indobert(text_input)
+    sent = analysis['sentiment']
+    pol = analysis['polarity']
+    emo = analysis['primary_emotion']
 
     # Deteksi topik secara mandiri dari teks yang diuji (Dynamic Topic Detection)
     active_topic = detect_topic_from_text(text_input, fallback=fallback_topic)
@@ -886,7 +857,10 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
         with c_res1:
             with st.container(border=True):
                 st.markdown(f"""
-                <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">PREDIKSI SENTIMEN (INDOBERT)</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">PREDIKSI SENTIMEN (INDOBERT)</span>
+                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:4px;">⚡ NEURAL LIVE</span>
+                </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{sent_bg}; color:{sent_color}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {sent_color}40;">
                         {sent.upper()}
@@ -902,7 +876,10 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
         with c_res2:
             with st.container(border=True):
                 st.markdown(f"""
-                <div style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">9 DIMENSI EMOSI (PLUTCHIK MODEL)</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">9 DIMENSI EMOSI (PLUTCHIK)</span>
+                    <span style="background:#F0FDF4; color:#16A34A; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:4px;">⚡ INDOBERT 9-CLASS</span>
+                </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{emo_hex}15; color:{emo_hex}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {emo_hex}40;">
                         {emo}

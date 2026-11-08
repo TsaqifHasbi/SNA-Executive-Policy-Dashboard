@@ -506,11 +506,11 @@ def align_emotion_valence_9class(text, predicted_sentiment, raw_emotion):
         
     # 2. Valensi Positif
     elif sent == 'Positif':
-        if raw_emo in ['Anger', 'Disgust', 'Sadness', 'Fear']:
-            if any(re.search(pat, text_l) for pat in PRO_POLICY_DEFENSE_PATTERNS) or any(w in text_l for w in ['dukung', 'percaya', 'kawal', 'yakin', 'amanah', 'hebat', 'harapan', 'terima kasih', 'bantuan', 'baik']):
+        if raw_emo in ['Anger', 'Disgust', 'Sadness', 'Fear'] or (raw_emo == 'Neutral' and any(w in text_l for w in ['berguna', 'keren', 'mantap', 'hebat', 'terbantu', 'membantu', 'sehat', 'nutrisi', 'senang', 'alhamdulillah', 'syukur', 'sukses', 'berkah', 'berfaedah', 'banget', 'woi'])):
+            if any(re.search(pat, text_l) for pat in PRO_POLICY_DEFENSE_PATTERNS) or any(w in text_l for w in ['dukung', 'percaya', 'kawal', 'yakin', 'amanah', 'hebat', 'harapan', 'terima kasih', 'bantuan', 'baik', 'berguna', 'manfaat']):
                 return 'Trust'
-            if any(w in text_l for w in ['mirip', 'wow', 'elit', 'keren', 'gila']):
-                return 'Surprise'
+            if any(w in text_l for w in ['mirip', 'wow', 'elit', 'keren', 'gila', 'mantap', 'banget', 'senang']):
+                return 'Joy'
             return 'Joy'
         return raw_emo
         
