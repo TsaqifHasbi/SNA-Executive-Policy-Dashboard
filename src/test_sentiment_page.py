@@ -807,13 +807,24 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     st.write("")
     if targeted_decomp.get('is_multi_target'):
         st.markdown("""
-        <div style="background:linear-gradient(90deg, #1E3A8A 0%, #1D4ED8 100%); color:white; padding:12px 18px; border-radius:10px; margin-bottom:12px; box-shadow:0 2px 8px rgba(30,58,138,0.15);">
-            <div style="font-size:11.5px; font-weight:800; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">
-                <i class="material-icons" style="font-size:15px;">alt_route</i>
-                <span>TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED OPINION MINING)</span>
+        <div style="background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%); color: #FFFFFF; padding: 14px 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="background: rgba(255, 255, 255, 0.12); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="6" r="3"></circle>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <path d="M18 9v2a4 4 0 0 1-4 4H6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;">TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED OPINION MINING)</div>
+                    <div style="font-size: 12px; color: rgba(255, 255, 255, 0.88); margin-top: 2px;">
+                        Terdeteksi perbandingan opini lintas kebijakan dalam satu komentar. Model mengurai polaritas & dimensi emosi secara terpisah per target program publik.
+                    </div>
+                </div>
             </div>
-            <div style="font-size:12.5px; opacity:0.95; margin-top:3px;">
-                Terdeteksi komparasi lintas kebijakan dalam satu opini warganet. Model mengurai polaritas & dimensi emosi spesifik per target kebijakan publik.
+            <div style="background: rgba(255, 255, 255, 0.15); padding: 5px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; white-space: nowrap; border: 1px solid rgba(255, 255, 255, 0.25);">
+                MULTI-TARGET ABSA
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -828,35 +839,55 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             if p_sent == "Positif":
                 t_color = "#10B981"
                 t_bg = "#ECFDF5"
+                badge_icon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>'
             elif p_sent == "Negatif":
                 t_color = "#EF4444"
                 t_bg = "#FEF2F2"
+                badge_icon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:4px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
             else:
                 t_color = "#64748B"
                 t_bg = "#F8FAFC"
+                badge_icon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:4px;"><line x1="5" y1="12" x2="19" y2="12"></line></svg>'
                 
             with cols_target[idx]:
                 with st.container(border=True):
                     st.markdown(f"""
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div>
-                            <div style="font-size:10px; font-weight:800; color:#64748B; letter-spacing:0.5px;">TARGET EVALUASI KEBIJAKAN</div>
-                            <div style="font-size:16px; font-weight:800; color:#0F2942;">{ev['title']}</div>
-                            <div style="font-size:11px; color:#2563EB; font-weight:600; margin-top:1px;">{ev['agency']} ({ev['handle']})</div>
+                    <div style="border-top: 3px solid {t_color}; margin: -1rem -1rem 12px -1rem; padding: 0;"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; min-height:50px;">
+                        <div style="flex:1; padding-right:8px;">
+                            <div style="font-size:9.5px; font-weight:800; color:#64748B; letter-spacing:0.5px; text-transform:uppercase;">Target Evaluasi Kebijakan</div>
+                            <div style="font-size:15px; font-weight:800; color:#0F2942; line-height:1.25; margin-top:2px;">{ev['title']}</div>
                         </div>
-                        <span style="background:{t_bg}; color:{t_color}; font-size:14px; font-weight:800; padding:4px 12px; border-radius:6px; border:1px solid {t_color}40;">
-                            {p_sent.upper()}
+                        <span style="background:{t_bg}; color:{t_color}; font-size:12px; font-weight:800; padding:4px 10px; border-radius:6px; border:1px solid {t_color}40; display:inline-flex; align-items:center; flex-shrink:0;">
+                            {badge_icon}{p_sent.upper()}
                         </span>
                     </div>
-                    <hr style="margin:8px 0; border:none; border-top:1px solid #E2E8F0;">
-                    <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#475569; margin-bottom:6px;">
-                        <span>Polaritas: <b style="color:{t_color};">{p_pol:+.2f}</b></span>
-                        <span>Keyakinan: <b>{ev['confidence']*100:.1f}%</b></span>
-                        <span>Emosi: <b style="color:{p_emo_hex};">{p_emo}</b></span>
+                    <div style="font-size:11px; color:#2563EB; font-weight:600; min-height:32px; margin-top:4px; line-height:1.3;">
+                        {ev['agency']} <span style="color:#64748B; font-weight:500;">({ev['handle']})</span>
                     </div>
-                    <div style="font-size:10.5px; color:#64748B; margin-bottom:4px; font-weight:700;">Klausa Terarah Terkait:</div>
-                    <div style="background:#F8FAFC; border-left:3px solid {t_color}; padding:6px 10px; border-radius:4px; font-size:11px; color:#334155; line-height:1.4; font-style:italic;">
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin:12px 0;">
+                        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:6px; padding:6px 4px; text-align:center;">
+                            <div style="font-size:9px; font-weight:700; color:#64748B; text-transform:uppercase;">Polaritas</div>
+                            <div style="font-size:13px; font-weight:800; color:{t_color}; margin-top:2px;">{p_pol:+.2f}</div>
+                        </div>
+                        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:6px; padding:6px 4px; text-align:center;">
+                            <div style="font-size:9px; font-weight:700; color:#64748B; text-transform:uppercase;">Keyakinan</div>
+                            <div style="font-size:13px; font-weight:800; color:#1E293B; margin-top:2px;">{ev['confidence']*100:.1f}%</div>
+                        </div>
+                        <div style="background:{p_emo_hex}15; border:1px solid {p_emo_hex}40; border-radius:6px; padding:6px 4px; text-align:center;">
+                            <div style="font-size:9px; font-weight:700; color:{p_emo_hex}; text-transform:uppercase;">Emosi</div>
+                            <div style="font-size:13px; font-weight:800; color:{p_emo_hex}; margin-top:2px;">{p_emo}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size:9.5px; font-weight:700; color:#64748B; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Klausa Terarah Terkait:</div>
+                    <div style="background:#F8FAFC; border-left:3px solid {t_color}; padding:8px 10px; border-radius:0 6px 6px 0; font-size:11px; color:#334155; line-height:1.45; font-style:italic; min-height:64px; display:flex; align-items:center;">
                         "{ev['excerpt']}"
+                    </div>
+                    <div style="font-size:10.5px; color:#64748B; margin-top:8px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #F1F5F9; padding-top:6px;">
+                        <span>Simpul SNA: <b style="color:#0F2942;">{ev['handle']}</b></span>
+                        <span style="color:{t_color}; font-weight:700;">{ev['hashtag']}</span>
                     </div>
                     """, unsafe_allow_html=True)
     else:
@@ -866,8 +897,8 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             with st.container(border=True):
                 st.markdown(f"""
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">PREDIKSI SENTIMEN (INDOBERT)</span>
-                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px;"><i class="material-icons" style="font-size:10px; vertical-align:middle;">memory</i> INDOBERT LIVE</span>
+                    <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px; text-transform:uppercase;">Prediksi Sentimen (IndoBERT)</span>
+                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px; border:1px solid #C7D2FE;">INDOBERT LIVE</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{sent_bg}; color:{sent_color}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {sent_color}40;">
@@ -885,8 +916,8 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
             with st.container(border=True):
                 st.markdown(f"""
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">9 DIMENSI EMOSI (PLUTCHIK)</span>
-                    <span style="background:#F0FDF4; color:#16A34A; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px;"><i class="material-icons" style="font-size:10px; vertical-align:middle;">psychology</i> PLUTCHIK 9-CLASS</span>
+                    <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px; text-transform:uppercase;">9 Dimensi Emosi (Plutchik)</span>
+                    <span style="background:#F0FDF4; color:#16A34A; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px; border:1px solid #BBF7D0;">PLUTCHIK 9-CLASS</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{emo_hex}15; color:{emo_hex}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {emo_hex}40;">
