@@ -105,6 +105,7 @@ def render_kpi_chips(chips):
 def render_status_badge(text, variant="default"):
     """
     Returns HTML string for a colored status badge.
+    Enforces white-space:nowrap and inline-block so status text never breaks into multiple lines.
     """
     styles = {
         "green": "background:#ECFDF5; color:#059669; border:1px solid #A7F3D0;",
@@ -115,7 +116,7 @@ def render_status_badge(text, variant="default"):
         "slate": "background:#F1F5F9; color:#475569; border:1px solid #CBD5E1;",
     }
     st_style = styles.get(variant, styles["slate"])
-    return f"""<span style="{st_style} font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; letter-spacing:0.3px; text-transform:uppercase;">{text}</span>"""
+    return f"""<span style="{st_style} font-size:10px; font-weight:700; padding:2.5px 8px; border-radius:4px; letter-spacing:0.3px; text-transform:uppercase; white-space:nowrap; display:inline-block; line-height:1.2;">{text}</span>"""
 
 def render_callout_target(text):
     """

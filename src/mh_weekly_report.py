@@ -1346,16 +1346,16 @@ Hasil Audit Pola Percakapan Warganet
 <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
 <thead>
 <tr style="border-bottom:1.5px solid #CBD5E1; color:#64748B; font-size:10px; font-weight:700;">
-<th style="padding:6px 4px;">KATEGORI UJI</th>
-<th style="padding:6px 4px;">POLA TERUKUR</th>
-<th style="padding:6px 4px;">PENILAIAN INTEGRITAS</th>
+<th style="padding:6px 6px;">KATEGORI UJI</th>
+<th style="padding:6px 6px;">POLA TERUKUR</th>
+<th style="padding:6px 6px; width:160px; min-width:150px; white-space:nowrap;">PENILAIAN INTEGRITAS</th>
 </tr>
 </thead>
 <tbody>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Sebaran Akun Penulis</td><td>Rasio {user_ratio}% penulis unik dari {m['vol']:,} total kiriman</td><td>{render_status_badge("ORGANIK", "green")}</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Teks Identik / Kembar</td><td>Ditemukan {dup_pct}% teks berulang secara harfiah</td><td>{render_status_badge("WAJAR / SINKRONISASI", "slate")}</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Serangan Bot Terorganisir</td><td>Tidak ditemukan lonjakan kaskade anomali di luar jam aktif</td><td>{render_status_badge("TIDAK TERDETEKSI", "green")}</td></tr>
-<tr><td style="font-weight:600; padding:6px 4px;">Dinamika Tagar Publik</td><td>Tagar berkembang secara variatif mengikuti isu aktual</td><td>{render_status_badge("ALAMI", "green")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Sebaran Akun Penulis</td><td style="padding:6px 6px;">Rasio {user_ratio}% penulis unik dari {m['vol']:,} total kiriman</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("ORGANIK", "green")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Teks Identik / Kembar</td><td style="padding:6px 6px;">Ditemukan {dup_pct}% teks berulang secara harfiah</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("WAJAR / SINKRONISASI", "slate")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Serangan Bot Terorganisir</td><td style="padding:6px 6px;">Tidak ditemukan lonjakan kaskade anomali di luar jam aktif</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("TIDAK TERDETEKSI", "green")}</td></tr>
+<tr><td style="font-weight:600; padding:6px 6px;">Dinamika Tagar Publik</td><td style="padding:6px 6px;">Tagar berkembang secara variatif mengikuti isu aktual</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("ALAMI", "green")}</td></tr>
 </tbody>
 </table>
 </div>"""
@@ -1621,18 +1621,18 @@ Butir Pantau Prioritas Pimpinan
 <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
 <thead>
 <tr style="border-bottom:1.5px solid #CBD5E1; color:#64748B; font-size:10px; font-weight:700;">
-<th style="padding:6px 4px;">BUTIR ISU</th>
-<th style="padding:6px 4px;">UNIT TERKAIT</th>
-<th style="padding:6px 4px; width:110px;">STATUS ▼</th>
-<th style="padding:6px 4px;">LANGKAH TINDAK LANJUT</th>
+<th style="padding:6px 6px;">BUTIR ISU</th>
+<th style="padding:6px 6px;">UNIT TERKAIT</th>
+<th style="padding:6px 6px; width:135px; min-width:130px; white-space:nowrap;">STATUS ▼</th>
+<th style="padding:6px 6px;">LANGKAH TINDAK LANJUT</th>
 </tr>
 </thead>
 <tbody>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Kendala teknis & mutu pelaksanaan di daerah</td><td style="color:#64748B;">Tim Teknis Lapangan</td><td>{render_status_badge("PRIORITAS - TINGGI", "red")}</td><td>Inspeksi & audit cepat 24 jam</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Aduan keterlambatan distribusi / sarana</td><td style="color:#64748B;">Divisi Logistik</td><td>{render_status_badge("PANTAU", "amber")}</td><td>Buka jalur hotline aduan</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Pemberitaan capaian & dampak ekonomi warga</td><td style="color:#64748B;">Biro Humas & Media</td><td>{render_status_badge("BERJALAN", "green")}</td><td>Rilis lembar fakta berkala</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">Dinamika kritik di media sosial (TikTok/X)</td><td style="color:#64748B;">Tim Monitoring Siber</td><td>{render_status_badge("PANTAU", "blue")}</td><td>Klarifikasi berbasis infografik</td></tr>
-<tr><td style="font-weight:600; padding:6px 4px;">Kesesuaian alokasi anggaran kebijakan</td><td style="color:#64748B;">Inspektorat / Pengawas</td><td>{render_status_badge("TERKENDALI", "green")}</td><td>Transparansi laporan berkala</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Kendala teknis & mutu pelaksanaan di daerah</td><td style="color:#64748B; padding:6px 6px;">Tim Teknis Lapangan</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("PRIORITAS TINGGI", "red")}</td><td style="padding:6px 6px;">Inspeksi & audit cepat 24 jam</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Aduan keterlambatan distribusi / sarana</td><td style="color:#64748B; padding:6px 6px;">Divisi Logistik</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("PANTAU", "amber")}</td><td style="padding:6px 6px;">Buka jalur hotline aduan</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Pemberitaan capaian & dampak ekonomi warga</td><td style="color:#64748B; padding:6px 6px;">Biro Humas & Media</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("BERJALAN", "green")}</td><td style="padding:6px 6px;">Rilis lembar fakta berkala</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">Dinamika kritik di media sosial (TikTok/X)</td><td style="color:#64748B; padding:6px 6px;">Tim Monitoring Siber</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("PANTAU", "blue")}</td><td style="padding:6px 6px;">Klarifikasi berbasis infografik</td></tr>
+<tr><td style="font-weight:600; padding:6px 6px;">Kesesuaian alokasi anggaran kebijakan</td><td style="color:#64748B; padding:6px 6px;">Inspektorat / Pengawas</td><td style="padding:6px 6px; white-space:nowrap;">{render_status_badge("TERKENDALI", "green")}</td><td style="padding:6px 6px;">Transparansi laporan berkala</td></tr>
 </tbody>
 </table>
 </div>"""
@@ -1674,17 +1674,17 @@ Enam Tindakan Prioritas Pimpinan
 <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
 <thead>
 <tr style="border-bottom:1.5px solid #CBD5E1; color:#64748B; font-size:10px; font-weight:700;">
-<th style="padding:6px 4px;">TINDAKAN STRATEGIS</th>
-<th style="padding:6px 4px; width:80px;">WAKTU</th>
+<th style="padding:6px 6px;">TINDAKAN STRATEGIS</th>
+<th style="padding:6px 6px; width:105px; min-width:100px; white-space:nowrap; text-align:right;">WAKTU</th>
 </tr>
 </thead>
 <tbody>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">1. Respons klarifikasi aduan mutu lapangan</td><td>{render_status_badge("SEGERA", "red")}</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">2. Publikasi capaian penerima manfaat terkini</td><td>{render_status_badge("SEGERA", "red")}</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">3. Kolaborasi bersama pemengaruh kredibel</td><td>{render_status_badge("PEKAN INI", "amber")}</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">4. Penguatan narasi edukatif di TikTok & IG</td><td>{render_status_badge("PEKAN INI", "amber")}</td></tr>
-<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 4px;">5. Evaluasi berkala sentimen negatif mingguan</td><td>{render_status_badge("RUTIN", "slate")}</td></tr>
-<tr><td style="font-weight:600; padding:6px 4px;">6. Pengawasan terpadu kanal hotline publik</td><td>{render_status_badge("RUTIN", "slate")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">1. Respons klarifikasi aduan mutu lapangan</td><td style="padding:6px 6px; white-space:nowrap; text-align:right;">{render_status_badge("SEGERA", "red")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">2. Publikasi capaian penerima manfaat terkini</td><td style="padding:6px 6px; white-space:nowrap; text-align:right;">{render_status_badge("SEGERA", "red")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">3. Kolaborasi bersama pemengaruh kredibel</td><td style="padding:6px 6px; white-space:nowrap; text-align:right;">{render_status_badge("PEKAN INI", "amber")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">4. Penguatan narasi edukatif di TikTok & IG</td><td style="padding:6px 6px; white-space:nowrap; text-align:right;">{render_status_badge("PEKAN INI", "amber")}</td></tr>
+<tr style="border-bottom:1px solid #F1F5F9;"><td style="font-weight:600; padding:6px 6px;">5. Evaluasi berkala sentimen negatif mingguan</td><td style="padding:6px 6px; white-space:nowrap; text-align:right;">{render_status_badge("RUTIN", "slate")}</td></tr>
+<tr><td style="font-weight:600; padding:6px 6px;">6. Pengawasan terpadu kanal hotline publik</td><td style="padding:6px 6px; white-space:nowrap; text-align:right;">{render_status_badge("RUTIN", "slate")}</td></tr>
 </tbody>
 </table>
 </div>"""
