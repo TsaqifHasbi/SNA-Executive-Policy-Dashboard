@@ -63,8 +63,8 @@ POSITIVE_TERMS = {
 
 NEGATIVE_TERMS = {
     # Umpatan & Makian Kasar (High intensity Anger/Negatif)
-    'anjing': 3.5, 'babi': 3.5, 'bangsat': 3.5, 'bajingan': 3.5, 'brengsek': 3.2,
-    'kontol': 3.5, 'memek': 3.5, 'pantek': 3.5, 'jancuk': 3.5, 'jancok': 3.5,
+    'anjing': 3.8, 'anjg': 3.8, 'ajg': 3.8, 'babi': 3.5, 'bangsat': 3.5, 'bajingan': 3.5, 'brengsek': 3.2,
+    'kontol': 3.8, 'memek': 3.8, 'pantek': 3.5, 'jancuk': 3.8, 'jancok': 3.8,
     'asu': 3.5, 'kampret': 3.0, 'sialan': 3.0, 'tai': 3.2, 'taik': 3.2, 'taek': 3.2,
     'keparat': 3.2, 'bedebah': 3.2, 'biadab': 3.5, 'laknat': 3.0, 'bangke': 3.0,
     'sompret': 2.8, 'setan': 3.0, 'iblis': 3.0, 'dajjal': 3.2,
@@ -412,6 +412,11 @@ def analyze_text_nlp(text):
     neg_score = 0.0
     caution_score = 0.0
 
+    # Evaluasi umpatan & makian langsung (High-confidence Negatif)
+    from src.sentiment_corrector import PROFANITY
+    if any(w in PROFANITY for w in words):
+        neg_score += 6.0
+
     # Evaluasi frasa multi-kata (e.g. "buang anggaran", "salah sasaran", "tidak tepat sasaran", "bakar uang")
     for phrase, score in NEGATIVE_TERMS.items():
         if ' ' in phrase and phrase in clean_text:
@@ -699,18 +704,18 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
 
     fallback_topic = topic_label or selected_topic or "MBG"
 
-    # Presets Kalimat Uji
+    # Presets Kalimat Uji (Tanpa Emoji, Menggunakan Deskripsi Bersih)
     PRESETS = {
-        "🟢 MBG Positif (Trust & Joy)": "Program Makan Bergizi Gratis (MBG) sangat membantu anak-anak di sekolah dasar mendapatkan nutrisi sehat dan berkualitas! Pedagang katering lokal juga ikut merasakan berkah dan untung @kemdikbud @bapanas #MBG2026 #GenerasiSehat",
-        "🔴 Aduan MBG Negatif (Anger & Disgust)": "Kecewa sekali dengan distribusi makanan MBG di sekolah kemarin! Makanan basi, jorok, dan ada anak yang mengeluh mual keracunan! Tolong jangan jadikan anggaran rakyat bancakan korupsi! @bpom_ri @dpr_ri #UsutTuntas",
-        "🟡 KDMP Antisipasi (Harapan Transparansi)": "Koperasi Desa Merah Putih (KDMP) punya prospek dan peluang besar menyejahterakan warga pelosok jika dikelola secara adil, jujur, dan transparan @kemenkopukm #KDMP2026",
-        "🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)": "Sekolah Rakyat harus dipastikan tepat sasaran bagi anak putus sekolah dan kaum dhuafa, jangan sampai implementasi di lapangan tidak merata dan terhambat pungli @kemensos #PendidikanAdil",
-        "⚖️ Komparasi Lintas Kebijakan (MBG vs SR)": "wah gila BGN kerjanya ga becus sampe saat ini masih banyak banget kasus keracunan dari pada buat MBG, mending uangnya buat Sekolah Rakyat lebih bermanfaat buat mereka yang mau belajar dari pada ngeracunin anak mending mencerdaskan anak"
+        "MBG Positif (Trust & Joy)": "Program Makan Bergizi Gratis (MBG) sangat membantu anak-anak di sekolah dasar mendapatkan nutrisi sehat dan berkualitas! Pedagang katering lokal juga ikut merasakan berkah dan untung @kemdikbud @bapanas #MBG2026 #GenerasiSehat",
+        "Aduan Negatif MBG (Anger & Disgust)": "Kecewa sekali dengan distribusi makanan MBG di sekolah kemarin! Makanan basi, jorok, dan ada anak yang mengeluh mual keracunan! Tolong jangan jadikan anggaran rakyat bancakan korupsi! @bpom_ri @dpr_ri #UsutTuntas",
+        "KDMP Antisipasi (Harapan Transparansi)": "Koperasi Desa Merah Putih (KDMP) punya prospek dan peluang besar menyejahterakan warga pelosok jika dikelola secara adil, jujur, dan transparan @kemenkopukm #KDMP2026",
+        "Sekolah Rakyat Kritis (Perlindungan Sosial)": "Sekolah Rakyat harus dipastikan tepat sasaran bagi anak putus sekolah dan kaum dhuafa, jangan sampai implementasi di lapangan tidak merata dan terhambat pungli @kemensos #PendidikanAdil",
+        "Komparasi Kebijakan (MBG vs SR)": "wah gila BGN kerjanya ga becus sampe saat ini masih banyak banget kasus keracunan dari pada buat MBG, mending uangnya buat Sekolah Rakyat lebih bermanfaat buat mereka yang mau belajar dari pada ngeracunin anak mending mencerdaskan anak"
     }
 
     # Session State Initialization
     if 'test_input_text' not in st.session_state:
-        st.session_state.test_input_text = PRESETS["🟢 MBG Positif (Trust & Joy)"]
+        st.session_state.test_input_text = PRESETS["MBG Positif (Trust & Joy)"]
     if 'test_author_handle' not in st.session_state:
         st.session_state.test_author_handle = "warganet_aktif"
 
@@ -720,27 +725,27 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
         col_p1, col_p2, col_p3, col_p4, col_p5 = st.columns(5)
         with col_p1:
             if st.button("MBG Positif", use_container_width=True, help="Uji opini positif MBG"):
-                st.session_state.test_input_text = PRESETS["🟢 MBG Positif (Trust & Joy)"]
+                st.session_state.test_input_text = PRESETS["MBG Positif (Trust & Joy)"]
                 st.session_state.test_author_handle = "orangtua_siswa"
                 st.rerun()
         with col_p2:
             if st.button("Aduan Negatif", use_container_width=True, help="Uji aduan negatif / keracunan"):
-                st.session_state.test_input_text = PRESETS["🔴 Aduan MBG Negatif (Anger & Disgust)"]
+                st.session_state.test_input_text = PRESETS["Aduan Negatif MBG (Anger & Disgust)"]
                 st.session_state.test_author_handle = "warga_kritis"
                 st.rerun()
         with col_p3:
             if st.button("Antisipasi KDMP", use_container_width=True, help="Uji sentimen harapan KDMP"):
-                st.session_state.test_input_text = PRESETS["🟡 KDMP Antisipasi (Harapan Transparansi)"]
+                st.session_state.test_input_text = PRESETS["KDMP Antisipasi (Harapan Transparansi)"]
                 st.session_state.test_author_handle = "tokoh_desa"
                 st.rerun()
         with col_p4:
             if st.button("Sekolah Rakyat", use_container_width=True, help="Uji evaluasi Sekolah Rakyat"):
-                st.session_state.test_input_text = PRESETS["🔵 Sekolah Rakyat Kritis (Perlindungan Sosial)"]
+                st.session_state.test_input_text = PRESETS["Sekolah Rakyat Kritis (Perlindungan Sosial)"]
                 st.session_state.test_author_handle = "relawan_pendidikan"
                 st.rerun()
         with col_p5:
-            if st.button("Komparasi Lintas Isu", use_container_width=True, help="Uji dekomposisi opini multitarget (MBG vs Sekolah Rakyat)"):
-                st.session_state.test_input_text = PRESETS["⚖️ Komparasi Lintas Kebijakan (MBG vs SR)"]
+            if st.button("Komparasi Isu", use_container_width=True, help="Uji dekomposisi opini multitarget (MBG vs Sekolah Rakyat)"):
+                st.session_state.test_input_text = PRESETS["Komparasi Kebijakan (MBG vs SR)"]
                 st.session_state.test_author_handle = "analis_kebijakan"
                 st.rerun()
 
@@ -803,8 +808,11 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
     if targeted_decomp.get('is_multi_target'):
         st.markdown("""
         <div style="background:linear-gradient(90deg, #1E3A8A 0%, #1D4ED8 100%); color:white; padding:12px 18px; border-radius:10px; margin-bottom:12px; box-shadow:0 2px 8px rgba(30,58,138,0.15);">
-            <div style="font-size:11.5px; font-weight:800; letter-spacing:0.5px;">🎯 TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED OPINION MINING)</div>
-            <div style="font-size:12.5px; opacity:0.95; margin-top:2px;">
+            <div style="font-size:11.5px; font-weight:800; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">
+                <i class="material-icons" style="font-size:15px;">alt_route</i>
+                <span>TARGETED SENTIMENT DECOMPOSITION (ASPECT-BASED OPINION MINING)</span>
+            </div>
+            <div style="font-size:12.5px; opacity:0.95; margin-top:3px;">
                 Terdeteksi komparasi lintas kebijakan dalam satu opini warganet. Model mengurai polaritas & dimensi emosi spesifik per target kebijakan publik.
             </div>
         </div>
@@ -859,7 +867,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                 st.markdown(f"""
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">PREDIKSI SENTIMEN (INDOBERT)</span>
-                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:4px;">⚡ NEURAL LIVE</span>
+                    <span style="background:#EEF2FF; color:#4F46E5; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px;"><i class="material-icons" style="font-size:10px; vertical-align:middle;">memory</i> INDOBERT LIVE</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{sent_bg}; color:{sent_color}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {sent_color}40;">
@@ -878,7 +886,7 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                 st.markdown(f"""
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:11px; font-weight:800; color:#64748B; letter-spacing:0.5px;">9 DIMENSI EMOSI (PLUTCHIK)</span>
-                    <span style="background:#F0FDF4; color:#16A34A; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:4px;">⚡ INDOBERT 9-CLASS</span>
+                    <span style="background:#F0FDF4; color:#16A34A; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:4px;"><i class="material-icons" style="font-size:10px; vertical-align:middle;">psychology</i> PLUTCHIK 9-CLASS</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <span style="background:{emo_hex}15; color:{emo_hex}; font-size:22px; font-weight:800; padding:4px 14px; border-radius:8px; border:1px solid {emo_hex}40;">
