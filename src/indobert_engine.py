@@ -1,5 +1,6 @@
 import os
 import re
+# pyrefly: ignore[missing-import]
 import numpy as np
 
 from src.sentiment_corrector import (
@@ -35,7 +36,9 @@ def get_indobert_models():
         return _MODEL_CACHE
 
     try:
+        # pyrefly: ignore[missing-import]
         import torch
+        # pyrefly: ignore[missing-import]
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
     except Exception as e:
         # Fallback jika torch belum terdeteksi di proses ini
@@ -87,6 +90,7 @@ def predict_real_indobert(text):
     
     if models and 'sentiment' in models and 'emotion' in models:
         try:
+            # pyrefly: ignore[missing-import]
             import torch
             tok_sent, mod_sent = models['sentiment']
             tok_emo, mod_emo = models['emotion']

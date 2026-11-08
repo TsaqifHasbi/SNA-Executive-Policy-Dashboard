@@ -18,6 +18,7 @@ from src.clean_header_footer import fmt_val
 from src.metrics_calculator import calculate_framing_entman
 from src.mh_style import (
     render_html,
+    render_logo_badge,
     render_mh_top_bar,
     render_mh_title,
     render_kpi_chips,
