@@ -58,7 +58,8 @@ POSITIVE_TERMS = {
     'murah': 2.0, 'terjangkau': 2.5, 'gratis': 2.0, 'lengkap': 2.0,
     'terobosan': 2.8, 'efisien': 2.5, 'efisiensi': 2.5, 'solusi': 2.5, 'solutif': 2.8,
     'semangat': 2.0, 'berdaya': 2.2, 'optimal': 2.2, 'top': 2.2, 'jos': 2.2, 'joss': 2.2,
-    'berkah': 2.5, 'setuju': 2.0, 'pro': 2.0, 'pro rakyat': 2.8, 'juara': 2.5
+    'berkah': 2.5, 'setuju': 2.0, 'pro': 2.0, 'pro rakyat': 2.8, 'juara': 2.5,
+    'cerdas': 2.5, 'mencerdaskan': 2.8, 'mencerdaskan bangsa': 3.2, 'mencerdaskan rakyat': 3.0
 }
 
 NEGATIVE_TERMS = {
@@ -194,8 +195,8 @@ def get_morphology_candidates(word):
     return cands
 
 EMOTION_KEYWORDS = {
-    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang', 'bijak', 'bijaksana', 'salut', 'jempol', 'berguna', 'bermanfaat', 'berfaedah', 'efektif', 'membantu'],
-    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran', 'bijak', 'bijaksana', 'kebijaksanaan', 'arif', 'cerdas', 'visioner', 'berguna', 'bermanfaat', 'berfaedah', 'efektif', 'membantu'],
+    'Joy': ['senang', 'gembira', 'bahagia', 'suka', 'mantap', 'mantul', 'keren', 'puas', 'bangga', 'alhamdulillah', 'alhamdulilah', 'enak', 'nikmat', 'lezat', 'top', 'joss', 'jos', 'hebat', 'bagus', 'sehat', 'gizi', 'kenyang', 'baik', 'terbaik', 'kebaikan', 'cinta', 'sayang', 'bijak', 'bijaksana', 'salut', 'jempol', 'berguna', 'bermanfaat', 'berfaedah', 'efektif', 'membantu', 'mencerdaskan', 'mencerdaskan bangsa'],
+    'Trust': ['percaya', 'dukung', 'transparan', 'amanah', 'terbukti', 'kualitas', 'terjamin', 'sah', 'adil', 'profesional', 'apresiasi', 'berkualitas', 'sehat', 'higienis', 'solutif', 'solusi', 'baik', 'benar', 'tepat', 'peduli', 'aman', 'tepat sasaran', 'bijak', 'bijaksana', 'kebijaksanaan', 'arif', 'cerdas', 'mencerdaskan', 'mencerdaskan bangsa', 'visioner', 'berguna', 'bermanfaat', 'berfaedah', 'efektif', 'membantu'],
     'Anticipation': [
         'harapan', 'semoga', 'nunggu', 'menunggu', 'rencana', 'target', 'potensi', 'peluang', 'prospek', 'nanti', 'ke depan', 'harap', 'tumbuh',
         'harus dipastikan', 'dipastikan', 'diantisipasi', 'jangan sampai', 'tepat sasaran', 'kawal', 'mengawal', 'pengawasan', 'aspirasi', 'dorong', 'mendorong', 'waspada', 'kehati-hatian', 'antisipasi', 'peringatan', 'mitigasi'
@@ -321,7 +322,7 @@ def decompose_targeted_policy_sentiment(text):
     CONTRASTIVE_PATTERNS = [
         r'\b(?:daripada|dari pada|ketimbang|dibanding|dibandingkan)\b',
         r'\b(?:mending|mendingan|better|lebih\s+baik)\b',
-        r'\b(?:tapi|tetapi|namun|padahal|sedangkan|sementara)\b',
+        r'\b(?:tapi|tetapi|namun|padahal|sedangkan|sementara|seenggaknya|setidaknya)\b',
     ]
     has_contrast = any(re.search(p, text, flags=re.IGNORECASE) for p in CONTRASTIVE_PATTERNS)
     
@@ -335,37 +336,51 @@ def decompose_targeted_policy_sentiment(text):
             topic_clauses[p].append(text.strip())
     else:
         # KOMPARASI PERTENTANGAN (ASPECT-BASED DECOMPOSITION):
-        # Split hanya pada konjungsi kontras dan terminasi kalimat (JANGAN potong pada koma deret!)
-        raw_clauses = re.split(r'([.?!;\n]+|\b(?:daripada|dari pada|ketimbang|mending|mendingan|better|tapi|tetapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)\b)', text, flags=re.IGNORECASE)
+        # Split secara cerdas pada konjungsi kontras dan terminasi kalimat (JANGAN potong pada koma deret!)
+        CONTRAST_RE = r'(?:daripada|dari pada|ketimbang|mendingan|mending|better|lebih\s+baik|tapi|tetapi|padahal|sedangkan|sementara|namun|seenggaknya|setidaknya|dibandingkan|dibanding)'
+        COMBINED_SEP = rf'([.?!;\n]+|\b(?:{CONTRAST_RE}(?:\s+{CONTRAST_RE})*)\b)'
         
+        parts = re.split(COMBINED_SEP, text, flags=re.IGNORECASE)
         fragments = []
         curr = ""
-        for frag in raw_clauses:
-            if not frag: continue
-            if re.match(r'^[.?!;\n]+$', frag):
-                curr += frag
-                fragments.append(curr.strip())
+        for part in parts:
+            if not part: continue
+            part_stripped = part.strip()
+            if re.match(r'^[.?!;\n]+$', part_stripped):
+                curr += part
+                fragments.append(curr.strip(' ,'))
                 curr = ""
-            elif re.search(r'^(?:daripada|dari pada|ketimbang|mending|mendingan|better|tapi|tetapi|padahal|sedangkan|sementara|namun|dibanding|dibandingkan)$', frag, re.IGNORECASE):
-                if curr.strip():
-                    fragments.append(curr.strip())
-                curr = frag + " "
+            elif re.search(rf'^(?:{CONTRAST_RE}(?:\s+{CONTRAST_RE})*)$', part_stripped, re.IGNORECASE):
+                if curr.strip(' ,'):
+                    fragments.append(curr.strip(' ,'))
+                curr = part_stripped + " "
             else:
-                curr += frag
-        if curr.strip():
-            fragments.append(curr.strip())
+                curr += part
+        if curr.strip(' ,'):
+            fragments.append(curr.strip(' ,'))
 
-        active_policies = list(present_policies)
+        # Penelusuran & Perutean Klausa Terarah:
         for frag in fragments:
             frag_l = frag.lower()
-            matched_policies = [p for p in present_policies if any(re.search(rf'\b{re.escape(k)}\b', frag_l) or (k.startswith(('@', '#')) and k in frag_l) for k in POLICY_TARGET_DEFINITIONS[p]['keywords'] + [POLICY_TARGET_DEFINITIONS[p]['handle'].lower(), POLICY_TARGET_DEFINITIONS[p]['hashtag'].lower()])]
-            if matched_policies:
-                active_policies = matched_policies
+            matched_policies = [
+                p for p in present_policies
+                if any(re.search(rf'\b{re.escape(k)}\b', frag_l) or (k.startswith(('@', '#')) and k in frag_l)
+                       for k in POLICY_TARGET_DEFINITIONS[p]['keywords'] + [POLICY_TARGET_DEFINITIONS[p]['handle'].lower(), POLICY_TARGET_DEFINITIONS[p]['hashtag'].lower()])
+            ]
+            is_contrast_frag = bool(re.search(rf'^(?:{CONTRAST_RE}(?:\s+{CONTRAST_RE})*)\b', frag.strip(), re.IGNORECASE))
+
+            if is_contrast_frag and matched_policies and len(matched_policies) < len(present_policies):
+                # Targeted concession / exception (e.g. "tapi seenggaknya sekolah rakyat bisa..."):
+                # Menjadi klausa penentu mandiri untuk kebijakan yang dikhususkan
                 for p in matched_policies:
-                    topic_clauses[p].append(frag)
+                    topic_clauses[p] = [frag]
             else:
-                for p in active_policies:
-                    topic_clauses[p].append(frag)
+                if matched_policies:
+                    for p in matched_policies:
+                        topic_clauses[p].append(frag)
+                else:
+                    for p in present_policies:
+                        topic_clauses[p].append(frag)
 
     evaluations = {}
     for p in present_policies:
@@ -1012,30 +1027,74 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                 st.markdown("<div style='font-size:12px; font-weight:700; color:#0F2942; margin-bottom:8px;'>KOMPARASI EMOSI LINTAS KEBIJAKAN</div>", unsafe_allow_html=True)
                 fig_emo = go.Figure()
                 
-                for p_name, ev in targeted_decomp['evaluations'].items():
-                    p_col = "#10B981" if ev['sentiment'] == "Positif" else ("#EF4444" if ev['sentiment'] == "Negatif" else "#64748B")
-                    sorted_p_emos = sorted(ev['emotion_probs'].items(), key=lambda x: x[1], reverse=True)[:5]
-                    e_p_names = [x[0] for x in sorted_p_emos]
-                    e_p_vals = [round(x[1] * 100, 1) for x in sorted_p_emos]
+                # Distinct Policy Palette: tiap kebijakan memiliki palet warna identitas khusus agar tidak tercampur merah/hijau seragam
+                POLICY_CHART_COLORS = {
+                    'MBG': '#2563EB',             # Royal Blue
+                    'Sekolah Rakyat': '#059669',    # Emerald Green
+                    'KDMP': '#D97706'              # Amber Gold
+                }
+                DEFAULT_PALETTE = ['#2563EB', '#059669', '#D97706', '#7C3AED', '#DB2777', '#0891B2']
+                
+                # Tentukan kategori emosi terpadu (shared categories) across all policies
+                # Ambil 5 emosi dengan nilai puncak tertinggi dari salah satu kebijakan
+                peak_scores = {}
+                for ev in targeted_decomp['evaluations'].values():
+                    for emo_name, prob in ev['emotion_probs'].items():
+                        peak_scores[emo_name] = max(peak_scores.get(emo_name, 0.0), prob)
+                
+                top_shared_emos = [k for k, _ in sorted(peak_scores.items(), key=lambda x: x[1], reverse=True)[:5]]
+                y_categories = top_shared_emos[::-1]  # Dibalik agar nilai terbesar tampil paling atas
+                
+                max_val_found = 0.0
+                for idx, (p_name, ev) in enumerate(targeted_decomp['evaluations'].items()):
+                    p_col = POLICY_CHART_COLORS.get(p_name, DEFAULT_PALETTE[idx % len(DEFAULT_PALETTE)])
+                    e_vals = [round(ev['emotion_probs'].get(e_k, 0.0) * 100, 1) for e_k in y_categories]
+                    if e_vals:
+                        max_val_found = max(max_val_found, max(e_vals))
+                    
                     fig_emo.add_trace(go.Bar(
                         name=f"{p_name} ({ev['sentiment']})",
-                        y=e_p_names[::-1],
-                        x=e_p_vals[::-1],
+                        y=y_categories,
+                        x=e_vals,
                         orientation='h',
-                        marker_color=p_col,
-                        text=[f"{v}%" for v in e_p_vals[::-1]],
-                        textposition='inside',
-                        textfont=dict(color='#FFFFFF', size=10, family='Plus Jakarta Sans, sans-serif')
+                        marker=dict(color=p_col, line=dict(width=0)),
+                        text=[f"{v:.1f}%" if v >= 1.0 else "" for v in e_vals],
+                        textposition='outside',
+                        cliponaxis=False,
+                        textfont=dict(color='#334155', size=10, family='Plus Jakarta Sans, sans-serif'),
+                        hovertemplate=f"<b>{p_name}</b> ({ev['sentiment']})<br>%{{y}}: <b>%{{x:.1f}}%</b><extra></extra>"
                     ))
+                    
                 fig_emo.update_layout(
                     barmode='group',
-                    height=340,
-                    margin=dict(l=10, r=10, t=30, b=10),
-                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
+                    bargap=0.22,
+                    bargroupgap=0.08,
+                    height=350,
+                    margin=dict(l=10, r=40, t=32, b=10),
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.04,
+                        xanchor="center",
+                        x=0.5,
+                        font=dict(size=10.5, family='Plus Jakarta Sans, sans-serif'),
+                        itemclick=False,
+                        itemdoubleclick=False
+                    ),
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=True, gridcolor='#F1F5F9', zeroline=False),
-                    yaxis=dict(showgrid=False, tickfont=dict(size=11, color='#0F2942', family='Plus Jakarta Sans, sans-serif'))
+                    xaxis=dict(
+                        showgrid=True,
+                        gridcolor='#F1F5F9',
+                        zeroline=False,
+                        ticksuffix='%',
+                        tickfont=dict(size=10, color='#64748B'),
+                        range=[0, min(100.0, max(max_val_found * 1.32, 25.0))]
+                    ),
+                    yaxis=dict(
+                        showgrid=False,
+                        tickfont=dict(size=11, color='#0F2942', family='Plus Jakarta Sans, sans-serif')
+                    )
                 )
                 st.plotly_chart(fig_emo, use_container_width=True, config={'displayModeBar': False})
             else:
@@ -1050,16 +1109,17 @@ def render_test_sentiment_page(df=None, selected_topic='MBG', topic_label=None, 
                     y=e_names[::-1],
                     orientation='h',
                     marker=dict(color=e_colors[::-1], line=dict(width=0)),
-                    text=[f"{v}%" for v in e_vals[::-1]],
-                    textposition='inside',
-                    textfont=dict(color='#FFFFFF', size=11, family='Plus Jakarta Sans, sans-serif')
+                    text=[f"{v:.1f}%" for v in e_vals[::-1]],
+                    textposition='outside',
+                    cliponaxis=False,
+                    textfont=dict(color='#334155', size=11, family='Plus Jakarta Sans, sans-serif')
                 ))
                 fig_emo.update_layout(
-                    height=340,
-                    margin=dict(l=10, r=10, t=10, b=10),
+                    height=350,
+                    margin=dict(l=10, r=40, t=10, b=10),
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=True, gridcolor='#F1F5F9', range=[0, max(e_vals) * 1.25], zeroline=False),
+                    xaxis=dict(showgrid=True, gridcolor='#F1F5F9', range=[0, min(100.0, max(e_vals) * 1.28)], zeroline=False, ticksuffix='%'),
                     yaxis=dict(showgrid=False, tickfont=dict(size=11, color='#0F2942', family='Plus Jakarta Sans, sans-serif'))
                 )
                 st.plotly_chart(fig_emo, use_container_width=True, config={'displayModeBar': False})

@@ -236,7 +236,11 @@ def generate_pyvis_html(G, height="620px", mode='sentiment'):
     net = Network(height=height, width="100%", bgcolor="#0F172A", font_color="#F8FAFC", directed=True)
 
     for node, data in G.nodes(data=True):
-        clean_node = f"@{str(node).strip().lstrip('@')}"
+        node_str = str(node).strip().lstrip('@')
+        if node_str.startswith('#'):
+            clean_node = f"#{node_str.lstrip('#')}"
+        else:
+            clean_node = f"@{node_str}"
         net.add_node(
             node,
             label=clean_node,
