@@ -75,15 +75,31 @@ def extract_emojis(text):
 
 @st.cache_resource(show_spinner=False)
 def load_main_data():
+    needed_cols = [
+        'post_id', 'platform', 'author', 'handle', 'created_at',
+        'likes', 'comments', 'shares', 'reposts', 'views', 'url',
+        'keyword', 'topic', 'cleaned_content', 'total_engagement',
+        'reach', 'sentiment_label', 'predicted_sentiment', 'sentiment_score',
+        'sentiment_name', 'emotion', 'emotion_confidence', 'emotion_sentiment',
+        'date', 'date_str', 'year_month'
+    ]
+
     if os.path.exists(PARQUET_PATH):
         try:
-            df = pd.read_parquet(PARQUET_PATH, engine='pyarrow', use_threads=False)
+            df = pd.read_parquet(PARQUET_PATH, columns=needed_cols, engine='pyarrow', use_threads=False)
         except Exception:
-            df = pd.read_parquet(PARQUET_PATH)
+            try:
+                df = pd.read_parquet(PARQUET_PATH, columns=needed_cols)
+            except Exception:
+                df = pd.read_parquet(PARQUET_PATH)
     elif os.path.exists(CSV_PATH):
         df = pd.read_csv(CSV_PATH, low_memory=False)
     else:
         raise FileNotFoundError(f"Data tidak ditemukan di {PARQUET_PATH} atau {CSV_PATH}")
+
+    # Drop heavy unused columns early to minimize memory footprint on Streamlit Cloud
+    unused_cols = ['thumbnail', 'duration', 'saves', 'views_text', 'description', 'scraped_at', 'post_type', 'source']
+    df.drop(columns=[c for c in unused_cols if c in df.columns], inplace=True, errors='ignore')
 
     # Standardize textual columns & share string memory between raw_content and cleaned_content
     for col in ['cleaned_content', 'handle', 'url']:
@@ -91,27 +107,25 @@ def load_main_data():
             df[col] = df[col].fillna('').astype(str)
 
     if 'cleaned_content' in df.columns:
-        if 'content' not in df.columns:
-            df['content'] = df['cleaned_content']
         if 'raw_content' not in df.columns:
             df['raw_content'] = df['cleaned_content']
         else:
             df['raw_content'] = df['cleaned_content']
     elif 'raw_content' in df.columns:
         df['raw_content'] = df['raw_content'].fillna('').astype(str)
-        if 'content' not in df.columns:
-            df['content'] = df['raw_content']
 
     if 'author' in df.columns:
         df['author'] = df['author'].fillna(df.get('handle', '')).fillna('anonim').astype(str)
 
-    # Deduplicate normalized URLs (e.g. TikTok /photo/ vs /video/ redirects)
+    # Deduplicate normalized URLs without duplicating dataframe memory
     if 'url' in df.columns:
         norm_url = df['url'].str.replace('/photo/', '/video/', regex=False)
         valid_url = norm_url.str.len() > 10
         dup_mask = valid_url & norm_url.duplicated(keep='first')
         if dup_mask.any():
-            df = df[~dup_mask].copy()
+            dup_indices = df.index[dup_mask]
+            df.drop(index=dup_indices, inplace=True)
+        del norm_url, valid_url, dup_mask
 
     # Downcast categorical columns to drastically reduce memory on Streamlit Cloud (saves ~40MB)
     if 'platform' in df.columns:
@@ -171,6 +185,12 @@ def load_main_data():
                 ]
         except Exception:
             pass
+
+    # Downcast categorical columns to category to save ~200MB RAM on Streamlit Community Cloud
+    cat_cols = ['platform', 'topic', 'sentiment_name', 'emotion', 'predicted_sentiment', 'emotion_sentiment']
+    for c in cat_cols:
+        if c in df.columns:
+            df[c] = df[c].fillna('Unknown').astype('category')
 
     import gc
     gc.collect()
